@@ -30,7 +30,8 @@ tasks:
       - cmd: git push
         ignore_error: true
     vars:
-      MESSAGE: '[skip ci] Development commit'
+      MESSAGE: '{{.CLI_ARGS | default "[skip ci] Development commit"}}'
+
 
   default:
     - 'echo Running in: $(pwd) as $(whoami)'
