@@ -16,12 +16,24 @@ tasks:
   default:
     desc: clean, format & lint
     cmds:
-      - task: git:info
+      - task: aux
+      - task: git
       - task: format
       - task: lint
 
-  docker: docker compose run --rm devenv task {{.CLI_ARGS}}
+  # Run a command inside the docker container
+  # Usage
+  #   - `task docker` to run a shell inside the container
+  #   - `task docker -- task format -f` to run a task/command inside the container
+  docker:
+    cmds:
+      - docker compose run --build --name devenv --rm --service-ports devenv {{.CLI_ARGS}}
+    interactive: true
 
+  # Push to remote
+  # Usage:
+  #   - `task push` for a default commit message
+  #   - `task push -- "My commit message"` for a custom commit message
   push:
     - task: git:diff
     - echo "commit and push? [ctrl-c to cancel]" && read
