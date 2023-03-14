@@ -1,0 +1,90 @@
+version: '3'
+
+vars:
+  CONFIG_DIR: './config'
+  SCRIPTS_DIR: './scripts'
+
+  # Output folder names
+  BUILD_DIR: '{{.BUILD_DIR | default ".build"}}'
+
+tasks:
+  # TODO: Write this as a Go-tool!
+  ws: |
+    files=$(find . -type f \
+    ! -path "*/.git/*" \
+    ! -path "*/{{.BUILD_DIR}}/*" \
+    ! -path "*/.task/*" \
+    ! -path "*/.vscode-server/*" \
+    -exec egrep -l " +$" {} \;)
+
+    if [ -n "$files" ]; then
+      for file in ${files[@]}; do
+        echo "formatting $file..."
+        sed --in-place 's/[[:space:]]\+$//' $file
+      done
+    fi
+
+  docker: |
+    dockerfiles=$(find . -name "Dockerfile")
+    for dockerfile in $dockerfiles
+    do
+      tfile="$(mktemp /tmp/Dockerfile.XXXXX)"
+      echo "$(cat $dockerfile)" > $tfile
+      dockerfile-utils format --spaces 4 $tfile > $dockerfile
+      rm $tfile
+      sed --in-place 's/[[:space:]]\+$//' $dockerfile
+    done
+
+  json:
+    cmds:
+      - jsonlint --mode=cjson --pretty-print --quiet --in-place --indent "    " .
+      - prettier --config={{.CONFIG}} --loglevel=silent --ignore-path={{.IGNORE}} --write "**/*.json"
+    vars:
+      CONFIG: '{{.CONFIG_DIR}}/.prettierrc.yml'
+      IGNORE: '{{.CONFIG_DIR}}/.ignore'
+    sources:
+      - ./**/*.json
+
+  yaml:
+    cmds:
+      - prettier --config={{.CONFIG}} --loglevel=silent --ignore-path={{.IGNORE}} --write "**/*.yaml" "**/*.yml"
+    vars:
+      CONFIG: '{{.CONFIG_DIR}}/.prettierrc.yml'
+      IGNORE: '{{.CONFIG_DIR}}/.ignore'
+    sources:
+      - ./**/*.yaml
+      - ./**/*.yml
+
+  md:
+    cmds:
+      - cmd: markdownlint --quiet --fix --ignore-path={{.IGNORE}} "**/*.md"
+        ignore_error: true
+      - prettier --config={{.CONFIG}} --loglevel=silent --ignore-path={{.IGNORE}} --write "**/*.md"
+    vars:
+      CONFIG: '{{.CONFIG_DIR}}/.prettierrc.yml'
+      IGNORE: '{{.CONFIG_DIR}}/.ignore'
+    sources:
+      - ./**/*.md
+
+  shell:
+    cmds:
+      - shfmt -i 2 -ci -s -w {{.SCRIPTS_DIR}}/**/*.sh
+      - |
+        for check in {{.CHECKS}}; do
+          shellcheck --shell=bash --enable=$check --severity=style --source-path={{.SCRIPTS_DIR}}/go -f diff {{.SCRIPTS_DIR}}/**/*.sh | patch -p1 > /dev/null
+        done
+      - shellcheck --shell=bash --enable=all --severity=style --source-path={{.SCRIPTS_DIR}}/go -f diff {{.SCRIPTS_DIR}}/**/*.sh | patch -p1 > /dev/null
+    vars:
+      CHECKS: quote-safe-variables require-double-brackets require-variable-braces
+    sources:
+      - ./{{.SCRIPTS_DIR}}/**/*.sh
+    silent: true
+
+  # ---------
+  default:
+    - task: ws
+    - task: docker
+    - task: json
+    - task: yaml
+    - task: md
+    - task: shell

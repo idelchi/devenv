@@ -1,0 +1,21 @@
+version: '3'
+
+vars:
+  CONFIG_DIR: './config'
+  SCRIPTS_DIR: './scripts'
+
+  # Output folder names
+  BUILD_DIR: '{{.BUILD_DIR | default ".build"}}'
+
+tasks:
+  clean:
+    - rm -rf .task {{.BUILD_DIR}}
+
+  todo: grep --exclude-dir={.cache,.git,.task,.build} -rwo -n . --regexp 'TODO[:(].*'
+
+  graph: yml2dot {{.CLI_ARGS}}.yml | dot -Tpng > {{.CLI_ARGS}}.png
+
+  default: |
+    echo "Config directory: {{.CONFIG_DIR}}"
+    echo "Scripts directory: {{.SCRIPTS_DIR}}"
+    echo "Build directory: {{.BUILD_DIR}}"
