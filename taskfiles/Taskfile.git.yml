@@ -24,6 +24,11 @@ vars:
 tasks:
   push:
     cmds:
+      - |
+        if [[ ! "{{.MESSAGE}}" =~ ^\'.*\'$ ]]; then
+          echo "ERROR: MESSAGE must be one complete string (starting and ending with a quote)"
+          exit 1
+        fi
       - git add .
       - cmd: git commit -am "{{.MESSAGE}}"
         ignore_error: true
