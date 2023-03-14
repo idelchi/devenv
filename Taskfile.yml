@@ -21,3 +21,8 @@ tasks:
       - task: lint
 
   docker: docker compose run --rm devenv task {{.CLI_ARGS}}
+
+  push:
+    - task: git:diff
+    - echo "commit and push? [ctrl-c to cancel]" && read
+    - task: git:push
