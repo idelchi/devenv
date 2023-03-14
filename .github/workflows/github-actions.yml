@@ -3,9 +3,10 @@ on: [workflow_dispatch]
 
 env:
   BRANCH: ${{ github.head_ref || github.ref_name }}
-  IMAGE: idelchi/devenv
+  IMAGE: ${{ github.repository }}
 
 jobs:
+  # TODO: This job could be reusable in other workflows
   info:
     runs-on: ubuntu-22.04
     steps:
