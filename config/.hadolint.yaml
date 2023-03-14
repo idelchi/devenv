@@ -1,0 +1,7 @@
+ignored:
+  # Ignore DL3008, DL3013 & DL3016 because we use the latest packages intentionally
+  - DL3008
+  - DL3013
+  - DL3016
+
+  - DL4001 # Ignore DL4001 because we use wget or curl depending on installation guides

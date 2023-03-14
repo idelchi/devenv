@@ -1,0 +1,11 @@
+overrides:
+  - files: '*.json'
+    options:
+      trailingComma: 'es5'
+      tabWidth: 4
+  - files:
+      - '*.yaml'
+      - '*.yml'
+    options:
+      tabWidth: 2
+      singleQuote: true
