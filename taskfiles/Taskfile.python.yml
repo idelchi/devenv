@@ -9,11 +9,14 @@ vars:
 
 tasks:
   lint:
+  format:
+    - black --quiet --config={{.CONFIG_PYPROJECT}} .
+    - isort --quiet --settings-file={{.CONFIG_PYPROJECT}} .
+
     - black --check --quiet --config={{.CONFIG_PYPROJECT}} .
     - isort --check --quiet --settings-file={{.CONFIG_PYPROJECT}} .
     - prospector --messages-only --profile={{.CONFIG_PROSPECTOR}}
     - pyright --project={{.CONFIG_PYPROJECT}} .
 
-  format:
-    - black --quiet --config={{.CONFIG_PYPROJECT}} .
-    - isort --quiet --settings-file={{.CONFIG_PYPROJECT}} .
+  test:
+    - pytest {{.CLI_ARGS}}
