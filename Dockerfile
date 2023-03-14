@@ -125,6 +125,7 @@ RUN groupadd -r -g 1001 user && \
     useradd -r -u 1001 -g 1001 -m -c "user account" -d /home/user -s /bin/bash user
 
 # Python tooling for linting & formatting
+# (mistakes brackets for ranges)
 # hadolint ignore=SC2102
 RUN pip install --no-cache-dir \
     prospector[with_everything] \
@@ -133,6 +134,8 @@ RUN pip install --no-cache-dir \
     isort
 
 # Useful packages
+# (split up for readability)
+# hadolint ignore=DL3059
 RUN pip install --no-cache-dir \
     pytest \
     pydantic
