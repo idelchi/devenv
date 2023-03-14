@@ -124,13 +124,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN groupadd -r -g 1001 user && \
     useradd -r -u 1001 -g 1001 -m -c "user account" -d /home/user -s /bin/bash user
 
-# Python tooling
+# Python tooling for linting & formatting
 # hadolint ignore=SC2102
 RUN pip install --no-cache-dir \
     prospector[with_everything] \
     pyright \
     black \
     isort
+
+# Useful packages
+RUN pip install --no-cache-dir \
+    pytest \
+    pydantic
 
 ENV NPM_CONFIG_CACHE=/tmp/.npm
 ENV XDG_CONFIG_HOME=/tmp/.config
