@@ -16,6 +16,10 @@ tasks:
   graph: yml2dot {{.CLI_ARGS}}.yml | dot -Tpng > {{.CLI_ARGS}}.png
 
   default: |
-    echo "Config directory: {{.CONFIG_DIR}}"
-    echo "Scripts directory: {{.SCRIPTS_DIR}}"
-    echo "Build directory: {{.BUILD_DIR}}"
+    echo Running in: $(pwd) as $(whoami)
+    echo OS: {{OS}}:{{ARCH}}
+    echo Time: {{now | date "2006-01-02 15:04:05"}}
+    echo Build directory: {{.BUILD_DIR}}
+    echo Config directory: {{.CONFIG_DIR}}
+    echo Scripts directory: {{.SCRIPTS_DIR}}
+    echo Build directory: {{.BUILD_DIR}}
