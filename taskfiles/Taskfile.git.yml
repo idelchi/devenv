@@ -31,7 +31,7 @@ tasks:
           exit 1
         fi
       - git add .
-      - cmd: git commit -am "{{.MESSAGE}}"
+      - cmd: git commit -am {{.MESSAGE}}
         ignore_error: true
       - cmd: git push
         ignore_error: true
