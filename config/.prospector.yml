@@ -1,0 +1,40 @@
+output-format: grouped
+
+strictness: veryhigh
+
+doc-warnings: true
+member-warnings: true
+test-warnings: true
+autodetect: true
+
+max-line-length: 120
+
+pylint:
+  run: true
+
+pycodestyle:
+  run: true
+
+pydocstyle:
+  run: true
+
+pyflakes:
+  run: true
+
+mypy:
+  run: true
+
+mccabe:
+  run: true
+
+bandit:
+  run: true
+
+dodgy:
+  run: true
+
+pyroma:
+  run: true
+
+vulture:
+  run: true

@@ -1,0 +1,11 @@
+# BLACK
+[tool.black]
+line-length = 120
+
+# ISORT
+[tool.isort]
+profile = "black"
+
+# PYRIGHT
+[tool.pyright]
+typeCheckingMode = "strict"
