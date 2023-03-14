@@ -1,14 +1,10 @@
-# settings
+# devenv
 
-Common basic settings for linters, formatters, etc.
+This repository serves as a collection of common basic settings for linters, formatters, driven by taskfiles.
 
-Builds and pushes a Docker image to Docker Hub.
+In addition, it builds and pushes a Docker image to Docker Hub containing all the tools.
 
-Include as a submodule and initialize your main project's Taskfile & vscode settings with:
-
-    task -f settings/Taskfile.yml aux:init
-
-or write your own `Taskfile.yml` using the tasks defined in `settings/taskfiles`
+Include as a submodule and copy over the .vscode folder into your main project, amending the paths to the configuration folders used.
 
 ## Running the code
 
@@ -20,7 +16,7 @@ To display available commands along with their descriptions, run
 
     task --list
 
-## Tools
+## Main Tools
 
 - Go
   - [gofmt](https://pkg.go.dev/cmd/gofmt)
@@ -28,13 +24,9 @@ To display available commands along with their descriptions, run
   - [golangci-lint](https://github.com/golangci/golangci-lint)
 - Python
   - [black](tbd)
-  - [flake8](tbd)
   - [isort](tbd)
   - [prospector](tbd)
   - [pyright](tbd)
-- Groovy
-  - [npm-groovy-lint](https://github.com/nvuillam/npm-groovy-lint)
-  - [jflint](https://github.com/miyajan/jflint)
 - JSON/YAML
   - [prettier](https://github.com/prettier/prettier)
   - [jsonlint](https://github.com/zaach/jsonlint)
@@ -54,6 +46,9 @@ To display available commands along with their descriptions, run
   - [codespell](https://github.com/codespell-project/codespell)
 - Copy-Paste
   - [jscpd](https://github.com/kucherenko/jscpd)
+- Groovy
+  - [npm-groovy-lint](https://github.com/nvuillam/npm-groovy-lint)
+  - [jflint](https://github.com/miyajan/jflint)
 
 ## Using Docker
 
