@@ -20,3 +20,7 @@ tasks:
 
   test:
     - pytest {{.CLI_ARGS}}
+
+  clean:
+    # TODO: Does pytest create the cache everywhere?
+    - rm -rf .pytest_cache

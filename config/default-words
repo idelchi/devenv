@@ -63,6 +63,7 @@ paralleltest
 prantlf
 profilegen
 profileview
+pydantic
 rustup
 scspell
 segmentio
