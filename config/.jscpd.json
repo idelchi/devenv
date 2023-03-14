@@ -1,0 +1,18 @@
+{
+    "reporters": ["console", "html", "markdown", "json"],
+    "output": ".build/cpd/",
+    "format": "python, go, bash",
+    "mode": "mild",
+    "ignorePattern": [
+        "___appSpecifics___",
+        "___errorChecking___",
+        "___testSpecifics___",
+        "for _, tc := range tcs {\r?\n\\s*tc := tc",
+        "t\\.Run\\(tc\\.Name, func\\(t \\*testing\\.T\\) {",
+        ".*\\(t \\*testing\\.T\\) {\r?\n\\s*t\\.Parallel\\(\\)",
+        ".*\\.Lock().*\r?\n\\s*defer.*\\.Unlock()"
+    ],
+    "minTokens": 50,
+    "minLines": 5,
+    "threshold": 0
+}

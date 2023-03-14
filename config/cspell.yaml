@@ -1,0 +1,26 @@
+language: en-gb
+
+# Paths are relative to this file (?)
+ignorePaths:
+  - '.build'
+  - '.exp'
+  - '.cache'
+  - '.task'
+  - '.vscode-server'
+  - '**/LICENSE'
+  - '**/go.mod'
+  - '**/go.sum'
+
+dictionaries:
+  - bash
+  - cpp
+  - golang
+  - python
+  - default-words
+  - project-words
+
+dictionaryDefinitions:
+  - name: default-words
+    path: default-words
+  - name: project-words
+    path: config/project-words
