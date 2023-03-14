@@ -1,0 +1,19 @@
+version: '3'
+
+vars:
+  CONFIG_DIR: './config'
+  SCRIPTS_DIR: './scripts'
+
+  CONFIG_PYPROJECT: '{{.CONFIG_DIR}}/pyproject.toml'
+  CONFIG_PROSPECTOR: '{{.CONFIG_DIR}}/.prospector.yml'
+
+tasks:
+  lint:
+    - black --check --quiet --config={{.CONFIG_PYPROJECT}} .
+    - isort --check --quiet --settings-file={{.CONFIG_PYPROJECT}} .
+    - prospector --messages-only --profile={{.CONFIG_PROSPECTOR}}
+    - pyright --project={{.CONFIG_PYPROJECT}} .
+
+  format:
+    - black --quiet --config={{.CONFIG_PYPROJECT}} .
+    - isort --quiet --settings-file={{.CONFIG_PYPROJECT}} .

@@ -1,0 +1,139 @@
+version: '3'
+
+vars:
+  CONFIG_DIR: './config'
+  SCRIPTS_DIR: './scripts'
+
+  # Output folder names
+  BUILD_DIR: '{{.BUILD_DIR | default ".build"}}'
+
+tasks:
+  # TODO: Write this as a Go-tool!
+  ws: |
+    files=$(find . -type f \
+    ! -path "*/.git/*" \
+    ! -path "*/{{.BUILD_DIR}}/*" \
+    ! -path "*/.task/*" \
+    ! -path "*/.vscode-server/*" \
+    -exec egrep -Hno " +$" {} \;)
+
+    if [ -z "$files" ]; then
+      exit 0
+    else
+      for file in ${files[@]}; do
+        echo $file
+      done
+      echo "trailing whitespace found"
+      exit 1
+    fi
+
+  docker:
+    cmds:
+      - |
+        for dockerfile in {{.DOCKERFILES}}
+        do
+          hadolint --config={{.CONFIG}} $dockerfile
+        done
+      - |
+        for dockerfile in {{.DOCKERFILES}}
+        do
+          dockerfilelint $dockerfile
+        done
+      - |
+        for dockerfile in {{.DOCKERFILES}}
+        do
+          tfile="$(mktemp /tmp/Dockerfile.XXXXX)"
+          dockerfile-utils format --spaces 4 $dockerfile > $tfile
+          cmp $tfile $dockerfile || echo "$dockerfile has not been formatted"
+          rm $tfile
+        done
+    vars:
+      CONFIG: '{{.CONFIG_DIR}}/.hadolint.yaml'
+      DOCKERFILES:
+        sh: find . -name "Dockerfile"
+    sources:
+      - ./**/Dockerfile
+
+  json:
+    cmds:
+      - prettier --config={{.CONFIG}} --ignore-path={{.IGNORE}} --check "**/*.json"
+      - jsonlint --mode=cjson --quiet .
+    vars:
+      CONFIG: '{{.CONFIG_DIR}}/.prettierrc.yml'
+      IGNORE: '{{.CONFIG_DIR}}/.ignore'
+    sources:
+      - ./**/*.json
+
+  yaml:
+    cmds:
+      - prettier --config={{.CONFIG}} --ignore-path={{.IGNORE}} --check "**/*.yaml" "**/*.yml"
+      - yamllint --config-file={{.CONFIG_YAML}} --strict .
+    vars:
+      CONFIG: '{{.CONFIG_DIR}}/.prettierrc.yml'
+      CONFIG_YAML: '{{.CONFIG_DIR}}/.yamllint.yml'
+      IGNORE: '{{.CONFIG_DIR}}/.ignore'
+    sources:
+      - ./**/*.yaml
+      - ./**/*.yml
+
+  md:
+    cmds:
+      - markdownlint --disable=MD013 --ignore-path={{.IGNORE}} "**/*.md"
+      - prettier --ignore-path={{.IGNORE}} --check "**/*.md"
+    vars:
+      IGNORE: '{{.CONFIG_DIR}}/.ignore'
+    sources:
+      - ./**/*.md
+
+  shell:
+    cmds:
+      - shfmt -i 2 -ci -d -l -s {{.SCRIPTS_DIR}}/**/*.sh
+      - shellcheck --shell=bash --enable=all --severity=style --source-path={{.SCRIPTS_DIR}}/go {{.SCRIPTS_DIR}}/**/*.sh
+    sources:
+      - ./{{.SCRIPTS_DIR}}/**/*.sh
+    preconditions:
+      - sh: shfmt -i 2 -ci -d -l -s {{.SCRIPTS_DIR}}/**/*.sh
+        msg: 'shell/bash files have not been formatted with shfmt'
+
+  spell:
+    cmds:
+      - misspell -error {{.FILES}}
+      - cspell lint --show-suggestions --config={{.CONFIG}} --no-progress "**"
+      - codespell --ignore-words={{.WORDLIST}} {{.FILES}}
+    vars:
+      CONFIG: '{{.CONFIG_DIR}}/cspell.yaml'
+      WORDLIST: '{{.CONFIG_DIR}}/default-words'
+      FILES:
+        sh: >-
+          find . -type f -name '*'
+          | grep -v .build/
+          | grep -v .git/
+          | grep -v .cache/
+          | grep -v .task/
+          | grep -v *.mod
+          | grep -v *.sum
+          | tr '\n' ' '
+
+  cp:
+    cmds:
+      - jscpd --config={{.CONFIG}} .
+    vars:
+      CONFIG: '{{.CONFIG_DIR}}/.jscpd.json'
+    sources:
+      - ./**/*.go
+      - ./**/*.sh
+      - ./settings/.jscpd.json
+    generates:
+      - ./build/cpd/**/*
+
+  # ---------
+  default:
+    deps:
+      - task: ws
+      - task: docker
+      - task: yaml
+      - task: json
+      - task: shell
+      - task: md
+      - task: spell
+      - task: cp
