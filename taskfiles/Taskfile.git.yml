@@ -49,3 +49,6 @@ tasks:
 
   diff:
     - git diff --name-only
+
+  update:
+    - git submodule update --remote
