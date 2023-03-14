@@ -27,6 +27,7 @@ tasks:
   #   - `task docker -- task format -f` to run a task/command inside the container
   docker:
     cmds:
+      - docker rm -f devenv > /dev/null 2>&1 || true
       - docker compose run --build --name devenv --rm --service-ports devenv {{.CLI_ARGS}}
     interactive: true
 
