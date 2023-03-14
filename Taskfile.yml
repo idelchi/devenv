@@ -1,0 +1,23 @@
+version: '3'
+
+includes:
+  aux: 'taskfiles/Taskfile.aux.yml'
+  git: 'taskfiles/Taskfile.git.yml'
+  lint: 'taskfiles/Taskfile.lint.yml'
+  format: 'taskfiles/Taskfile.format.yml'
+
+silent: true
+
+output: prefixed
+
+tasks:
+  # default 'format & lint' target
+  # ---------
+  default:
+    desc: clean, format & lint
+    cmds:
+      - task: git:info
+      - task: format
+      - task: lint
+
+  docker: docker compose run --rm devenv task {{.CLI_ARGS}}
