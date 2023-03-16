@@ -4,13 +4,11 @@ This repository serves as a collection of common basic settings for linters, for
 
 In addition, it builds and pushes a Docker image to Docker Hub containing all the tools.
 
-Include as a submodule and copy over the .vscode folder into your main project, amending the paths to the configuration folders used.
+Include as a submodule and copy over the [.vscode](./.vscode) folder into your main project, amending the paths in [settings.json](./.vscode/settings.json) to the configuration folders used.
 
 ## Running the code
 
-A [Taskfile][taskfile-file] is used to summarize and manage the different build system commands.
-
-[taskfile-file]: ./Taskfile.yaml
+A [Taskfile](./Taskfile.yml) is used to summarize and manage the different build system commands.
 
 To display available commands along with their descriptions, run
 

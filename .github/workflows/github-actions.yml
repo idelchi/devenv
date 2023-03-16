@@ -1,6 +1,8 @@
 name: devenv
 on: [workflow_dispatch]
 
+# TODO: [GHRC](https://dev.to/github/publishing-a-docker-image-to-githubs-container-repository-4n50)
+
 env:
   BRANCH: ${{ github.head_ref || github.ref_name }}
   IMAGE: ${{ github.repository }}
