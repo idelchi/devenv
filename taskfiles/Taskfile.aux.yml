@@ -1,20 +1,22 @@
 version: '3'
 
 vars:
+  # Directories
   CONFIG_DIR: './config'
   SCRIPTS_DIR: './scripts'
-
-  # Output folder names
   BUILD_DIR: '{{.BUILD_DIR | default ".build"}}'
 
 tasks:
-  clean:
-    - rm -rf .task {{.BUILD_DIR}}
+  # Removes the build directory and the task cache
+  clean: rm -rf .task {{.BUILD_DIR}}
 
+  # Returns found TODOs in the project
   todo: grep --exclude-dir={.cache,.git,.task,.build} -rwo -n . --regexp 'TODO[:(].*'
 
-  graph: yml2dot {{.CLI_ARGS}}.yml | dot -Tpng > {{.CLI_ARGS}}.png
+  # Outputs a graph representation of a YAML file
+  graph: yml2dot {{.CLI_ARGS}} | dot -Tpng > {{.CLI_ARGS}}.png
 
+  # Prints out the current setup
   default: |
     echo Running in: $(pwd) as $(whoami)
     echo OS: {{OS}}:{{ARCH}}
