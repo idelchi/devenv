@@ -58,7 +58,3 @@ linters-settings:
   gomnd:
     ignored-functions:
       - time.Duration
-
-  wrapcheck:
-    ignorePackageGlobs:
-      - github.com/idelchi/*/internal/*
