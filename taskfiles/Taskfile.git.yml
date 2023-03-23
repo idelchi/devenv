@@ -1,6 +1,7 @@
 version: '3'
 
 vars:
+  # Directories
   CONFIG_DIR: './config'
   SCRIPTS_DIR: './scripts'
 

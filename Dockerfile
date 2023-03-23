@@ -42,6 +42,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN npm install -g \
     # groovy
     npm-groovy-lint \
+    # Jenkinsfile
     jflint \
     # spellcheck
     spellchecker-cli \
@@ -140,6 +141,7 @@ RUN pip install --no-cache-dir \
     pytest \
     pydantic
 
+# Reroute cache to /tmp
 ENV NPM_CONFIG_CACHE=/tmp/.npm
 ENV XDG_CONFIG_HOME=/tmp/.config
 ENV XDG_CACHE_HOME=/tmp/.cache

@@ -1,10 +1,9 @@
 version: '3'
 
 vars:
+  # Directories
   CONFIG_DIR: './config'
   SCRIPTS_DIR: './scripts'
-
-  # Output folder names
   BUILD_DIR: '{{.BUILD_DIR | default ".build"}}'
 
 tasks:
@@ -78,7 +77,13 @@ tasks:
       CHECKS: quote-safe-variables require-double-brackets require-variable-braces
     sources:
       - ./{{.SCRIPTS_DIR}}/**/*.sh
-    silent: true
+
+  jenkins:
+    cmds:
+      - npm-groovy-lint --config={{.CONFIG_DIR}}/ --fix --nolintafter --no-insight --files "{{ .PWD }}/Jenkinsfile" > /dev/null
+      - npm-groovy-lint --config={{.CONFIG_DIR}}/ --format --nolintafter --no-insight --files "{{ .PWD }}/Jenkinsfile"  > /dev/null
+    sources:
+      - ./Jenkinsfile
 
   # ---------
   default:
@@ -88,3 +93,4 @@ tasks:
     - task: yaml
     - task: md
     - task: shell
+    - task: jenkins
