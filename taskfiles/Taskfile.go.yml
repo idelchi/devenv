@@ -1,11 +1,12 @@
 version: '3'
 
 vars:
+  # Directories
   CONFIG_DIR: './config'
   SCRIPTS_DIR: './scripts'
-
-  # Output folder names
   BUILD_DIR: '{{.BUILD_DIR | default ".build"}}'
+
+  # Files
   LINT_REPORT: '{{.LINT_REPORT | default "lint-report"}}'
   COVER_REPORT: '{{.COVER_REPORT | default "coverage-report"}}'
   TEST_REPORT: '{{.TEST_REPORT | default "test-report"}}'

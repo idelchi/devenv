@@ -1,10 +1,9 @@
 version: '3'
 
 vars:
+  # Directories
   CONFIG_DIR: './config'
   SCRIPTS_DIR: './scripts'
-
-  # Output folder names
   BUILD_DIR: '{{.BUILD_DIR | default ".build"}}'
 
 tasks:
@@ -126,6 +125,16 @@ tasks:
     generates:
       - ./build/cpd/**/*
 
+  jenkins:
+    cmds:
+      - npm-groovy-lint --config={{.CONFIG_DIR}}/ --failon info --no-insight --files "{{ .PWD }}/Jenkinsfile"
+      - cmd: jflint --config={{.CONFIG}} Jenkinsfile
+        ignore_error: true
+    vars:
+      CONFIG: '{{.CONFIG_DIR}}/.jflintrc'
+    sources:
+      - ./Jenkinsfile
+
   # ---------
   default:
     deps:
@@ -137,3 +146,4 @@ tasks:
       - task: md
       - task: spell
       - task: cp
+      - task: jenkins
