@@ -13,6 +13,7 @@ vars:
     sh: git rev-parse --abbrev-ref HEAD
   GIT_AUTHOR:
     sh: git config user.name || whoami
+  # Unsure if these should run every time or only when needed
   GIT_CHANGES:
     sh: |
       for file in $(git diff HEAD HEAD~ --name-only)

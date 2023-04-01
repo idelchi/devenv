@@ -8,20 +8,32 @@ vars:
 
 tasks:
   # Removes the build directory and the task cache
-  clean: rm -rf .task {{.BUILD_DIR}}
+  clean:
+    desc: Remove build directory, task cache, and bash history
+    cmds:
+      - rm -rf .task {{.BUILD_DIR}} .bash_history
 
   # Returns found TODOs in the project
-  todo: grep --exclude-dir={.cache,.git,.task,.build} -rwo -n . --regexp 'TODO[:(].*'
+  todo:
+    desc: Search for TODOs in the project
+    cmds:
+      - grep --exclude-dir={.cache,.git,.task,.build} -rwo -n . --regexp 'TODO[:(].*'
 
   # Outputs a graph representation of a YAML file
-  graph: yml2dot {{.CLI_ARGS}} | dot -Tpng > {{.CLI_ARGS}}.png
+  graph:
+    desc: Generate graph representation of a YAML file
+    cmds:
+      - yml2dot {{.CLI_ARGS}} | dot -Tpng > {{.CLI_ARGS}}.png
 
   # Prints out the current setup
-  default: |
-    echo Running in: $(pwd) as $(whoami)
-    echo OS: {{OS}}:{{ARCH}}
-    echo Time: {{now | date "2006-01-02 15:04:05"}}
-    echo Build directory: {{.BUILD_DIR}}
-    echo Config directory: {{.CONFIG_DIR}}
-    echo Scripts directory: {{.SCRIPTS_DIR}}
-    echo Build directory: {{.BUILD_DIR}}
+  default:
+    desc: Display the current setup
+    cmds:
+      - |
+        echo Running in: $(pwd) as $(whoami)
+        echo OS: {{OS}}:{{ARCH}}
+        echo Time: {{now | date "2006-01-02 15:04:05"}}
+        echo Build directory: {{.BUILD_DIR}}
+        echo Config directory: {{.CONFIG_DIR}}
+        echo Scripts directory: {{.SCRIPTS_DIR}}
+        echo Build directory: {{.BUILD_DIR}}

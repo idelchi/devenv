@@ -1,16 +1,18 @@
 # devenv
 
-This repository serves as a collection of common basic settings for linters, formatters, driven by taskfiles.
+`devenv` is a repository that provides a collection of common basic settings for linters and formatters, driven by Taskfiles. It also builds and pushes a Docker image to Docker Hub containing all the necessary tools.
 
-In addition, it builds and pushes a Docker image to Docker Hub containing all the tools.
+To use `devenv` in your project, include it as a submodule. Optionally copy the [.vscode](./.vscode) folder into your main project,  make sure to update the paths in [settings.json](./.vscode/settings.json) to point to the configuration folders used.
 
-Include as a submodule and copy over the [.vscode](./.vscode) folder into your main project, amending the paths in [settings.json](./.vscode/settings.json) to the configuration folders used.
+## Table of Contents
+
+- [Running the code](#running-the-code)
+- [Main Tools](#main-tools)
+- [Using Docker](#using-docker)
 
 ## Running the code
 
-A [Taskfile](./Taskfile.yml) is used to summarize and manage the different build system commands.
-
-To display available commands along with their descriptions, run
+A [Taskfile](./Taskfile.yml) is used to manage and summarize the different build system commands. To display the available commands along with their descriptions, run:
 
     task --list
 
@@ -50,8 +52,8 @@ To display available commands along with their descriptions, run
 
 ## Using Docker
 
-The accompanying docker image may be used to run native runs with full support of all commands listed in the _taskfile_.
-
-To launch the container and mount the workspace, run
+You can use the accompanying Docker image to run native tasks with full support for all commands listed in the Taskfile. To launch the container and mount the workspace, run:
 
     docker compose run devenv
+
+For more detailed instructions on how to use these tools, please refer to their respective documentation.
