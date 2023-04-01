@@ -114,6 +114,33 @@ tasks:
       CXX: '{{.CXX}}'
       RUN_MONKEY_PATCH_TESTS: '{{.RUN_MONKEY_PATCH_TESTS}}'
 
+  race:
+    - task: test
+      vars:
+        MODE: '-race'
+
+  msan:
+    cmds:
+      - task: test
+        vars:
+          MODE: '-msan'
+          CC: clang
+          CXX: clang++
+    status:
+      - test {{OS}} != "linux"
+
+  # TODO: Add benchmark target. Should be able to pass optional test flags (-run=...)
+  bench:
+    - task: test
+      vars:
+        MODE: '--not--implemented'
+
+  # TODO: Add fuzzing target. Must be able to pass test flags (-run=...)
+  fuzz:
+    - task: test
+      vars:
+        MODE: '--not--implemented'
+
   cover:
     desc: test go project with code coverage enabled
     deps:
@@ -132,27 +159,6 @@ tasks:
     generates:
       - './{{.COVER_REPORT}}.cov'
       - './{{.COVER_REPORT}}.html'
-
-  race:
-    - task: test
-      vars:
-        MODE: '-race'
-
-  msan:
-    cmds:
-      - task: test
-        vars:
-          MODE: '-msan'
-          CC: clang
-          CXX: clang++
-    status:
-      - test {{OS}} != "linux"
-
-  # TODO: Add fuzzing target to the Taskfile for Go.
-  fuzz:
-    - task: test
-      vars:
-        MODE: '--not--implemented'
 
   genprofile:
     desc: generate profiles for go project
