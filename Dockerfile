@@ -2,6 +2,7 @@
 # Description : Docker image containing various tooling, such as:
 #   - Go
 #   - Python
+#   - Rust
 #   - Linters
 #   - Formatters
 #]=======================================================================]
@@ -74,6 +75,7 @@ RUN wget -q https://github.com/hadolint/hadolint/releases/download/${HADOLINT_VE
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
     python3-pip \
+    python3-sphinx \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Spellcheckers
@@ -139,7 +141,10 @@ RUN pip install --no-cache-dir \
 # hadolint ignore=DL3059
 RUN pip install --no-cache-dir \
     pytest \
-    pydantic
+    pydantic \
+    requests \
+    flask \
+    fastapi
 
 # Reroute cache to /tmp
 ENV NPM_CONFIG_CACHE=/tmp/.npm
@@ -178,7 +183,7 @@ RUN echo \
     # Feed to 'go install'
     | xargs -n 1 go install
 
-ARG GOLANGCI_LINT_VERSION=v1.51.2
+ARG GOLANGCI_LINT_VERSION=v1.52.2
 RUN curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b "$(go env GOPATH)/bin" ${GOLANGCI_LINT_VERSION}
 
 # Pre-download some useful packages and dependencies

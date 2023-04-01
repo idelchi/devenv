@@ -23,6 +23,7 @@ dockerfilelint
 DOCKERFILES
 dockerfiles
 failon
+fastapi
 funlen
 gcflags
 genprofile
