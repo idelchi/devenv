@@ -2,7 +2,7 @@
 
 `devenv` is a repository that provides a collection of common basic settings for linters and formatters, driven by Taskfiles. It also builds and pushes a Docker image to Docker Hub containing all the necessary tools.
 
-To use `devenv` in your project, include it as a submodule. Optionally copy the [.vscode](./.vscode) folder into your main project,  make sure to update the paths in [settings.json](./.vscode/settings.json) to point to the configuration folders used.
+To use `devenv` in your project, include it as a submodule. Optionally copy the [.vscode](./.vscode) folder into your main project, make sure to update the paths in [settings.json](./.vscode/settings.json) to point to the configuration folders used.
 
 ## Table of Contents
 
