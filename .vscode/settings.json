@@ -85,12 +85,4 @@
     },
     "terminal.integrated.defaultProfile.windows": "PowerShell",
     /* ****** ****** ****** */
-    /* ****** COPILOT ****** */
-    "editor.inlineSuggest.enabled": true,
-    "github.copilot.enable": {
-        "*": true,
-        "markdown": true,
-        "plaintext": true
-    }
-    /* ****** ****** ****** */
 }
