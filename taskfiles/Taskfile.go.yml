@@ -130,6 +130,7 @@ tasks:
       - test {{OS}} != "linux"
 
   # TODO: Add benchmark target. Should be able to pass optional test flags (-run=...)
+  # go test -bench=. -benchtime=10s ./...
   bench:
     - task: test
       vars:

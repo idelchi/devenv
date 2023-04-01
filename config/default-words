@@ -6,6 +6,7 @@
 # cspell --config=config/cspell.yaml --words-only --unique "**" | sort --ignore-case >> config/default-words.txt
 
 bmatcuk
+benchtime
 checkstyle
 cjson
 cobertura
