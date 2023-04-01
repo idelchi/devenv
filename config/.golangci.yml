@@ -33,6 +33,7 @@ issues:
 linters-settings:
   forbidigo:
     forbid:
+      # Probably a good idea to forbid log.Fatal unless you're in a main function or package
       - '^$'
 
   varnamelen:
