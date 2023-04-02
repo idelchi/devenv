@@ -130,6 +130,7 @@ tasks:
       vars:
         MODE: '-race'
 
+  # TODO: Implement bench task
   bench:
     cmds:
       - task: test
@@ -137,8 +138,9 @@ tasks:
           MODE: '-bench=. -benchtime=10s'
     preconditions:
       - sh: 'exit 1'
-        msg: 'TODO: <bench> task yet to be implemented'
+        msg: 'task not implemented'
 
+  # TODO: Implement fuzz task
   fuzz:
     cmds:
       - task: test
@@ -146,7 +148,7 @@ tasks:
           MODE: '-fuzz=<> ...'
     preconditions:
       - sh: 'exit 1'
-        msg: 'TODO: <fuzz> task yet to be implemented'
+        msg: 'task not implemented'
 
   cover:
     desc: test go project with code coverage enabled
