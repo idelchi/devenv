@@ -11,31 +11,36 @@ silent: true
 output: prefixed
 
 tasks:
-  # default 'format & lint' target
-  # ---------
   default:
-    desc: clean, format & lint
+    desc: Clean, format, and lint the codebase
+    summary: |
+      This task cleans, formats, and lints the codebase.
     cmds:
       - task: aux
       - task: git
       - task: format
       - task: lint
 
-  # Run a command inside the docker container
-  # Usage
-  #   - `task docker` to run a shell inside the container
-  #   - `task docker -- task format -f` to run a task/command inside the container
   docker:
+    desc: Run commands inside the Docker container
+    summary: |
+      This task allows you to run commands inside the Docker container.
+      Usage:
+        - `task docker` to launch the container and enter its shell
+        - `task docker -- task <task> -f` to run a task/command inside the container
     cmds:
       - docker rm -f devenv > /dev/null 2>&1 || true
       - docker compose run --build --name devenv --rm --service-ports devenv {{.CLI_ARGS}}
     interactive: true
 
-  # Push to remote
-  # Usage:
-  #   - `task push` for a default commit message
-  #   - `task push -- "My commit message"` for a custom commit message
   push:
-    - task: git:diff
-    - echo "commit and push? [ctrl-c to cancel]" && read
-    - task: git:push
+    desc: Push changes to the remote repository
+    summary: |
+      This task pushes changes to the remote repository.
+      Usage:
+        - `task push` for a default commit message
+        - `task push -- "My commit message"` for a custom commit message
+    cmds:
+      - task: git:diff
+      - echo "Commit and push changes? [Press Ctrl+C to cancel]" && read
+      - task: git:push
