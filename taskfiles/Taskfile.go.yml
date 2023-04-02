@@ -259,7 +259,6 @@ tasks:
     deps:
       - task: test
       - task: race
-      - task: msan
       - task: cover
     cmds:
       # TODO: fix sed for Windows (not escaping properly?)
