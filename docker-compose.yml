@@ -3,12 +3,12 @@ version: '3.7'
 
 services:
   devenv:
+    build:
+      context: .
     pull_policy: never
     image: idelchi/devenv:local
     container_name: devenv
     hostname: devenv
-    build:
-      context: .
     ports:
       # <host:container>
       - '8888:8888' # GoDoc
