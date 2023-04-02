@@ -7,37 +7,48 @@ vars:
   BUILD_DIR: '{{.BUILD_DIR | default ".build"}}'
 
 tasks:
-  # TODO: Write this as a Go-tool!
-  ws: |
-    files=$(find . -type f \
-    ! -path "*/.git/*" \
-    ! -path "*/{{.BUILD_DIR}}/*" \
-    ! -path "*/.task/*" \
-    ! -path "*/.vscode-server/*" \
-    -exec egrep -Hno " +$" {} \;)
+  ws:
+    # TODO: Replace with a tool
+    desc: Check for trailing whitespaces in the project files
+    summary: |
+      This task finds any trailing whitespaces in the project files and reports them.
+    cmds:
+      - |
+        files=$(find . -type f \
+        ! -path "*/.git/*" \
+        ! -path "*/{{.BUILD_DIR}}/*" \
+        ! -path "*/.task/*" \
+        ! -path "*/.vscode-server/*" \
+        -exec egrep -Hno " +$" {} \;)
 
-    if [ -z "$files" ]; then
-      exit 0
-    else
-      for file in ${files[@]}; do
-        echo $file
-      done
-      echo "trailing whitespace found"
-      exit 1
-    fi
+        if [ -z "$files" ]; then
+          exit 0
+        else
+          for file in ${files[@]}; do
+            echo $file
+          done
+          echo "trailing whitespace found"
+          exit 1
+        fi
 
   docker:
+    desc: Lint Dockerfiles
+    summary: |
+      This task lints Dockerfiles using hadolint, dockerfilelint, and dockerfile-utils.
     cmds:
+      # hadolint
       - |
         for dockerfile in {{.DOCKERFILES}}
         do
           hadolint --config={{.CONFIG}} $dockerfile
         done
+      # dockerfilelint
       - |
         for dockerfile in {{.DOCKERFILES}}
         do
           dockerfilelint $dockerfile
         done
+      # dockerfile-utils
       - |
         for dockerfile in {{.DOCKERFILES}}
         do
@@ -52,8 +63,12 @@ tasks:
         sh: find . -name "Dockerfile"
     sources:
       - ./**/Dockerfile
+      - '{{.CONFIG}}'
 
   json:
+    desc: Lint JSON files
+    summary: |
+      This task lints JSON files using prettier and jsonlint.
     cmds:
       - prettier --config={{.CONFIG}} --ignore-path={{.IGNORE}} --check "**/*.json"
       - jsonlint --mode=cjson --quiet .
@@ -62,20 +77,31 @@ tasks:
       IGNORE: '{{.CONFIG_DIR}}/.ignore'
     sources:
       - ./**/*.json
+      - '{{.CONFIG}}'
+      - '{{.IGNORE}}'
 
   yaml:
+    desc: Lint YAML files
+    summary: |
+      This task lints YAML files using prettier and yamllint.
     cmds:
-      - prettier --config={{.CONFIG}} --ignore-path={{.IGNORE}} --check "**/*.yaml" "**/*.yml"
+      - prettier --config={{.CONFIG_PRETTIER}} --ignore-path={{.IGNORE}} --check "**/*.yaml" "**/*.yml"
       - yamllint --config-file={{.CONFIG_YAML}} --strict .
     vars:
-      CONFIG: '{{.CONFIG_DIR}}/.prettierrc.yml'
+      CONFIG_PRETTIER: '{{.CONFIG_DIR}}/.prettierrc.yml'
       CONFIG_YAML: '{{.CONFIG_DIR}}/.yamllint.yml'
       IGNORE: '{{.CONFIG_DIR}}/.ignore'
     sources:
       - ./**/*.yaml
       - ./**/*.yml
+      - '{{.CONFIG_PRETTIER}}'
+      - '{{.CONFIG_YAML}}'
+      - '{{.IGNORE}}'
 
   md:
+    desc: Lint Markdown files
+    summary: |
+      This task lints Markdown files using markdownlint and prettier.
     cmds:
       - markdownlint --disable=MD013 --ignore-path={{.IGNORE}} "**/*.md"
       - prettier --ignore-path={{.IGNORE}} --check "**/*.md"
@@ -83,8 +109,12 @@ tasks:
       IGNORE: '{{.CONFIG_DIR}}/.ignore'
     sources:
       - ./**/*.md
+      - '{{.IGNORE}}'
 
   shell:
+    desc: Lint shell scripts
+    summary: |
+      This task lints shell scripts using shfmt and shellcheck.
     cmds:
       - shfmt -i 2 -ci -d -l -s {{.SCRIPTS_DIR}}/**/*.sh
       - shellcheck --shell=bash --enable=all --severity=style --source-path={{.SCRIPTS_DIR}}/go {{.SCRIPTS_DIR}}/**/*.sh
@@ -95,6 +125,9 @@ tasks:
         msg: 'shell/bash files have not been formatted with shfmt'
 
   spell:
+    desc: Perform spell checking in the project files
+    summary: |
+      This task performs spell checking in the project files using misspell, cspell, and codespell.
     cmds:
       - misspell -error {{.FILES}}
       - cspell lint --show-suggestions --config={{.CONFIG}} --no-progress "**"
@@ -114,6 +147,9 @@ tasks:
           | tr '\n' ' '
 
   cp:
+    desc: Detect copy-paste issues in the project files
+    summary: |
+      This task detects copy-paste issues in Go and Shell files using jscpd.
     cmds:
       - jscpd --config={{.CONFIG}} .
     vars:
@@ -121,14 +157,18 @@ tasks:
     sources:
       - ./**/*.go
       - ./**/*.sh
-      - ./settings/.jscpd.json
+      - '{{.CONFIG}}'
     generates:
       - ./build/cpd/**/*
 
   jenkins:
+    # TODO: Lint any Jenkinsfile found in the project
+    desc: Lint the Jenkinsfile
+    summary: |
+      This task lints the Jenkinsfile using npm-groovy-lint and jflint.
     cmds:
       - npm-groovy-lint --config={{.CONFIG_DIR}}/ --failon info --no-insight --files "{{ .PWD }}/Jenkinsfile"
-      - cmd: jflint --config={{.CONFIG}} Jenkinsfile
+      - cmd: jflint --config={{.CONFIG}} Jenkinsfile >> /dev/null
         ignore_error: true
     vars:
       CONFIG: '{{.CONFIG_DIR}}/.jflintrc'
@@ -137,6 +177,7 @@ tasks:
 
   # ---------
   default:
+    desc: Run all linting tasks in parallel
     deps:
       - task: ws
       - task: docker
