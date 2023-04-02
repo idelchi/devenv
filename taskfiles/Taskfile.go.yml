@@ -13,11 +13,11 @@ vars:
 
   COVERAGE: '{{.COVERAGE | default "100%"}}'
   COVER: '{{.COVER | default "."}}'
-  # PROJECT:
-  #   sh: go list -m
-  # PACKAGES:
-  #   sh: |
-  #     echo $(go list ./...)
+  PROJECT:
+    sh: go list -m
+  PACKAGES:
+    sh: |
+      echo $(go list ./...)
 
 tasks:
   # Utilities
