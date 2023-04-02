@@ -155,11 +155,6 @@ tasks:
       - go tool cover -html={{.COVER_REPORT}}.cov -o {{.COVER_REPORT}}.html
     vars:
       COVER_REPORT: '{{.BUILD_DIR}}/{{.COVER_REPORT}}'
-    sources:
-      - ./**/*.go
-    generates:
-      - './{{.COVER_REPORT}}.cov'
-      - './{{.COVER_REPORT}}.html'
 
   genprofile:
     desc: generate profiles for go project
@@ -168,10 +163,6 @@ tasks:
       - '{{.SCRIPTS_DIR}}/profilegen.sh {{.BENCH}} -d {{.BUILD_DIR}} -p {{.PROJECT}} {{.PACKAGES}}'
     vars:
       BENCH: '{{if eq .BENCH "true"}}-b{{else}}{{end}}'
-    sources:
-      - ./**/*.go
-    generates:
-      - '{{.BUILD_DIR}}/prof/**/*'
 
   profile:
     desc: view profiles for go project
