@@ -129,10 +129,9 @@ tasks:
         TEST_FLAGS: '-race'
 
   bench:
-    cmds:
-      - task: test
-        vars:
-          TEST_FLAGS: '-bench=.'
+    - task: test
+      vars:
+        TEST_FLAGS: '-bench=.'
 
   fuzz:
     summary: |
@@ -151,7 +150,7 @@ tasks:
     cmds:
       - task: test
         vars:
-          MODE: '-gcflags=-l -tags cover -covermode=set --coverprofile {{.COVER_REPORT}}.cov'
+          TEST_FLAGS: '-gcflags=-l -tags cover -covermode=set --coverprofile {{.COVER_REPORT}}.cov'
           RUN_MONKEY_PATCH_TESTS: 'true'
       - go tool cover -html={{.COVER_REPORT}}.cov -o {{.COVER_REPORT}}.html
     vars:
