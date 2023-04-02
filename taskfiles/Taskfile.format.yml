@@ -7,34 +7,50 @@ vars:
   BUILD_DIR: '{{.BUILD_DIR | default ".build"}}'
 
 tasks:
-  # TODO: Write this as a Go-tool!
-  ws: |
-    files=$(find . -type f \
-    ! -path "*/.git/*" \
-    ! -path "*/{{.BUILD_DIR}}/*" \
-    ! -path "*/.task/*" \
-    ! -path "*/.vscode-server/*" \
-    -exec egrep -l " +$" {} \;)
+  # TODO: Replace with a tool
+  ws:
+    desc: Remove trailing whitespace from files
+    summary: |
+      This task removes trailing whitespace from all files except ignored paths.
+    cmds:
+      - |
+        files=$(find . -type f \
+        ! -path "*/.git/*" \
+        ! -path "*/{{.BUILD_DIR}}/*" \
+        ! -path "*/.task/*" \
+        ! -path "*/.vscode-server/*" \
+        -exec egrep -l " +$" {} \;)
 
-    if [ -n "$files" ]; then
-      for file in ${files[@]}; do
-        echo "formatting $file..."
-        sed --in-place 's/[[:space:]]\+$//' $file
-      done
-    fi
+        if [ -n "$files" ]; then
+          for file in ${files[@]}; do
+            echo "formatting $file..."
+            sed --in-place 's/[[:space:]]\+$//' $file
+          done
+        fi
 
-  docker: |
-    dockerfiles=$(find . -name "Dockerfile")
-    for dockerfile in $dockerfiles
-    do
-      tfile="$(mktemp /tmp/Dockerfile.XXXXX)"
-      echo "$(cat $dockerfile)" > $tfile
-      dockerfile-utils format --spaces 4 $tfile > $dockerfile
-      rm $tfile
-      sed --in-place 's/[[:space:]]\+$//' $dockerfile
-    done
+  docker:
+    desc: Format Dockerfiles
+    summary: |
+      This task formats Dockerfiles using dockerfile-utils and removes trailing whitespace.
+    cmds:
+      - |
+        dockerfiles=$(find . -name "Dockerfile")
+        for dockerfile in $dockerfiles
+        do
+          tfile="$(mktemp /tmp/Dockerfile.XXXXX)"
+          echo "$(cat $dockerfile)" > $tfile
+          dockerfile-utils format --spaces 4 $tfile > $dockerfile
+          sed --in-place 's/[[:space:]]\+$//' $dockerfile
+          rm -f $tfile
+        done
+    preconditions:
+      - sh: 'command -v dockerfile-utils'
+        msg: 'dockerfile-utils errors out, check it nodejs is having problems'
 
   json:
+    desc: Format JSON files
+    summary: |
+      This task formats JSON files using jsonlint and prettier.
     cmds:
       - jsonlint --mode=cjson --pretty-print --quiet --in-place --indent "    " .
       - prettier --config={{.CONFIG}} --loglevel=silent --ignore-path={{.IGNORE}} --write "**/*.json"
@@ -45,6 +61,9 @@ tasks:
       - ./**/*.json
 
   yaml:
+    desc: Format YAML files
+    summary: |
+      This task formats YAML files using prettier.
     cmds:
       - prettier --config={{.CONFIG}} --loglevel=silent --ignore-path={{.IGNORE}} --write "**/*.yaml" "**/*.yml"
     vars:
@@ -55,6 +74,9 @@ tasks:
       - ./**/*.yml
 
   md:
+    desc: Format Markdown files
+    summary: |
+      This task formats Markdown files using markdownlint and prettier.
     cmds:
       - cmd: markdownlint --quiet --fix --ignore-path={{.IGNORE}} "**/*.md"
         ignore_error: true
@@ -66,6 +88,9 @@ tasks:
       - ./**/*.md
 
   shell:
+    desc: Format Shell scripts
+    summary: |
+      This task formats shell scripts using shfmt and applies shellcheck recommendations.
     cmds:
       - shfmt -i 2 -ci -s -w {{.SCRIPTS_DIR}}/**/*.sh
       - |
@@ -79,6 +104,9 @@ tasks:
       - ./{{.SCRIPTS_DIR}}/**/*.sh
 
   jenkins:
+    desc: Format Jenkinsfile
+    summary: |
+      This task formats the Jenkinsfile using npm-groovy-lint.
     cmds:
       - npm-groovy-lint --config={{.CONFIG_DIR}}/ --fix --nolintafter --no-insight --files "{{ .PWD }}/Jenkinsfile" > /dev/null
       - npm-groovy-lint --config={{.CONFIG_DIR}}/ --format --nolintafter --no-insight --files "{{ .PWD }}/Jenkinsfile"  > /dev/null
@@ -87,10 +115,12 @@ tasks:
 
   # ---------
   default:
-    - task: ws
-    - task: docker
-    - task: json
-    - task: yaml
-    - task: md
-    - task: shell
-    - task: jenkins
+    desc: Run all formatting tasks in sequence
+    cmds:
+      - task: ws
+      - task: docker
+      - task: json
+      - task: yaml
+      - task: md
+      - task: shell
+      - task: jenkins

@@ -11,17 +11,48 @@ vars:
 
 tasks:
   lint:
-    - black --check --quiet --config={{.CONFIG_PYPROJECT}} .
-    - isort --check --quiet --settings-file={{.CONFIG_PYPROJECT}} .
-    - prospector --messages-only --profile={{.CONFIG_PROSPECTOR}}
-    - pyright --project={{.CONFIG_PYPROJECT}} .
+    desc: Lint Python code
+    summary: |
+      This task checks Python code using black, isort, prospector, and pyright.
+    cmds:
+      - black --check --quiet --config={{.CONFIG_PYPROJECT}} .
+      - isort --check --quiet --settings-file={{.CONFIG_PYPROJECT}} .
+      - prospector --messages-only --profile={{.CONFIG_PROSPECTOR}}
+      - pyright --project={{.CONFIG_PYPROJECT}} .
+    sources:
+      - ./**/*.py
+      - '{{.CONFIG_PYPROJECT}}'
+      - '{{.CONFIG_PROSPECTOR}}'
 
   format:
-    - black --quiet --config={{.CONFIG_PYPROJECT}} .
-    - isort --quiet --settings-file={{.CONFIG_PYPROJECT}} .
+    desc: Format Python code
+    summary: |
+      This task formats Python code using black and isort.
+    cmds:
+      - black --quiet --config={{.CONFIG_PYPROJECT}} .
+      - isort --quiet --settings-file={{.CONFIG_PYPROJECT}} .
+    sources:
+      - ./**/*.py
+      - '{{.CONFIG_PYPROJECT}}'
 
-  test: pytest {{.CLI_ARGS}}
+  test:
+    desc: Run pytest
+    summary: |
+      This task runs all tests with pytest.
+    cmds:
+      - pytest {{.CLI_ARGS}}
+
+  cover:
+    desc: Generate test coverage report
+    summary: |
+      This task generates a test coverage report (currently not implemented).
+    cmds:
+      - echo "not implemented"
 
   clean:
-    # TODO: Does pytest create the cache everywhere?
-    - rm -rf .pytest_cache
+    desc: Clean up temporary files
+    summary: |
+      This task cleans up temporary files created by python and pytest.
+    cmds:
+      - rm -rf .pytest_cache **/.pytest_cache **/__pycache__
+    shopt: [globstar]

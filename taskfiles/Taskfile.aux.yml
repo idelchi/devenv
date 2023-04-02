@@ -7,27 +7,31 @@ vars:
   BUILD_DIR: '{{.BUILD_DIR | default ".build"}}'
 
 tasks:
-  # Removes the build directory and the task cache
   clean:
-    desc: Remove build directory, task cache, and bash history
+    desc: Clean up the project workspace
+    summary: |
+      This task removes the build directory, task cache, and bash history to clean up the project workspace.
     cmds:
       - rm -rf .task {{.BUILD_DIR}} .bash_history
 
-  # Returns found TODOs in the project
   todo:
-    desc: Search for TODOs in the project
+    desc: Find TODOs within the project
+    summary: |
+      This task searches for TODOs within the project files, excluding certain directories.
     cmds:
       - grep --exclude-dir={.cache,.git,.task,.build} -rwo -n . --regexp 'TODO[:(].*'
 
-  # Outputs a graph representation of a YAML file
   graph:
-    desc: Generate graph representation of a YAML file
+    desc: Create a graph from a YAML file
+    summary: |
+      This task generates a graph representation of a YAML file and saves it as a PNG image.
     cmds:
       - yml2dot {{.CLI_ARGS}} | dot -Tpng > {{.CLI_ARGS}}.png
 
-  # Prints out the current setup
   default:
-    desc: Display the current setup
+    desc: Show the current project setup
+    summary: |
+      This task displays the current project setup, including directory paths, operating system, and build information.
     cmds:
       - |
         echo Running in: $(pwd) as $(whoami)
