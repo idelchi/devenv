@@ -40,7 +40,11 @@ tasks:
   diff:
     desc: Show the list of changed files
     cmds:
-      - git diff --name-only
+      - echo "Current changes are:"
+      - |
+        for file in $(git diff --name-only); do
+          echo "  - ${file}"
+        done
 
   update:
     desc: Update Git submodules to their latest version
