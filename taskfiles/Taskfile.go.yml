@@ -184,15 +184,20 @@ tasks:
           exit 0
         fi
 
+        count=0
         ignore_tag="//cover:ignore"
         while read -r line; do
           if [[ $line =~ ^[[:space:]] ]]; then
             if [[ $line != *"$ignore_tag"* ]]; then
-              echo "uncovered line(s) detected"
-              exit 1
+              ((count++))
             fi
           fi
         done <<< "$lines"
+
+        if [ $count -gt 0 ]; then
+          echo "uncovered lines: $count"
+          exit 1
+        fi
     vars:
       COVER_REPORT: '{{.BUILD_DIR}}/{{.COVER_REPORT}}'
 
@@ -246,7 +251,6 @@ tasks:
       - task: race
       - task: cover
     cmds:
-      # TODO: fix sed for Windows (not escaping properly?)
       - gotestsum --junitfile {{.TEST_REPORT}}.xml --format testname --packages {{.PACKAGES}}
       - |
         gocover-cobertura < {{.COVER_REPORT}}.cov > {{.COVER_REPORT}}.xml
