@@ -13,11 +13,11 @@ vars:
 
   COVERAGE: '{{.COVERAGE | default "100%"}}'
   COVER: '{{.COVER | default "."}}'
-  PROJECT:
-    sh: go list -m
-  PACKAGES:
-    sh: |
-      echo $(go list ./...)
+  # PROJECT:
+  #   sh: go list -m
+  # PACKAGES:
+  #   sh: |
+  #     echo $(go list ./...)
 
 tasks:
   # Utilities
@@ -130,28 +130,23 @@ tasks:
       vars:
         MODE: '-race'
 
-  # TODO: Evaluate if this is useful - create an example test which triggers it.
-  msan:
-    platforms: [linux]
+  bench:
     cmds:
       - task: test
         vars:
-          MODE: '-msan'
-          CC: clang
-          CXX: clang++
+          MODE: '-bench=. -benchtime=10s'
+    preconditions:
+      - sh: 'exit 1'
+        msg: 'TODO: <bench> task yet to be implemented'
 
-  # TODO: Add benchmark target. Should be able to pass optional test flags (-run=...)
-  # go test -bench=. -benchtime=10s ./...
-  bench:
-    - task: test
-      vars:
-        MODE: '--not--implemented'
-
-  # TODO: Add fuzzing target. Must be able to pass test flags (-run=...)
   fuzz:
-    - task: test
-      vars:
-        MODE: '--not--implemented'
+    cmds:
+      - task: test
+        vars:
+          MODE: '-fuzz=<> ...'
+    preconditions:
+      - sh: 'exit 1'
+        msg: 'TODO: <fuzz> task yet to be implemented'
 
   cover:
     desc: test go project with code coverage enabled
