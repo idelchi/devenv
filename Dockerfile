@@ -183,6 +183,7 @@ RUN echo \
     golang.org/x/tools/cmd/guru@latest  \
     honnef.co/go/implements@latest  \
     rsc.io/tmp/uncover@latest \
+    github.com/rillig/gobco@latest \
     # Feed to 'go install'
     | xargs -n 1 go install
 
