@@ -9,10 +9,6 @@ services:
     image: idelchi/devenv:local
     container_name: devenv
     hostname: devenv
-    ports:
-      # <host:container>
-      - '8888:8888' # GoDoc
-      - '10000-10200:10000-10200' # Go Profilers
     network_mode: bridge
     user: user
     volumes:

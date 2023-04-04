@@ -123,6 +123,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     terraform \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
+# Markdown tools (grip)
+RUN pip install --no-cache-dir grip
+
 # Create CI User (Debian/Ubuntu)
 RUN groupadd -r -g 1001 user && \
     useradd -r -u 1001 -g 1001 -m -c "user account" -d /home/user -s /bin/bash user
