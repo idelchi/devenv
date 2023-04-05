@@ -3,7 +3,6 @@ version: '3'
 vars:
   # Directories
   CONFIG_DIR: './config'
-  SCRIPTS_DIR: './scripts'
 
   # Files
   CONFIG_PYPROJECT: '{{.CONFIG_DIR}}/pyproject.toml'
@@ -13,10 +12,11 @@ tasks:
   lint:
     desc: Lint Python code
     summary: |
-      This task checks Python code using black, isort, prospector, and pyright.
+      This task checks Python code using black, isort, prospector, pyright, and ruff.
     cmds:
-      - black --check --quiet --config={{.CONFIG_PYPROJECT}} .
-      - isort --check --quiet --settings-file={{.CONFIG_PYPROJECT}} .
+      - black --check --config={{.CONFIG_PYPROJECT}} .
+      - isort --check --settings-file={{.CONFIG_PYPROJECT}} .
+      - ruff check --config={{.CONFIG_PYPROJECT}} .
       - prospector --messages-only --profile={{.CONFIG_PROSPECTOR}}
       - pyright --project={{.CONFIG_PYPROJECT}} .
     sources:
@@ -27,10 +27,11 @@ tasks:
   format:
     desc: Format Python code
     summary: |
-      This task formats Python code using black and isort.
+      This task formats Python code using black, isort, and ruff.
     cmds:
       - black --quiet --config={{.CONFIG_PYPROJECT}} .
       - isort --quiet --settings-file={{.CONFIG_PYPROJECT}} .
+      - ruff check --fix --config={{.CONFIG_PYPROJECT}} .
     sources:
       - ./**/*.py
       - '{{.CONFIG_PYPROJECT}}'

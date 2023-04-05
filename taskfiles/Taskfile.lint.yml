@@ -127,11 +127,12 @@ tasks:
   spell:
     desc: Perform spell checking in the project files
     summary: |
-      This task performs spell checking in the project files using misspell, cspell, and codespell.
+      This task performs spell checking in the project files using misspell, cspell, codespell and typos.
     cmds:
       - misspell -error {{.FILES}}
       - cspell lint --show-suggestions --config={{.CONFIG}} --no-progress "**"
       - codespell --ignore-words={{.WORDLIST}} {{.FILES}}
+      - typos
     vars:
       CONFIG: '{{.CONFIG_DIR}}/cspell.yaml'
       WORDLIST: '{{.CONFIG_DIR}}/default-words'
