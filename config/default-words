@@ -25,6 +25,7 @@ fastapi
 fuzztime
 gcflags
 genprofile
+gitlint
 gnupg
 gobco
 gocover

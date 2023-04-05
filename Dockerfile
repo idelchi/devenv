@@ -123,8 +123,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     terraform \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Markdown tools (grip)
-RUN pip install --no-cache-dir grip
+# Various tools
+RUN pip install --no-cache-dir \
+    grip \
+    gitlint
 
 # Create CI User (Debian/Ubuntu)
 RUN groupadd -r -g 1001 user && \
@@ -200,7 +202,6 @@ RUN go mod download \
     gopkg.in/check.v1@v0.0.0-20161208181325-20d25e280405 \
     bou.ke/monkey@v1.0.2
 
-
 # Install Rust
 USER root
 ARG RUST_DIR=/opt/rust
@@ -221,6 +222,6 @@ ENV XDG_CACHE_HOME=/tmp/.cache
 ENV MYPY_CACHE_DIR=/tmp/.mypy_cache
 ENV RUFF_CACHE_DIR=/tmp/.ruff_cache
 
-# Additional Rust based
+# Additional Rust based tools.
 RUN curl -sSf https://raw.githubusercontent.com/crate-ci/gh-install/master/v1/install.sh -o/tmp/install.sh && \
     sh /tmp/install.sh -- --git "crate-ci/typos" --to "${CARGO_HOME}/bin" --target "x86_64-unknown-linux-musl" --tag v1.14.5
