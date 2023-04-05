@@ -55,5 +55,5 @@ tasks:
     summary: |
       This task cleans up temporary files created by python and pytest.
     cmds:
-      - rm -rf .pytest_cache **/.pytest_cache **/__pycache__
+      - rm -rf .pytest_cache **/.pytest_cache **/__pycache__ .mypy_cache .ruff_cache
     shopt: [globstar]

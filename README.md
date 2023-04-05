@@ -31,10 +31,11 @@ A [Taskfile](./Taskfile.yml) is used to manage and summarize the different build
   - [vet](https://pkg.go.dev/cmd/vet)
   - [golangci-lint](https://github.com/golangci/golangci-lint)
 - Python
-  - [black](tbd)
-  - [isort](tbd)
-  - [prospector](tbd)
-  - [pyright](tbd)
+  - [black](https://github.com/psf/black)
+  - [isort](https://github.com/PyCQA/isort)
+  - [prospector](https://github.com/PyCQA/prospector)
+  - [pyright](https://github.com/microsoft/pyright)
+  - [ruff](https://github.com/charliermarsh/ruff)
 - JSON/YAML
   - [prettier](https://github.com/prettier/prettier)
   - [jsonlint](https://github.com/zaach/jsonlint)
@@ -52,11 +53,20 @@ A [Taskfile](./Taskfile.yml) is used to manage and summarize the different build
   - [misspell](https://github.com/client9/misspell)
   - [cspell](https://github.com/streetsidesoftware/cspell)
   - [codespell](https://github.com/codespell-project/codespell)
+  - [typos](https://github.com/crate-ci/typos)
 - Copy-Paste
   - [jscpd](https://github.com/kucherenko/jscpd)
 - Groovy
   - [npm-groovy-lint](https://github.com/nvuillam/npm-groovy-lint)
   - [jflint](https://github.com/miyajan/jflint)
+- Git
+  - [gitlint](https://jorisroovers.com/gitlint)
+
+Tools that are not linters or formatters, but are useful for development:
+
+- [grip](https://github.com/joeyespo/grip)
+- [ansible](https://github.com/ansible/ansible)
+- [terraform](https://github.com/hashicorp/terraform)
 
 ## Using Docker
 

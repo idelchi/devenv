@@ -1,5 +1,5 @@
 name: devenv
-on: [push, workflow_dispatch]
+on: [push, pull_request, workflow_dispatch]
 
 # TODO: [GHRC](https://dev.to/github/publishing-a-docker-image-to-githubs-container-repository-4n50)
 
