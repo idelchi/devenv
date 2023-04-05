@@ -2,15 +2,17 @@
 
 `devenv` is a repository that provides a collection of common basic settings for linters and formatters, driven by Taskfiles. It also builds and pushes a Docker image to Docker Hub containing all the necessary tools.
 
-To use `devenv` in your project, include it as a submodule. Optionally copy the [.vscode](./.vscode) folder into your main project, make sure to update the paths in [settings.json](./.vscode/settings.json) to point to the configuration folders used.
+To use `devenv` in your project, include it as a submodule.
 
     git submodule add https://github.com/idelchi/devenv.git
 
-Optionally, to change name, track the dev branch instead of the default master branch, the following commands can be used:
+To change name, track the dev branch instead of the default master branch, the following commands can be used:
 
     git submodule set-branch -b dev devenv
     git mv devenv .devenv
     git submodule update --init --recursive --remote
+
+Copy the [.vscode](./.vscode) folder into your main project, and make sure to update the paths in [settings.json](./.vscode/settings.json) to point to the configuration folders used.
 
 ## Table of Contents
 
