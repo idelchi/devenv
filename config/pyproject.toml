@@ -9,3 +9,6 @@ profile = "black"
 # PYRIGHT
 [tool.pyright]
 typeCheckingMode = "strict"
+
+[tool.ruff]
+line-length = 120

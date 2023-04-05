@@ -137,7 +137,8 @@ RUN pip install --no-cache-dir \
     prospector[with_everything] \
     pyright \
     black \
-    isort
+    isort \
+    ruff
 
 # Useful packages
 # (split up for readability)
@@ -149,14 +150,8 @@ RUN pip install --no-cache-dir \
     flask \
     fastapi
 
-# Reroute cache to /tmp
-ENV NPM_CONFIG_CACHE=/tmp/.npm
-ENV XDG_CONFIG_HOME=/tmp/.config
-ENV XDG_CACHE_HOME=/tmp/.cache
-ENV MYPY_CACHE_DIR=/tmp/.mypy_cache
-
 # Install Go
-ARG GO_VERSION=go1.20.2.linux-amd64
+ARG GO_VERSION=go1.20.3.linux-amd64
 RUN wget -qO- https://go.dev/dl/${GO_VERSION}.tar.gz | tar -xz -C /usr/local
 ENV PATH="/usr/local/go/bin:$PATH"
 
@@ -218,3 +213,14 @@ RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
 ENV PATH="${CARGO_HOME}/bin:${PATH}"
 
 ENV TZ=Europe/Zurich
+
+# Reroute cache to /tmp
+ENV NPM_CONFIG_CACHE=/tmp/.npm
+ENV XDG_CONFIG_HOME=/tmp/.config
+ENV XDG_CACHE_HOME=/tmp/.cache
+ENV MYPY_CACHE_DIR=/tmp/.mypy_cache
+ENV RUFF_CACHE_DIR=/tmp/.ruff_cache
+
+# Additional Rust based
+RUN curl -sSf https://raw.githubusercontent.com/crate-ci/gh-install/master/v1/install.sh -o/tmp/install.sh && \
+    sh /tmp/install.sh -- --git "crate-ci/typos" --to "${CARGO_HOME}/bin" --target "x86_64-unknown-linux-musl" --tag v1.14.5
