@@ -4,13 +4,14 @@
 
 To use `devenv` in your project, include it as a submodule.
 
-    git submodule add https://github.com/idelchi/devenv.git
+    git submodule add https://github.com/idelchi/devenv .devenv
 
-To change name, track the dev branch instead of the default master branch, the following commands can be used:
+To track the dev branch instead of the default master branch, the following commands can be used:
 
     git submodule set-branch -b dev devenv
-    git mv devenv .devenv
     git submodule update --init --recursive --remote
+
+Alternatively
 
 Copy the [.vscode](./.vscode) folder into your main project, and make sure to update the paths in [settings.json](./.vscode/settings.json) to point to the configuration folders used.
 
