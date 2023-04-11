@@ -1,5 +1,7 @@
 # devenv
 
+TODO: Log in as repository user.
+
 `devenv` is a repository that provides a collection of common basic settings for linters and formatters, driven by Taskfiles. It also builds and pushes a Docker image to Docker Hub containing all the necessary tools.
 
 To use `devenv` in your project, include it as a submodule.
