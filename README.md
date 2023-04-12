@@ -1,7 +1,5 @@
 # devenv
 
-TODO: Log in as repository user.
-
 `devenv` is a repository that provides a collection of common basic settings for linters and formatters, driven by Taskfiles. It also builds and pushes a Docker image to Docker Hub containing all the necessary tools.
 
 To use `devenv` in your project, include it as a submodule.
@@ -80,3 +78,8 @@ You can use the accompanying Docker image to run native tasks with full support 
     docker compose run devenv
 
 For more detailed instructions on how to use these tools, please refer to their respective documentation.
+
+## TODOs
+
+- Log in as repository user (`idelchi`)
+- Add support for `just`
