@@ -11,17 +11,15 @@ To track the dev branch instead of the default master branch, the following comm
     git submodule set-branch -b dev .devenv
     git submodule update --init --recursive --remote
 
-Alternatively
-
-Copy the [.vscode](./.vscode) folder into your main project, and make sure to update the paths in [settings.json](./.vscode/settings.json) to point to the configuration folders used.
+If using VS Code, copy the [.vscode](./.vscode) folder into the main project, and update the paths in [settings.json](./.vscode/settings.json) to point to the configuration folders used.
 
 ## Table of Contents
 
-- [Running the code](#running-the-code)
+- [Task](#task)
 - [Main Tools](#main-tools)
 - [Using Docker](#using-docker)
 
-## Running the code
+## Task
 
 A [Taskfile](./Taskfile.yml) is used to manage and summarize the different build system commands. To display the available commands along with their descriptions, run:
 
@@ -79,7 +77,3 @@ You can use the accompanying Docker image to run native tasks with full support 
     docker compose run devenv
 
 For more detailed instructions on how to use these tools, please refer to their respective documentation.
-
-## TODOs
-
-Use issue tracker instead of this section
