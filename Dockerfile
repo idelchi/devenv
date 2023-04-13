@@ -213,7 +213,10 @@ ENV CARGO_HOME=${RUST_DIR}/.cargo
 RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
 ENV PATH="${CARGO_HOME}/bin:${PATH}"
 
-ENV TZ=Europe/Zurich
+# Additional Rust based tools.
+RUN cargo install \
+    typos-cli \
+    just
 
 # Reroute cache to /tmp
 ENV NPM_CONFIG_CACHE=/tmp/.npm
@@ -222,6 +225,5 @@ ENV XDG_CACHE_HOME=/tmp/.cache
 ENV MYPY_CACHE_DIR=/tmp/.mypy_cache
 ENV RUFF_CACHE_DIR=/tmp/.ruff_cache
 
-# Additional Rust based tools.
-RUN curl -sSf https://raw.githubusercontent.com/crate-ci/gh-install/master/v1/install.sh -o/tmp/install.sh && \
-    sh /tmp/install.sh -- --git "crate-ci/typos" --to "${CARGO_HOME}/bin" --target "x86_64-unknown-linux-musl" --tag v1.14.5
+# Timezone
+ENV TZ=Europe/Zurich

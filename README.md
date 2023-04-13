@@ -70,6 +70,7 @@ Tools that are not linters or formatters, but are useful for development:
 - [grip](https://github.com/joeyespo/grip)
 - [ansible](https://github.com/ansible/ansible)
 - [terraform](https://github.com/hashicorp/terraform)
+- [just](https://github.com/casey/just)
 
 ## Using Docker
 
@@ -81,5 +82,4 @@ For more detailed instructions on how to use these tools, please refer to their 
 
 ## TODOs
 
-- Log in as repository user (`idelchi`) - is it related to email? Search for "how is repository user identified, commit, github"
-- Add support for `just`
+Use issue tracker instead of this section
