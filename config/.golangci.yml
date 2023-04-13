@@ -26,15 +26,22 @@ issues:
   max-same-issues: 0
 
   exclude-rules:
-    - path: '_test.go$'
+    - path: '_test.go'
       linters:
         - funlen
+
+    - path: '^main.go$'
+      linters:
+        - forbidigo
 
 linters-settings:
   forbidigo:
     forbid:
-      # Probably a good idea to forbid log.Fatal unless you're in a main function or package
-      - '^$'
+      # Encourage using loggers instead of fmt.Print*
+      - 'fmt\.Print.*'
+      # Discourage exiting the program
+      - os.Exit
+      - log.Fatal.*
 
   varnamelen:
     ignore-names:
