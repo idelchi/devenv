@@ -81,5 +81,5 @@ For more detailed instructions on how to use these tools, please refer to their 
 
 ## TODOs
 
-- Log in as repository user (`idelchi`)
+- Log in as repository user (`idelchi`) - is it related to email? Search for "how is repository user identified, commit, github"
 - Add support for `just`
