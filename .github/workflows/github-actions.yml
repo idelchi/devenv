@@ -24,7 +24,7 @@ jobs:
           echo github.ref_name: ${{ github.ref_name }}
           echo whoami: $(whoami)
 
-  test:
+  verify:
     runs-on: ubuntu-22.04
     needs: [info]
     steps:
@@ -65,7 +65,7 @@ jobs:
           tags: ${{ env.IMAGE }}:dev
           cache-to: type=inline
 
-  push:
+  release:
     runs-on: ubuntu-22.04
     needs: [test]
     if: github.ref == 'refs/heads/master'
