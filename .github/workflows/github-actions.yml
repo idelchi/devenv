@@ -62,7 +62,7 @@ jobs:
 
   release:
     runs-on: ubuntu-22.04
-    needs: [test]
+    needs: [verify]
     if: github.ref == 'refs/heads/master'
     steps:
       - uses: actions/checkout@v3
