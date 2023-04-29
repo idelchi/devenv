@@ -10,9 +10,9 @@ vars:
       _=$(git config --global --unset-all safe.directory || true)
       _=$(git config --global --add safe.directory "*")
   GIT_BRANCH:
-    sh: git rev-parse --abbrev-ref HEAD
+    sh: git rev-parse --abbrev-ref HEAD || echo unknown
   GIT_COMMIT:
-    sh: git log -n 1 --format=%h
+    sh: git log -n 1 --format=%h || echo unknown
   GIT_AUTHOR:
     sh: git config user.name || whoami
 
@@ -64,3 +64,5 @@ tasks:
           for file in $(git diff --name-only); do
             echo "  - ${file}"
           done
+    preconditions:
+      - sh: test $(which git)
