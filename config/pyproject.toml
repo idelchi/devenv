@@ -11,4 +11,4 @@ profile = "black"
 typeCheckingMode = "strict"
 
 [tool.ruff]
-line-length = 2
+line-length = 120
