@@ -4,10 +4,6 @@ vars:
   # Directories
   CONFIG_DIR: './config'
 
-  # Files
-  CONFIG_PYPROJECT: '{{.CONFIG_DIR}}/pyproject.toml'
-  CONFIG_PROSPECTOR: '{{.CONFIG_DIR}}/.prospector.yml'
-
 tasks:
   lint:
     desc: Lint Python code
@@ -23,6 +19,9 @@ tasks:
       - ./**/*.py
       - '{{.CONFIG_PYPROJECT}}'
       - '{{.CONFIG_PROSPECTOR}}'
+    vars:
+      CONFIG_PYPROJECT: '{{.CONFIG_DIR}}/pyproject.toml'
+      CONFIG_PROSPECTOR: '{{.CONFIG_DIR}}/.prospector.yml'
 
   format:
     desc: Format Python code
@@ -35,6 +34,9 @@ tasks:
     sources:
       - ./**/*.py
       - '{{.CONFIG_PYPROJECT}}'
+    vars:
+      CONFIG_PYPROJECT: '{{.CONFIG_DIR}}/pyproject.toml'
+      CONFIG_PROSPECTOR: '{{.CONFIG_DIR}}/.prospector.yml'
 
   test:
     desc: Run pytest
