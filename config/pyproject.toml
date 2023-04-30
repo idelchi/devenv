@@ -12,3 +12,4 @@ typeCheckingMode = "strict"
 
 [tool.ruff]
 line-length = 120
+select = ["ALL"]
