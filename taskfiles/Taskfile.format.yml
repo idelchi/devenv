@@ -78,9 +78,12 @@ tasks:
     summary: |
       This task formats Markdown files using markdownlint and prettier.
     cmds:
-      - cmd: markdownlint --quiet --fix --ignore-path={{.IGNORE}} "**/*.md"
-        ignore_error: true
-      - prettier --config={{.CONFIG}} --loglevel=silent --ignore-path={{.IGNORE}} --write "**/*.md"
+      - |
+        files=$(find . -name "*.md")
+        test -z "$files" && echo "no markdown files found" && exit 0
+
+        markdownlint --quiet --fix --ignore-path={{.IGNORE}} "**/*.md"
+        prettier --config={{.CONFIG}} --loglevel=silent --ignore-path={{.IGNORE}} --write "**/*.md"
     vars:
       CONFIG: '{{.CONFIG_DIR}}/.prettierrc.yml'
       IGNORE: '{{.CONFIG_DIR}}/.ignore'

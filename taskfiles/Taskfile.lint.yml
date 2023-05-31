@@ -103,8 +103,12 @@ tasks:
     summary: |
       This task lints Markdown files using markdownlint and prettier.
     cmds:
-      - markdownlint --disable=MD013 --ignore-path={{.IGNORE}} "**/*.md"
-      - prettier --ignore-path={{.IGNORE}} --check "**/*.md"
+      - |
+        files=$(find . -name "*.md")
+        test -z "$files" && echo "no markdown files found" && exit 0
+
+        markdownlint --disable=MD013 --ignore-path={{.IGNORE}} "**/*.md"
+        prettier --ignore-path={{.IGNORE}} --check "**/*.md"
     vars:
       IGNORE: '{{.CONFIG_DIR}}/.ignore'
     sources:
