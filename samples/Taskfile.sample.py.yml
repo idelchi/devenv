@@ -1,0 +1,76 @@
+version: '3'
+
+vars:
+  SETTINGS_DIR: .devenv
+
+includes:
+  common:
+    taskfile: '{{.SETTINGS_DIR}}/Taskfile.yml'
+    vars:
+      CONFIG_DIR: '{{.SETTINGS_DIR}}/config'
+      SCRIPTS_DIR: '{{.SETTINGS_DIR}}/scripts'
+    aliases:
+      - ci
+
+  python:
+    taskfile: '{{.SETTINGS_DIR}}/taskfiles/Taskfile.python.yml'
+    vars:
+      CONFIG_DIR: '{{.SETTINGS_DIR}}/config'
+    aliases:
+      - py
+
+silent: true
+
+output: prefixed
+
+tasks:
+  clean:
+    - task: common:aux:clean
+    - task: python:clean
+
+  info:
+    - task: common:git
+
+  format:
+    - task: common:format
+    - task: python:format
+
+  lint:
+    deps:
+      - common:lint
+      - python:lint
+
+  # TODO: Add a task which builds python wheels or an executable
+  build:
+    - task: python:build
+    - task: python:release
+
+  test:
+    - task: python:test
+    - task: python:cover
+
+  docker:
+    - task: common:docker
+
+  all:
+    desc: run all available tasks
+    cmds:
+      - task: clean
+      - task: info
+      - task: format
+      - task: lint
+      - task: build
+      - task: test
+
+  default:
+    desc: clean, format & lint
+    cmds:
+      - task: info
+      - task: format
+      - task: lint
+
+  push:
+    - task: common:push
+
+  update:
+    - task: common:git:update
