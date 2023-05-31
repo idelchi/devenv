@@ -41,3 +41,9 @@ tasks:
         echo Config directory: {{.CONFIG_DIR}}
         echo Scripts directory: {{.SCRIPTS_DIR}}
         echo Build directory: {{.BUILD_DIR}}
+
+  bp:
+    desc: Best practices
+    cmds:
+      - test -f README.md || echo "README.md missing"
+      - test -f LICENSE || echo "LICENSE missing"

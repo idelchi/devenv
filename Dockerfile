@@ -78,6 +78,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python3-sphinx \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
+# Python 3.11
+RUN apt-get update && apt-get install software-properties-common -y && \
+    add-apt-repository ppa:deadsnakes/ppa -y && \
+    apt-get install python3.11 -y && \
+    curl -sS https://bootstrap.pypa.io/get-pip.py | python3.11 && \
+    ln -f /usr/bin/python3.11 /usr/bin/python3 && \
+    ln -f /usr/local/bin/pip3.11 /usr/local/bin/pip3
+
 # Spellcheckers
 RUN apt-get update && apt-get install -y --no-install-recommends \
     enchant-2 \
@@ -124,7 +132,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Various tools
-RUN pip install --no-cache-dir \
+RUN pip install --no-cache-dir --ignore-installed \
     grip \
     gitlint
 
