@@ -17,9 +17,12 @@ covermode
 coverprofile
 cpuprofile
 davecgh
+deadsnakes
 devenv
+dockercompose
 dockerfilelint
 dockerfiles
+esbenp
 failon
 fastapi
 fuzztime
@@ -37,6 +40,7 @@ gofumpt
 golangci
 golines
 gonic
+gopls
 gotest
 gotestsum
 hadolint
@@ -62,6 +66,7 @@ prantlf
 profilegen
 profileview
 pydantic
+Pylance
 rillig
 rustup
 scspell
