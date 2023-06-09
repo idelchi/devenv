@@ -30,9 +30,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     # Tools
     graphviz \
+    # ssh
+    openssh-client \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Update node to version 14
+# Update node
 RUN curl -sL https://deb.nodesource.com/setup_19.x | bash -
 RUN apt-get update && apt-get install -y --no-install-recommends \
     default-jre \
@@ -79,12 +81,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Python 3.11
-RUN apt-get update && apt-get install software-properties-common -y && \
-    add-apt-repository ppa:deadsnakes/ppa -y && \
-    apt-get install python3.11 -y && \
-    curl -sS https://bootstrap.pypa.io/get-pip.py | python3.11 && \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    software-properties-common \
+    && add-apt-repository ppa:deadsnakes/ppa -y && \
+    apt-get install -y --no-install-recommends \
+    python3.11 \
+    && curl -sS https://bootstrap.pypa.io/get-pip.py | python3.11 && \
     ln -f /usr/bin/python3.11 /usr/bin/python3 && \
-    ln -f /usr/local/bin/pip3.11 /usr/local/bin/pip3
+    ln -f /usr/local/bin/pip3.11 /usr/local/bin/pip3 \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Spellcheckers
 RUN apt-get update && apt-get install -y --no-install-recommends \
