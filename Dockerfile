@@ -138,6 +138,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Various tools
 RUN pip install --no-cache-dir --ignore-installed \
+    # (bind to 0.0.0.0 to allow access from outside)
     grip \
     gitlint
 
