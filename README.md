@@ -1,6 +1,7 @@
 # devenv
 
-`devenv` is a repository that provides a collection of common basic settings for linters and formatters, driven by Taskfiles. It also builds and pushes a Docker image to Docker Hub containing all the necessary tools.
+`devenv` is a repository that provides a collection of common basic settings for linters and formatters, driven by Taskfiles.
+It also builds and pushes a Docker image to Docker Hub containing all the necessary tools.
 
 To use `devenv` in your project, include it as a submodule.
 
@@ -11,7 +12,8 @@ To track the dev branch instead of the default master branch, the following comm
     git submodule set-branch -b dev .devenv
     git submodule update --init --recursive --remote
 
-If using VS Code, copy the [.vscode](./.vscode) folder into the main project, and update the paths in [settings.json](./.vscode/settings.json) to point to the configuration folders used.
+If using VS Code, copy the [.vscode](./.vscode) folder into the main project, and update the paths in
+[settings.json](./.vscode/settings.json) to point to the configuration folders used.
 
 ## Table of Contents
 
@@ -21,7 +23,8 @@ If using VS Code, copy the [.vscode](./.vscode) folder into the main project, an
 
 ## Task
 
-A [Taskfile](./Taskfile.yml) is used to manage and summarize the different build system commands. To display the available commands along with their descriptions, run:
+A [Taskfile](./Taskfile.yml) is used to manage and summarize the different build system commands.
+To display the available commands along with their descriptions, run:
 
     task --list
 
@@ -69,10 +72,20 @@ Tools that are not linters or formatters, but are useful for development:
 - [ansible](https://github.com/ansible/ansible)
 - [terraform](https://github.com/hashicorp/terraform)
 - [just](https://github.com/casey/just)
+- [sphinx](https://www.sphinx-doc.org/)
+
+Compilers and interpreters:
+
+- [python](https://www.python.org/)
+- [go](https://golang.org/)
+- [rust](https://www.rust-lang.org/)
+- [gcc](https://gcc.gnu.org/)
+- [clang](https://clang.llvm.org/)
 
 ## Using Docker
 
-You can use the accompanying Docker image to run native tasks with full support for all commands listed in the Taskfile. To launch the container and mount the workspace, run:
+You can use the accompanying Docker image to run native tasks with full support for all commands listed in the Taskfile.
+To launch the container and mount the workspace, run:
 
     docker compose run devenv
 

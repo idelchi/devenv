@@ -74,11 +74,11 @@ RUN wget -q https://github.com/hadolint/hadolint/releases/download/${HADOLINT_VE
     chmod +x /usr/local/bin/hadolint
 
 # Python
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3 \
-    python3-pip \
-    python3-sphinx \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+# RUN apt-get update && apt-get install -y --no-install-recommends \
+#     python3 \
+#     python3-pip \
+#     python3-sphinx \
+#     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Python 3.11
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -140,7 +140,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN pip install --no-cache-dir --ignore-installed \
     # (bind to 0.0.0.0 to allow access from outside)
     grip \
-    gitlint
+    gitlint \
+    sphinx
 
 # Create CI User (Debian/Ubuntu)
 RUN groupadd -r -g 1001 user && \
