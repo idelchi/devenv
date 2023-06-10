@@ -34,8 +34,7 @@ tasks:
       This task formats Dockerfiles using dockerfile-utils and removes trailing whitespace.
     cmds:
       - |
-        dockerfiles=$(find . -name "Dockerfile")
-        for dockerfile in $dockerfiles
+        for dockerfile in {{.DOCKERFILES}}
         do
           tfile="$(mktemp /tmp/Dockerfile.XXXXX)"
           echo "$(cat $dockerfile)" > $tfile
@@ -43,6 +42,9 @@ tasks:
           sed --in-place 's/[[:space:]]\+$//' $dockerfile
           rm -f $tfile
         done
+    vars:
+      DOCKERFILES:
+        sh: find . -name "Dockerfile" | tr '\n' ' '
     preconditions:
       - sh: 'command -v dockerfile-utils'
         msg: 'dockerfile-utils errors out, check it nodejs is having problems'
@@ -82,10 +84,11 @@ tasks:
         files=$(find . -name "*.md")
         test -z "$files" && echo "no markdown files found" && exit 0
 
-        markdownlint --quiet --fix --ignore-path={{.IGNORE}} "**/*.md"
-        prettier --config={{.CONFIG}} --loglevel=silent --ignore-path={{.IGNORE}} --write "**/*.md"
+        markdownlint --quiet --fix --config={{.CONFIG_MARKDOWNLINT}} --ignore-path={{.IGNORE}} "**/*.md"
+        prettier --config={{.CONFIG_PRETTIER}} --loglevel=silent --ignore-path={{.IGNORE}} --write "**/*.md"
     vars:
-      CONFIG: '{{.CONFIG_DIR}}/.prettierrc.yml'
+      CONFIG_MARKDOWNLINT: '{{.CONFIG_DIR}}/.markdownlint.yaml'
+      CONFIG_PRETTIER: '{{.CONFIG_DIR}}/.prettierrc.yml'
       IGNORE: '{{.CONFIG_DIR}}/.ignore'
     sources:
       - ./**/*.md

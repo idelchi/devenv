@@ -37,30 +37,28 @@ tasks:
       This task lints Dockerfiles using hadolint, dockerfilelint, and dockerfile-utils.
     cmds:
       # hadolint
-      - |
-        for dockerfile in {{.DOCKERFILES}}
-        do
-          hadolint --config={{.CONFIG}} $dockerfile
-        done
+      - hadolint --config={{.CONFIG}} {{.DOCKERFILES}}
       # dockerfilelint
-      - |
-        for dockerfile in {{.DOCKERFILES}}
-        do
-          dockerfilelint $dockerfile
-        done
+      - dockerfilelint {{.DOCKERFILES}}
       # dockerfile-utils
       - |
+        exit_code=0
         for dockerfile in {{.DOCKERFILES}}
         do
+          echo "Checking $dockerfile"
           tfile="$(mktemp /tmp/Dockerfile.XXXXX)"
           dockerfile-utils format --spaces 4 $dockerfile > $tfile
-          cmp $tfile $dockerfile || echo "$dockerfile has not been formatted"
+          if ! cmp -s "$tfile" "$dockerfile"; then
+              echo "$dockerfile has not been formatted"
+              exit_code=1
+          fi
           rm $tfile
         done
+        exit $exit_code
     vars:
       CONFIG: '{{.CONFIG_DIR}}/.hadolint.yaml'
       DOCKERFILES:
-        sh: find . -name "Dockerfile"
+        sh: find . -name "Dockerfile" | tr '\n' ' '
     sources:
       - ./**/Dockerfile
       - '{{.CONFIG}}'
@@ -107,9 +105,11 @@ tasks:
         files=$(find . -name "*.md")
         test -z "$files" && echo "no markdown files found" && exit 0
 
-        markdownlint --disable=MD013 --ignore-path={{.IGNORE}} "**/*.md"
-        prettier --ignore-path={{.IGNORE}} --check "**/*.md"
+        markdownlint --config={{.CONFIG_MARKDOWNLINT}} --ignore-path={{.IGNORE}} "**/*.md"
+        prettier --config={{.CONFIG_PRETTIER}} --ignore-path={{.IGNORE}} --check "**/*.md"
     vars:
+      CONFIG_MARKDOWNLINT: '{{.CONFIG_DIR}}/.markdownlint.yaml'
+      CONFIG_PRETTIER: '{{.CONFIG_DIR}}/.prettierrc.yml'
       IGNORE: '{{.CONFIG_DIR}}/.ignore'
     sources:
       - ./**/*.md
