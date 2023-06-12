@@ -157,8 +157,8 @@ RUN cargo install \
     just
 
 # Python tooling for linting & formatting
-# (mistakes brackets for ranges)
-# hadolint ignore=SC2102
+# (mistakes brackets for ranges,split up for readability)
+# hadolint ignore=SC2102,DL3059
 RUN pip install --no-cache-dir \
     prospector[with_everything] \
     pyright \
