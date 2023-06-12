@@ -142,6 +142,20 @@ RUN pip install --no-cache-dir \
 RUN groupadd -r -g 1001 user && \
     useradd -r -u 1001 -g 1001 -m -c "user account" -d /home/user -s /bin/bash user
 
+# Install Rust
+ARG RUST_DIR=/opt/rust
+RUN mkdir -p ${RUST_DIR} && chown -R user:user ${RUST_DIR}
+
+ENV RUSTUP_HOME=${RUST_DIR}/.rustup
+ENV CARGO_HOME=${RUST_DIR}/.cargo
+RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
+ENV PATH="${CARGO_HOME}/bin:${PATH}"
+
+# Additional Rust based tools.
+RUN cargo install \
+    typos-cli \
+    just
+
 # Python tooling for linting & formatting
 # (mistakes brackets for ranges)
 # hadolint ignore=SC2102
@@ -211,22 +225,6 @@ RUN go mod download \
     golang.org/x/exp@v0.0.0-20230224173230-c95f2b4c22f2 \
     gopkg.in/check.v1@v0.0.0-20161208181325-20d25e280405 \
     bou.ke/monkey@v1.0.2
-
-# Install Rust
-USER root
-ARG RUST_DIR=/opt/rust
-RUN mkdir -p ${RUST_DIR} && chown -R user:user ${RUST_DIR}
-
-USER user
-ENV RUSTUP_HOME=${RUST_DIR}/.rustup
-ENV CARGO_HOME=${RUST_DIR}/.cargo
-RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
-ENV PATH="${CARGO_HOME}/bin:${PATH}"
-
-# Additional Rust based tools.
-RUN cargo install \
-    typos-cli \
-    just
 
 # Reroute cache to /tmp
 ENV NPM_CONFIG_CACHE=/tmp/.npm
