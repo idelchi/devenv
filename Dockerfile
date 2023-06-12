@@ -34,10 +34,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     openssh-client \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Update node
-# RUN curl -sL https://deb.nodesource.com/setup_19.x | bash -
+# Install Java & Node (version 11 of Java due to npm-groovy-lint)
+RUN echo "deb http://deb.debian.org/debian/ bullseye main" >> /etc/apt/sources.list && \
+    apt-get update && apt-get install -y --no-install-recommends \
+    openjdk-11-jdk \
+    && apt-get clean && rm -rf /var/lib/apt/lists/* && \
+    rm /etc/apt/sources.list
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    default-jre \
     nodejs \
     npm \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -234,6 +237,3 @@ ENV RUFF_CACHE_DIR=/tmp/.ruff_cache
 
 # Timezone
 ENV TZ=Europe/Zurich
-
-# to install correct java version until npm-groovy-lint starts supporting java > 14
-RUN npm-groovy-lint --version
