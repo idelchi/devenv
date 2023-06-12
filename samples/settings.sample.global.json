@@ -1,0 +1,20 @@
+{
+    /* ****** COPILOT ****** */
+    "editor.inlineSuggest.enabled": true,
+    "github.copilot.enable": {
+        "*": true
+        // "plaintext": true,
+        // "markdown": true,
+        // "yaml": true,
+        // "python": true,
+        // "go": true,
+        // "rust": true,
+        // "groovy": true,
+        // "dockerfile": true,
+        // "dockercompose": true,
+        // "json": true,
+        // "jsonc": true,
+        // "csharp": true
+    },
+    "terminal.integrated.enableMultiLinePasteWarning": false
+}

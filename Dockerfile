@@ -7,7 +7,7 @@
 #   - Formatters
 #]=======================================================================]
 
-FROM ubuntu:22.04
+FROM debian:bookworm
 
 LABEL maintainer=arash.idelchi
 
@@ -35,10 +35,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Update node
-RUN curl -sL https://deb.nodesource.com/setup_19.x | bash -
+# RUN curl -sL https://deb.nodesource.com/setup_19.x | bash -
 RUN apt-get update && apt-get install -y --no-install-recommends \
     default-jre \
     nodejs \
+    npm \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Various linters & formatters
@@ -74,22 +75,14 @@ RUN wget -q https://github.com/hadolint/hadolint/releases/download/${HADOLINT_VE
     chmod +x /usr/local/bin/hadolint
 
 # Python
-# RUN apt-get update && apt-get install -y --no-install-recommends \
-#     python3 \
-#     python3-pip \
-#     python3-sphinx \
-#     && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# Python 3.11
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    software-properties-common \
-    && add-apt-repository ppa:deadsnakes/ppa -y && \
-    apt-get install -y --no-install-recommends \
-    python3.11 \
-    && curl -sS https://bootstrap.pypa.io/get-pip.py | python3.11 && \
-    ln -f /usr/bin/python3.11 /usr/bin/python3 && \
-    ln -f /usr/local/bin/pip3.11 /usr/local/bin/pip3 \
+    python3 \
+    python3-pip \
+    python3-venv \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Pip override to allow breaking packages
+RUN echo -e "[global]\nbreak-system-packages=true" >> /etc/pip.conf
 
 # Spellcheckers
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -106,12 +99,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Powershell
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    wget \
+    curl \
+    gnupg \
     apt-transport-https \
-    software-properties-common \
-    && apt-get clean && rm -rf /var/lib/apt/lists/* && \
-    wget -q "https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb" && \
-    dpkg -i packages-microsoft-prod.deb && \
+    && curl https://packages.microsoft.com/keys/microsoft.asc | gpg --yes --dearmor --output /usr/share/keyrings/microsoft.gpg && \
+    sh -c 'echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/microsoft-debian-bullseye-prod bullseye main" > /etc/apt/sources.list.d/microsoft.list' && \
     apt-get update && apt-get install -y --no-install-recommends \
     powershell \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -137,7 +129,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Various tools
-RUN pip install --no-cache-dir --ignore-installed \
+RUN pip install --no-cache-dir \
     # (bind to 0.0.0.0 to allow access from outside)
     grip \
     gitlint \
@@ -168,7 +160,7 @@ RUN pip install --no-cache-dir \
     fastapi
 
 # Install Go
-ARG GO_VERSION=go1.20.3.linux-amd64
+ARG GO_VERSION=go1.20.5.linux-amd64
 RUN wget -qO- https://go.dev/dl/${GO_VERSION}.tar.gz | tar -xz -C /usr/local
 ENV PATH="/usr/local/go/bin:$PATH"
 
@@ -199,7 +191,7 @@ RUN echo \
     # Feed to 'go install'
     | xargs -n 1 go install
 
-ARG GOLANGCI_LINT_VERSION=v1.52.2
+ARG GOLANGCI_LINT_VERSION=v1.53.2
 RUN curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b "$(go env GOPATH)/bin" ${GOLANGCI_LINT_VERSION}
 
 # Pre-download some useful packages and dependencies
@@ -242,3 +234,6 @@ ENV RUFF_CACHE_DIR=/tmp/.ruff_cache
 
 # Timezone
 ENV TZ=Europe/Zurich
+
+# to install correct java version until npm-groovy-lint starts supporting java > 14
+RUN npm-groovy-lint --version
