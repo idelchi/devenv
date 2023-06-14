@@ -85,17 +85,15 @@
         "editor.insertSpaces": true
     },
     /* ****** ****** ****** */
-    /* ****** CONSOLE ****** */
-    "terminal.integrated.env.windows": {
-        "PWD": "${workspaceFolder}"
-    },
-    // "terminal.integrated.defaultProfile.windows": "PowerShell",
-    "terminal.integrated.defaultProfile.windows": "Ubuntu-22.04 (WSL)",
-    /* ****** ****** ****** */
     /* ****** TODOs ****** */
     "todo-tree.filtering.includeHiddenFiles": true,
     "todo-tree.highlights.defaultHighlight": {
         "type": "text"
-    }
+    },
     /* ****** ****** ****** */
+    /* ****** CONSOLE ****** */
+    "terminal.integrated.env.windows": {
+        "PWD": "${workspaceFolder}"
+    },
+	"terminal.integrated.enableMultiLinePasteWarning": false
 }

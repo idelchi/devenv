@@ -84,16 +84,15 @@
         "editor.insertSpaces": true
     },
     /* ****** ****** ****** */
-    /* ****** CONSOLE ****** */
-    "terminal.integrated.env.windows": {
-        "PWD": "${workspaceFolder}"
-    },
-    "terminal.integrated.defaultProfile.windows": "PowerShell",
-    /* ****** ****** ****** */
     /* ****** TODOs ****** */
     "todo-tree.filtering.includeHiddenFiles": true,
     "todo-tree.highlights.defaultHighlight": {
         "type": "text"
-    }
+    },
     /* ****** ****** ****** */
+    /* ****** CONSOLE ****** */
+    "terminal.integrated.env.windows": {
+        "PWD": "${workspaceFolder}"
+    },
+	"terminal.integrated.enableMultiLinePasteWarning": false
 }
