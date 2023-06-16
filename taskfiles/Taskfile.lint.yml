@@ -159,10 +159,6 @@ tasks:
       - jscpd --config={{.CONFIG}} .
     vars:
       CONFIG: '{{.CONFIG_DIR}}/.jscpd.json'
-    sources:
-      - ./**/*.go
-      - ./**/*.sh
-      - '{{.CONFIG}}'
     generates:
       - ./build/cpd/**/*
 
