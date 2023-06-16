@@ -17,6 +17,19 @@ pycodestyle:
 
 pydocstyle:
   run: true
+  disable:
+    - D203
+  #   - D204
+    - D213
+  #   - D215
+  #   - D400
+  #   - D401
+  #   - D404
+    - D406
+    - D407
+  #   - D408
+  #   - D409
+    - D413
 
 pyflakes:
   run: true

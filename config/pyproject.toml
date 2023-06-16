@@ -13,3 +13,10 @@ typeCheckingMode = "strict"
 [tool.ruff]
 line-length = 120
 select = ["ALL"]
+ignore = [
+  "ANN101", # Missing type annotation for self in method
+  "EXE002", # The file is executable but no shebang is present
+]
+
+[tool.ruff.pydocstyle]
+convention = "google"

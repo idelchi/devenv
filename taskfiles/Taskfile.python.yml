@@ -30,7 +30,7 @@ tasks:
     cmds:
       - black --quiet --config={{.CONFIG_PYPROJECT}} .
       - isort --quiet --settings-file={{.CONFIG_PYPROJECT}} .
-      - ruff check --fix --config={{.CONFIG_PYPROJECT}} .
+      - ruff check --fix-only --config={{.CONFIG_PYPROJECT}} .
     sources:
       - ./**/*.py
       - '{{.CONFIG_PYPROJECT}}'
