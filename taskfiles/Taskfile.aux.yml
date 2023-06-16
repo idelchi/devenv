@@ -47,3 +47,12 @@ tasks:
     cmds:
       - test -f README.md || echo "README.md missing"
       - test -f LICENSE || echo "LICENSE missing"
+
+  vs:
+    desc: |
+      Copies the file '{{.CLI_ARGS}}/.vscode/settings.json', places it in '.vscode/settings.json',
+      and replaces the string 'config/' with '{{.CLI_ARGS}}/config/''
+    cmds:
+      - |
+        cp {{.CLI_ARGS}}/.vscode/settings.json .vscode/settings.json
+        sed -i 's/config/{{.CLI_ARGS}}\/config/g' .vscode/settings.json
