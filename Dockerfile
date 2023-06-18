@@ -139,8 +139,8 @@ RUN pip install --no-cache-dir \
     sphinx
 
 # Create CI User (Debian/Ubuntu)
-RUN groupadd -r -g 1000 user && \
-    useradd -r -u 1000 -g 1000 -m -c "user account" -d /home/user -s /bin/bash user
+RUN groupadd -r -g 1001 user && \
+    useradd -r -u 1001 -g 1001 -m -c "user account" -d /home/user -s /bin/bash user
 
 # Install Rust
 ARG RUST_DIR=/opt/rust
