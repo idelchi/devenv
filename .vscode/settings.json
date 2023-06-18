@@ -96,6 +96,6 @@
     "terminal.integrated.enableMultiLinePasteWarning": false,
     /* ****** ****** ****** */
     /* ****** SYSTEM ****** */
-    "files.eol": "\n",
+    "files.eol": "\n"
 }
 // TODO: https://code.visualstudio.com/docs/editor/intellisense
