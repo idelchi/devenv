@@ -93,6 +93,9 @@
     "terminal.integrated.env.windows": {
         "PWD": "${workspaceFolder}"
     },
-    "terminal.integrated.enableMultiLinePasteWarning": false
+    "terminal.integrated.enableMultiLinePasteWarning": false,
+    /* ****** ****** ****** */
+    /* ****** SYSTEM ****** */
+    "files.eol": "\n"
 }
 // TODO: https://code.visualstudio.com/docs/editor/intellisense

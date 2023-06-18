@@ -55,4 +55,4 @@ tasks:
     cmds:
       - |
         cp {{.CLI_ARGS}}/.vscode/settings.json .vscode/settings.json
-        sed -i 's/config/{{.CLI_ARGS}}\/config/g' .vscode/settings.json
+        sed -i 's/config\//{{.CLI_ARGS}}\/config\//g' .vscode/settings.json
