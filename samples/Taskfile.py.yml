@@ -1,7 +1,7 @@
 version: '3'
 
 vars:
-  SETTINGS_DIR: .devenv
+  SETTINGS_DIR: .devenv # or pointing to the location ($DEVENV)
 
 includes:
   common:

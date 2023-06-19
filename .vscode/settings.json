@@ -44,7 +44,8 @@
     /* ****** ****** ****** */
     /* ****** PYTHON ****** */
     "[python]": {
-        "editor.formatOnType": true
+        "editor.formatOnType": true,
+        "editor.defaultFormatter": "ms-python.black-formatter"
     },
     "python.defaultInterpreterPath": "python3",
     "python.languageServer": "Pylance",
