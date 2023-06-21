@@ -36,10 +36,15 @@ tasks:
     summary: |
       This task lints Dockerfiles using hadolint, dockerfilelint, and dockerfile-utils.
     cmds:
-      # hadolint
-      - hadolint --config={{.CONFIG}} {{.DOCKERFILES}}
-      # dockerfilelint
-      - dockerfilelint {{.DOCKERFILES}}
+      - |
+        if [ -z "{{.DOCKERFILES}}" ]; then
+            echo "No dockerfiles found"
+            exit 0
+        fi
+        # hadolint
+        hadolint --config={{.CONFIG}} {{.DOCKERFILES}}
+        # dockerfilelint
+        dockerfilelint {{.DOCKERFILES}}
       # dockerfile-utils
       - |
         exit_code=0
