@@ -205,6 +205,8 @@ RUN echo \
     honnef.co/go/implements@latest  \
     rsc.io/tmp/uncover@latest \
     github.com/rillig/gobco@latest \
+    github.com/mikefarah/yq/v4@latest \
+    github.com/bronze1man/yaml2json@latest \
     # Feed to 'go install'
     | xargs -n 1 go install
 
