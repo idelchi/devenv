@@ -8,28 +8,11 @@ vars:
 
 tasks:
   ws:
-    # TODO: Replace with a tool
     desc: Check for trailing whitespaces in the project files
     summary: |
       This task finds any trailing whitespaces in the project files and reports them.
     cmds:
-      - |
-        files=$(find . -type f \
-        ! -path "*/.git/*" \
-        ! -path "*/{{.BUILD_DIR}}/*" \
-        ! -path "*/.task/*" \
-        ! -path "*/.vscode-server/*" \
-        -exec egrep -Hno " +$" {} \;)
-
-        if [ -z "$files" ]; then
-          exit 0
-        else
-          for file in ${files[@]}; do
-            echo $file
-          done
-          echo "trailing whitespace found"
-          exit 1
-        fi
+      - wslint "**"
 
   docker:
     desc: Lint Dockerfiles
@@ -37,33 +20,24 @@ tasks:
       This task lints Dockerfiles using hadolint, dockerfilelint, and dockerfile-utils.
     cmds:
       - |
-        if [ -z "{{.DOCKERFILES}}" ]; then
-            echo "No dockerfiles found"
-            exit 0
-        fi
-        # hadolint
-        hadolint --config={{.CONFIG}} {{.DOCKERFILES}}
-        # dockerfilelint
-        dockerfilelint {{.DOCKERFILES}}
-      # dockerfile-utils
-      - |
+        dockerfiles=$(find . -name "Dockerfile")
+        test -z "$dockerfiles" && echo "no Dockerfiles found" && exit 0
+
+        hadolint --config={{.CONFIG}} $dockerfiles
+        dockerfilelint $dockerfiles
+
         exit_code=0
-        for dockerfile in {{.DOCKERFILES}}
+        for dockerfile in $dockerfiles
         do
-          echo "Checking $dockerfile"
-          tfile="$(mktemp /tmp/Dockerfile.XXXXX)"
-          dockerfile-utils format --spaces 4 $dockerfile > $tfile
-          if ! cmp -s "$tfile" "$dockerfile"; then
+          dockerfile-utils lint $dockerfile
+          if ! diff <(dockerfile-utils format --spaces 4 $dockerfile) <(cat $dockerfile) &>/dev/null; then
               echo "$dockerfile has not been formatted"
               exit_code=1
           fi
-          rm $tfile
         done
         exit $exit_code
     vars:
       CONFIG: '{{.CONFIG_DIR}}/.hadolint.yaml'
-      DOCKERFILES:
-        sh: find . -name "Dockerfile" | tr '\n' ' '
     sources:
       - ./**/Dockerfile
       - '{{.CONFIG}}'
@@ -126,7 +100,7 @@ tasks:
       This task lints shell scripts using shfmt and shellcheck.
     cmds:
       - shfmt -i 2 -ci -d -l -s {{.SCRIPTS_DIR}}/**/*.sh
-      - shellcheck --shell=bash --enable=all --severity=style --source-path={{.SCRIPTS_DIR}}/go {{.SCRIPTS_DIR}}/**/*.sh
+      - shellcheck --shell=bash --enable=all --severity=style --source-path=SCRIPTDIR {{.SCRIPTS_DIR}}/**/*.sh
     sources:
       - ./{{.SCRIPTS_DIR}}/**/*.sh
     preconditions:
@@ -137,14 +111,15 @@ tasks:
     desc: Perform spell checking in the project files
     summary: |
       This task performs spell checking in the project files using misspell, cspell, codespell and typos.
+      cspell is used mainly for code.
     cmds:
       - misspell -error {{.FILES}}
-      - cspell lint --show-suggestions --config={{.CONFIG}} --no-progress "**"
+      - cspell lint --show-suggestions --config={{.CONFIG}} --no-progress "**/.go" "**/.py" "**/*.sh"
       - codespell --ignore-words={{.WORDLIST}} {{.FILES}}
       - typos
     vars:
       CONFIG: '{{.CONFIG_DIR}}/cspell.yaml'
-      WORDLIST: '{{.CONFIG_DIR}}/default-words'
+      WORDLIST: '{{.CONFIG_DIR}}/project-words'
       FILES:
         sh: >-
           find . -type f -name '*'
@@ -152,8 +127,7 @@ tasks:
           | grep -v .git/
           | grep -v .cache/
           | grep -v .task/
-          | grep -v *.mod
-          | grep -v *.sum
+          | grep -v mypy_cache/
           | tr '\n' ' '
 
   cp:
@@ -168,18 +142,18 @@ tasks:
       - ./build/cpd/**/*
 
   jenkins:
-    # TODO: Lint any Jenkinsfile found in the project
-    desc: Lint the Jenkinsfile
+    desc: Lint Jenkinsfiles
     summary: |
-      This task lints the Jenkinsfile using npm-groovy-lint and jflint.
+      This task lints Jenkinsfiles using npm-groovy-lint and jflint.
     cmds:
-      - npm-groovy-lint --config={{.CONFIG_DIR}}/ --failon info --no-insight --files "{{ .PWD }}/Jenkinsfile"
-      - cmd: jflint --config={{.CONFIG}} Jenkinsfile >> /dev/null
+      - npm-groovy-lint --config={{.CONFIG_DIR}}/ --failon info --no-insight --files "**/Jenkinsfile"
+      - cmd: jflint --config={{.CONFIG}} {{.JENKINSFILE}} >> /dev/null
         ignore_error: true
     vars:
       CONFIG: '{{.CONFIG_DIR}}/.jflintrc'
+      JENKINSFILE: '{{.CLI_ARGS | default "Jenkinsfile"}}'
     sources:
-      - ./Jenkinsfile
+      - ./**/Jenkinsfile
 
   # ---------
   default:
