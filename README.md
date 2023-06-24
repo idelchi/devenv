@@ -73,6 +73,8 @@ Tools that are not linters or formatters, but are useful for development:
 - [terraform](https://github.com/hashicorp/terraform)
 - [just](https://github.com/casey/just)
 - [sphinx](https://www.sphinx-doc.org/)
+- [yq](https://github.com/mikefarah/yq)
+- [yaml2json](https://github.com/bronze1man/yaml2json)
 
 Compilers and interpreters:
 
