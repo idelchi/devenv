@@ -228,7 +228,6 @@ RUN go mod download \
     github.com/bmatcuk/doublestar/v4@latest \
     golang.org/x/exp@latest \
     golang.org/x/tools@latest \
-    golang.org/x/tools@v0.6.0 \
     golang.org/x/exp@v0.0.0-20230224173230-c95f2b4c22f2 \
     gopkg.in/check.v1@v0.0.0-20161208181325-20d25e280405 \
     bou.ke/monkey@v1.0.2

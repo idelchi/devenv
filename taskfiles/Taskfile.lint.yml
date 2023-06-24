@@ -114,9 +114,9 @@ tasks:
       cspell is used mainly for code.
     cmds:
       - misspell -error {{.FILES}}
-      - cspell lint --show-suggestions --config={{.CONFIG}} --no-progress "**/.go" "**/.py" "**/*.sh"
       - codespell --ignore-words={{.WORDLIST}} {{.FILES}}
       - typos
+      - cspell lint --show-suggestions --config={{.CONFIG}} --no-progress "**/*.go" "**/*.py" "**/*.sh"
     vars:
       CONFIG: '{{.CONFIG_DIR}}/cspell.yaml'
       WORDLIST: '{{.CONFIG_DIR}}/project-words'
