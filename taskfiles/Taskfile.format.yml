@@ -21,7 +21,7 @@ tasks:
     cmds:
       - |
         for dockerfile in {{.DOCKERFILES}}; do
-          output=$(dockerfile-utils format --spaces 4 Dockerfile) && echo "$output" > Dockerfile
+          output=$(dockerfile-utils format --spaces 4 $dockerfile) && echo "$output" > $dockerfile
         done
     vars:
       DOCKERFILES:
@@ -29,6 +29,8 @@ tasks:
     preconditions:
       - sh: 'command -v dockerfile-utils'
         msg: 'dockerfile-utils errors out, check if nodejs is having problems'
+    sources:
+      - ./**/Dockerfile
 
   json:
     desc: Format JSON files
