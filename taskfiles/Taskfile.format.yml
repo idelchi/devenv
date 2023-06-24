@@ -7,26 +7,12 @@ vars:
   BUILD_DIR: '{{.BUILD_DIR | default ".build"}}'
 
 tasks:
-  # TODO: Replace with a tool
   ws:
     desc: Remove trailing whitespace from files
     summary: |
       This task removes trailing whitespace from all files except ignored paths.
     cmds:
-      - |
-        files=$(find . -type f \
-        ! -path "*/.git/*" \
-        ! -path "*/{{.BUILD_DIR}}/*" \
-        ! -path "*/.task/*" \
-        ! -path "*/.vscode-server/*" \
-        -exec egrep -l " +$" {} \;)
-
-        if [ -n "$files" ]; then
-          for file in ${files[@]}; do
-            echo "formatting $file..."
-            sed --in-place 's/[[:space:]]\+$//' $file
-          done
-        fi
+      - wslint -w "**"
 
   docker:
     desc: Format Dockerfiles
@@ -39,7 +25,6 @@ tasks:
           tfile="$(mktemp /tmp/Dockerfile.XXXXX)"
           echo "$(cat $dockerfile)" > $tfile
           dockerfile-utils format --spaces 4 $tfile > $dockerfile
-          sed --in-place 's/[[:space:]]\+$//' $dockerfile
           rm -f $tfile
         done
     vars:
@@ -47,7 +32,7 @@ tasks:
         sh: find . -name "Dockerfile" | tr '\n' ' '
     preconditions:
       - sh: 'command -v dockerfile-utils'
-        msg: 'dockerfile-utils errors out, check it nodejs is having problems'
+        msg: 'dockerfile-utils errors out, check if nodejs is having problems'
 
   json:
     desc: Format JSON files
@@ -101,23 +86,23 @@ tasks:
       - shfmt -i 2 -ci -s -w {{.SCRIPTS_DIR}}/**/*.sh
       - |
         for check in {{.CHECKS}}; do
-          shellcheck --shell=bash --enable=$check --severity=style --source-path={{.SCRIPTS_DIR}}/go -f diff {{.SCRIPTS_DIR}}/**/*.sh | patch -p1 > /dev/null
+          shellcheck --shell=bash --enable=$check --severity=style --source-path=SCRIPTDIR -f diff {{.SCRIPTS_DIR}}/**/*.sh | patch -p1 > /dev/null
         done
-      - shellcheck --shell=bash --enable=all --severity=style --source-path={{.SCRIPTS_DIR}}/go -f diff {{.SCRIPTS_DIR}}/**/*.sh | patch -p1 > /dev/null
+      - shellcheck --shell=bash --enable=all --severity=style --source-path=SCRIPTDIR -f diff {{.SCRIPTS_DIR}}/**/*.sh | patch -p1 > /dev/null
     vars:
       CHECKS: quote-safe-variables require-double-brackets require-variable-braces
     sources:
       - ./{{.SCRIPTS_DIR}}/**/*.sh
 
   jenkins:
-    desc: Format Jenkinsfile
+    desc: Format Jenkinsfiles
     summary: |
-      This task formats the Jenkinsfile using npm-groovy-lint.
+      This task formats Jenkinsfiles using npm-groovy-lint.
     cmds:
-      - npm-groovy-lint --config={{.CONFIG_DIR}}/ --fix --nolintafter --no-insight --files "{{ .PWD }}/Jenkinsfile" > /dev/null
-      - npm-groovy-lint --config={{.CONFIG_DIR}}/ --format --nolintafter --no-insight --files "{{ .PWD }}/Jenkinsfile"  > /dev/null
+      - npm-groovy-lint --config={{.CONFIG_DIR}}/ --fix --nolintafter --no-insight --files "**/Jenkinsfile" > /dev/null
+      - npm-groovy-lint --config={{.CONFIG_DIR}}/ --format --nolintafter --no-insight --files "**/Jenkinsfile"  > /dev/null
     sources:
-      - ./Jenkinsfile
+      - ./**/Jenkinsfile
 
   # ---------
   default:

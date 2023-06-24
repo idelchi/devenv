@@ -1,6 +1,7 @@
 #!/bin/bash
 
-DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+FILE="$(realpath "$0")"
+DIR="${FILE%/*}"
 
 source "${DIR}/common.sh"
 

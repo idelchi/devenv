@@ -138,6 +138,10 @@ RUN pip install --no-cache-dir \
     gitlint \
     sphinx
 
+# Install Task
+ARG TASK_VERSION=v3.26.0
+RUN wget -qO- https://github.com/go-task/task/releases/download/${TASK_VERSION}/task_linux_amd64.tar.gz | tar -xz -C /usr/local/bin
+
 # Create CI User (Debian/Ubuntu)
 RUN groupadd -r -g 1001 user && \
     useradd -r -u 1001 -g 1001 -m -c "user account" -d /home/user -s /bin/bash user
@@ -148,7 +152,7 @@ RUN mkdir -p ${RUST_DIR} && chown -R user:user ${RUST_DIR}
 
 ENV RUSTUP_HOME=${RUST_DIR}/.rustup
 ENV CARGO_HOME=${RUST_DIR}/.cargo
-RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
+RUN wget -qO- https://sh.rustup.rs | bash -s -- -y
 ENV PATH="${CARGO_HOME}/bin:${PATH}"
 
 # Additional Rust based tools.
@@ -157,7 +161,7 @@ RUN cargo install \
     just
 
 # Python tooling for linting & formatting
-# (mistakes brackets for ranges,split up for readability)
+# (mistakes brackets for ranges, split up for readability)
 # hadolint ignore=SC2102,DL3059
 RUN pip install --no-cache-dir \
     prospector[with_everything] \
@@ -191,25 +195,28 @@ WORKDIR /home/user
 # Go tooling
 RUN echo \
     # Commands to install
-    github.com/go-task/task/v3/cmd/task@latest \
     golang.org/x/tools/cmd/godoc@latest \
-    gotest.tools/gotestsum@latest  \
+    gotest.tools/gotestsum@latest \
     github.com/t-yuki/gocover-cobertura@latest \
-    github.com/client9/misspell/cmd/misspell@latest  \
-    mvdan.cc/gofumpt@latest  \
-    mvdan.cc/sh/v3/cmd/shfmt@latest  \
-    github.com/loov/goda@latest  \
-    github.com/lucasepe/yml2dot@latest  \
-    github.com/segmentio/golines@latest  \
-    golang.org/x/tools/cmd/guru@latest  \
-    honnef.co/go/implements@latest  \
+    github.com/client9/misspell/cmd/misspell@latest \
+    mvdan.cc/gofumpt@latest \
+    mvdan.cc/sh/v3/cmd/shfmt@latest \
+    github.com/loov/goda@latest \
+    github.com/lucasepe/yml2dot@latest \
+    github.com/segmentio/golines@latest \
+    golang.org/x/tools/cmd/guru@latest \
+    honnef.co/go/implements@latest \
     rsc.io/tmp/uncover@latest \
     github.com/rillig/gobco@latest \
+    github.com/mikefarah/yq/v4@latest \
+    github.com/bronze1man/yaml2json@latest \
+    github.com/idelchi/wslint@latest \
     # Feed to 'go install'
     | xargs -n 1 go install
 
-ARG GOLANGCI_LINT_VERSION=v1.53.2
-RUN curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b "$(go env GOPATH)/bin" ${GOLANGCI_LINT_VERSION}
+# Install golangci-lint
+ARG GOLANGCI_LINT_VERSION=v1.53.3
+RUN wget -qO- https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b "$(go env GOPATH)/bin" ${GOLANGCI_LINT_VERSION}
 
 # Pre-download some useful packages and dependencies
 RUN go mod download \
@@ -221,7 +228,6 @@ RUN go mod download \
     github.com/bmatcuk/doublestar/v4@latest \
     golang.org/x/exp@latest \
     golang.org/x/tools@latest \
-    golang.org/x/tools@v0.6.0 \
     golang.org/x/exp@v0.0.0-20230224173230-c95f2b4c22f2 \
     gopkg.in/check.v1@v0.0.0-20161208181325-20d25e280405 \
     bou.ke/monkey@v1.0.2

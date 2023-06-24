@@ -13,7 +13,7 @@ parse::args() {
   N=${#args[@]}
 
   if [[ ${N} -eq "0" ]]; then
-    echo "<packages> required"
+    echo "positional arguments required"
     usage 1
   fi
 }

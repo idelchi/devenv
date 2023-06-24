@@ -1,11 +1,12 @@
 #!/bin/bash
 
-DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+FILE="$(realpath "$0")"
+DIR="${FILE%/*}"
 
 source "${DIR}/common.sh"
 
 usage() {
-  echo "Usage: $0 [-b] [-b=<build>] [-p=<project>] <packages>"
+  echo "Usage: $0 [-b] [-d=<build>] [-p=<project>] <packages>"
   echo "	where passing -b runs only benchmarks"
   exit "$1"
 }
