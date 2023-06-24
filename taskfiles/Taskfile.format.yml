@@ -17,15 +17,11 @@ tasks:
   docker:
     desc: Format Dockerfiles
     summary: |
-      This task formats Dockerfiles using dockerfile-utils and removes trailing whitespace.
+      This task formats Dockerfiles using dockerfile-utils.
     cmds:
       - |
-        for dockerfile in {{.DOCKERFILES}}
-        do
-          tfile="$(mktemp /tmp/Dockerfile.XXXXX)"
-          echo "$(cat $dockerfile)" > $tfile
-          dockerfile-utils format --spaces 4 $tfile > $dockerfile
-          rm -f $tfile
+        for dockerfile in {{.DOCKERFILES}}; do
+          output=$(dockerfile-utils format --spaces 4 Dockerfile) && echo "$output" > Dockerfile
         done
     vars:
       DOCKERFILES:

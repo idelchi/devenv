@@ -18,6 +18,7 @@ vars:
 
 tasks:
   push:
+    prompt: Commit and push changes?
     desc: Push changes to remote with a commit message
     summary: |
       This task pushes changes to the remote repository with a specified or default commit message.

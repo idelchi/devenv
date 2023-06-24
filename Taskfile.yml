@@ -42,5 +42,4 @@ tasks:
         - `task push -- "My commit message"` for a custom commit message
     cmds:
       - task: git
-      - echo "Commit and push changes? [Press Ctrl+C to cancel]" && read
       - task: git:push
