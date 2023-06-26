@@ -99,4 +99,5 @@
     /* ****** SYSTEM ****** */
     "files.eol": "\n"
 }
+// Note that environment variables might not work in config path
 // TODO: https://code.visualstudio.com/docs/editor/intellisense

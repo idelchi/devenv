@@ -13,6 +13,9 @@ tasks:
       - black --check --config={{.CONFIG_PYPROJECT}} .
       - isort --check --settings-file={{.CONFIG_PYPROJECT}} .
       - ruff check --config={{.CONFIG_PYPROJECT}} .
+      - |
+        mypy --install-types --non-interactive --config-file={{.CONFIG_PYPROJECT}} .
+        mypy --config-file={{.CONFIG_PYPROJECT}} .
       - prospector --messages-only --profile={{.CONFIG_PROSPECTOR}}
       - pyright --project={{.CONFIG_PYPROJECT}} .
     sources:

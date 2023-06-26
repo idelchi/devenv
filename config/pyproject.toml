@@ -6,17 +6,39 @@ line-length = 120
 [tool.isort]
 profile = "black"
 
-# PYRIGHT
-[tool.pyright]
-typeCheckingMode = "strict"
-
+# RUFF
 [tool.ruff]
 line-length = 120
 select = ["ALL"]
 ignore = [
   "ANN101", # Missing type annotation for self in method
   "EXE002", # The file is executable but no shebang is present
+  "G004",   # Logging statement uses string formatting
+  "INP001", # File is part of an implicit namespace package. Add an `__init__.py`.
+  "ANN401", # Dynamically typed expressions (typing.Any) are disallowed in ...
 ]
 
 [tool.ruff.pydocstyle]
 convention = "google"
+
+# PYRIGHT
+[tool.pyright]
+typeCheckingMode = "strict"
+reportUnknownVariableType = false
+reportMissingTypeArgument = false
+reportUnknownParameterType = false
+reportUnknownMemberType = false
+reportUnknownArgumentType = false
+# Minimum setup to alert only missing type hints
+#
+#
+
+# MYPY
+[tool.mypy]
+strict = true
+install_types = true
+explicit_package_bases = true
+
+# Minimum setup to alert only missing type hints
+#
+#

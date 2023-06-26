@@ -11,6 +11,10 @@ max-line-length: 120
 
 pylint:
   run: true
+  disable:
+    - logging-fstring-interpolation
+  options:
+    good-names: f
 
 pycodestyle:
   run: true
@@ -36,7 +40,7 @@ pyflakes:
   run: true
 
 mypy:
-  run: true
+  run: false
 
 mccabe:
   run: true
