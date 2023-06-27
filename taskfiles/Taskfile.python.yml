@@ -4,20 +4,20 @@ vars:
   # Directories
   CONFIG_DIR: './config'
 
+  DIRECTORY: '{{.CLI_ARGS | default "."}}'
+
 tasks:
   lint:
     desc: Lint Python code
     summary: |
       This task checks Python code using black, isort, prospector, pyright, and ruff.
     cmds:
-      - black --check --config={{.CONFIG_PYPROJECT}} .
-      - isort --check --settings-file={{.CONFIG_PYPROJECT}} .
-      - ruff check --config={{.CONFIG_PYPROJECT}} .
-      - |
-        mypy --install-types --non-interactive --config-file={{.CONFIG_PYPROJECT}} .
-        mypy --config-file={{.CONFIG_PYPROJECT}} .
-      - prospector --messages-only --profile={{.CONFIG_PROSPECTOR}}
-      - pyright --project={{.CONFIG_PYPROJECT}} .
+      - black --check --config={{.CONFIG_PYPROJECT}} {{.DIRECTORY}}
+      - isort --check --settings-file={{.CONFIG_PYPROJECT}} {{.DIRECTORY}}
+      - ruff check --config={{.CONFIG_PYPROJECT}} {{.DIRECTORY}}
+      - mypy --config-file={{.CONFIG_PYPROJECT}} {{.DIRECTORY}}
+      - prospector --messages-only --profile={{.CONFIG_PROSPECTOR}} {{.DIRECTORY}}
+      - pyright --project={{.CONFIG_PYPROJECT}} {{.DIRECTORY}}
     sources:
       - ./**/*.py
       - '{{.CONFIG_PYPROJECT}}'
@@ -31,9 +31,9 @@ tasks:
     summary: |
       This task formats Python code using black, isort, and ruff.
     cmds:
-      - black --quiet --config={{.CONFIG_PYPROJECT}} .
-      - isort --quiet --settings-file={{.CONFIG_PYPROJECT}} .
-      - ruff check --fix-only --config={{.CONFIG_PYPROJECT}} .
+      - black --quiet --config={{.CONFIG_PYPROJECT}} {{.DIRECTORY}}
+      - isort --quiet --settings-file={{.CONFIG_PYPROJECT}} {{.DIRECTORY}}
+      - ruff check --fix-only --config={{.CONFIG_PYPROJECT}} {{.DIRECTORY}}
     sources:
       - ./**/*.py
       - '{{.CONFIG_PYPROJECT}}'
@@ -46,7 +46,7 @@ tasks:
     summary: |
       This task runs all tests with pytest.
     cmds:
-      - pytest {{.CLI_ARGS}}
+      - pytest {{.DIRECTORY}}
 
   cover:
     desc: Generate test coverage report
@@ -62,3 +62,5 @@ tasks:
     cmds:
       - rm -rf .pytest_cache **/.pytest_cache **/__pycache__ .mypy_cache .ruff_cache
     shopt: [globstar]
+
+  share: 'find {{.DIRECTORY}} -name "*.py" -exec echo "" \; -exec echo "***** FILE: {} *****" \; -exec cat {} \; > share.py'
