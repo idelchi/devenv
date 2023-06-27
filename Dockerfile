@@ -168,7 +168,9 @@ RUN pip install --no-cache-dir \
     pyright \
     black \
     isort \
-    ruff
+    ruff \
+    # Library stubs for typing
+    types-pyyaml
 
 # Useful packages
 # (split up for readability)

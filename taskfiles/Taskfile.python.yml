@@ -25,6 +25,9 @@ tasks:
     vars:
       CONFIG_PYPROJECT: '{{.CONFIG_DIR}}/pyproject.toml'
       CONFIG_PROSPECTOR: '{{.CONFIG_DIR}}/.prospector.yml'
+    env:
+      # Important for pyright as it won't find imports
+      PYTHONPATH: '.'
 
   format:
     desc: Format Python code
