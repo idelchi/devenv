@@ -15,9 +15,9 @@ tasks:
       - black --check --config={{.CONFIG_PYPROJECT}} {{.DIRECTORY}}
       - isort --check --settings-file={{.CONFIG_PYPROJECT}} {{.DIRECTORY}}
       - ruff check --config={{.CONFIG_PYPROJECT}} {{.DIRECTORY}}
-      - mypy --config-file={{.CONFIG_PYPROJECT}} {{.DIRECTORY}}
       - prospector --messages-only --profile={{.CONFIG_PROSPECTOR}} {{.DIRECTORY}}
       - pyright --project={{.CONFIG_PYPROJECT}} {{.DIRECTORY}}
+      - mypy --config-file={{.CONFIG_PYPROJECT}} {{.DIRECTORY}}
     sources:
       - ./**/*.py
       - '{{.CONFIG_PYPROJECT}}'
