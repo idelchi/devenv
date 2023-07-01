@@ -18,6 +18,8 @@ services:
     user: user
     volumes:
       - .:/home/user/ws
+      - /C/Users/arash/Taskfile.yml:/home/user/Taskfile.yml
+      - /C/Users/arash/.devenv/Taskfile.yml:/home/user/.devenv/Taskfile.yml
     #   - ${DEVENV}:${DEVENV} # Possible to mount it inside
     # environment:
     #   - DEVENV=${DEVENV} # Inherit the environment

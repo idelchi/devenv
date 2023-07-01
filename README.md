@@ -96,10 +96,11 @@ To launch the container and mount the workspace, run:
 
 For more detailed instructions on how to use these tools, please refer to their respective documentation.
 
-## Usage
+## Usage & Integrations
+
+- As submodule (i.e reference it in your project)
+- As globally available environment (i.e install it on your machine and run it from anywhere with `task -g`)
 
 The root Taskfile expects `DEVENV` to be set in order to correctly include the subtasks.
-
 Either set it directly in the Taskfile, or provide it as an environment variable.
-
 The `.env` is used to the environment variables for the docker-compose service, as well as the subtasks.
