@@ -15,6 +15,9 @@ To track the dev branch instead of the default master branch, the following comm
 If using VS Code, copy the [.vscode](./.vscode) folder into the main project, and update the paths in
 [settings.json](./.vscode/settings.json) to point to the configuration folders used.
 
+[Taskfile.yml](./Taskfile.yml) contains the list of commands that can be run to format and lint the code,
+and can be used as a starting point for your own project.
+
 ## Table of Contents
 
 - [Task](#task)

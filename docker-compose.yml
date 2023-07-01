@@ -4,7 +4,7 @@ version: '3.7'
 services:
   devenv:
     build:
-      context: ${DEVENV} # or pointing to the location ($DEVENV)
+      context: ${DEVENV}
     pull_policy: never
     image: devenv:local
     container_name: devenv
