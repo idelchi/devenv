@@ -1,10 +1,9 @@
 version: '3'
 
-vars:
-  # Directories
-  CONFIG_DIR: './config'
-  SCRIPTS_DIR: './scripts'
-  BUILD_DIR: '{{.BUILD_DIR | default ".build"}}'
+# requires
+# - CONFIG_DIR
+# - SCRIPTS_DIR
+# - BUILD_DIR
 
 tasks:
   ws:

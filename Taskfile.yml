@@ -1,10 +1,23 @@
 version: '3'
 
+vars:
+  DEVENV: .
+
+dotenv: ['.env']
+
 includes:
-  aux: 'taskfiles/Taskfile.aux.yml'
-  git: 'taskfiles/Taskfile.git.yml'
-  lint: 'taskfiles/Taskfile.lint.yml'
-  format: 'taskfiles/Taskfile.format.yml'
+  aux:
+    taskfile: '{{.DEVENV}}/taskfiles/Taskfile.aux.yml'
+    dir: '{{.USER_WORKING_DIR}}'
+  git:
+    taskfile: '{{.DEVENV}}/taskfiles/Taskfile.git.yml'
+    dir: '{{.USER_WORKING_DIR}}'
+  lint:
+    taskfile: '{{.DEVENV}}/taskfiles/Taskfile.lint.yml'
+    dir: '{{.USER_WORKING_DIR}}'
+  format:
+    taskfile: '{{.DEVENV}}/taskfiles/Taskfile.format.yml'
+    dir: '{{.USER_WORKING_DIR}}'
 
 silent: true
 

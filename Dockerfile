@@ -240,6 +240,7 @@ ENV XDG_CONFIG_HOME=/tmp/.config
 ENV XDG_CACHE_HOME=/tmp/.cache
 ENV MYPY_CACHE_DIR=/tmp/.mypy_cache
 ENV RUFF_CACHE_DIR=/tmp/.ruff_cache
+ENV TASK_TEMP_DIR=/tmp/.task
 
 # Timezone
 ENV TZ=Europe/Zurich

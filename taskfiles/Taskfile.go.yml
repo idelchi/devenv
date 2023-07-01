@@ -1,10 +1,10 @@
 version: '3'
 
 vars:
-  # Directories
-  CONFIG_DIR: './config'
-  SCRIPTS_DIR: './scripts'
-  BUILD_DIR: '{{.BUILD_DIR | default ".build"}}'
+  # requires
+  # - CONFIG_DIR
+  # - SCRIPTS_DIR
+  # - BUILD_DIR
 
   # Files
   LINT_REPORT: '{{.LINT_REPORT | default "lint-report"}}'
@@ -16,8 +16,7 @@ vars:
   PROJECT:
     sh: go list -m
   PACKAGES:
-    sh: |
-      echo $(go list ./...)
+    sh: echo $(go list ./...)
 
 tasks:
   # Utilities
