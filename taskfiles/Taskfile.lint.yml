@@ -5,6 +5,8 @@ version: '3'
 # - SCRIPTS_DIR
 # - BUILD_DIR
 
+shopt: [globstar]
+
 tasks:
   ws:
     desc: Check for trailing whitespaces in the project files
@@ -76,7 +78,7 @@ tasks:
       This task lints Markdown files using markdownlint and prettier.
     cmds:
       - |
-        files=$(find . -name "*.md")
+        files=./**/*.md
         test -z "$files" && echo "no markdown files found" && exit 0
 
         markdownlint --config={{.CONFIG_MARKDOWNLINT}} --ignore-path={{.IGNORE}} "**/*.md"

@@ -5,6 +5,8 @@ version: '3'
 # - SCRIPTS_DIR
 # - BUILD_DIR
 
+shopt: [globstar]
+
 tasks:
   ws:
     desc: Remove trailing whitespace from files
@@ -63,7 +65,7 @@ tasks:
       This task formats Markdown files using markdownlint and prettier.
     cmds:
       - |
-        files=$(find . -name "*.md")
+        files=./**/*.md
         test -z "$files" && echo "no markdown files found" && exit 0
 
         markdownlint --quiet --fix --config={{.CONFIG_MARKDOWNLINT}} --ignore-path={{.IGNORE}} "**/*.md"
