@@ -6,18 +6,10 @@ vars:
 dotenv: ['.env']
 
 includes:
-  aux:
-    taskfile: '{{.DEVENV}}/taskfiles/Taskfile.aux.yml'
-    dir: '{{.USER_WORKING_DIR}}'
-  git:
-    taskfile: '{{.DEVENV}}/taskfiles/Taskfile.git.yml'
-    dir: '{{.USER_WORKING_DIR}}'
-  lint:
-    taskfile: '{{.DEVENV}}/taskfiles/Taskfile.lint.yml'
-    dir: '{{.USER_WORKING_DIR}}'
-  format:
-    taskfile: '{{.DEVENV}}/taskfiles/Taskfile.format.yml'
-    dir: '{{.USER_WORKING_DIR}}'
+  aux: '{{.DEVENV}}/taskfiles/Taskfile.aux.yml'
+  git: '{{.DEVENV}}/taskfiles/Taskfile.git.yml'
+  lint: '{{.DEVENV}}/taskfiles/Taskfile.lint.yml'
+  format: '{{.DEVENV}}/taskfiles/Taskfile.format.yml'
 
 silent: true
 

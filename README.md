@@ -95,3 +95,11 @@ To launch the container and mount the workspace, run:
     docker compose run devenv
 
 For more detailed instructions on how to use these tools, please refer to their respective documentation.
+
+## Usage
+
+The root Taskfile expects `DEVENV` to be set in order to correctly include the subtasks.
+
+Either set it directly in the Taskfile, or provide it as an environment variable.
+
+The `.env` is used to the environment variables for the docker-compose service, as well as the subtasks.
