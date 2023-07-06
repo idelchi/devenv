@@ -25,7 +25,12 @@ tasks:
       The default message is "[skip ci] Development commit".
     cmds:
       - echo "Pushing changes to remote"
-      - echo "The message is {{.MESSAGE}}"
+      - |
+        echo "The commit message is: {{.MESSAGE}}"
+        if [[ ! {{.MESSAGE}} =~ ^('.*'$|\".*\") ]]; then
+          echo "ERROR: commit message must be one complete string (starting and ending with a quote)"
+          exit 1
+        fi
       - git add .
       - cmd: git commit -am {{.MESSAGE}}
         ignore_error: true

@@ -7,7 +7,7 @@ env:
   BRANCH: ${{ github.head_ref || github.ref_name }}
   IMAGE: ${{ github.repository }}
 
-  DEVENV: .
+  DEVENV: '.'
 
 jobs:
   # TODO: This job could be reusable in other workflows
