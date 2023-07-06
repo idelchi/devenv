@@ -27,7 +27,7 @@ tasks:
       - echo "Pushing changes to remote"
       - |
         echo "The commit message is: {{.MESSAGE}}"
-        if [[ ! {{.MESSAGE}} =~ ^('.*'$|\".*\") ]]; then
+        if [[ ! "{{.MESSAGE}}" =~ ^\'.*\'$ ]]; then
           echo "ERROR: commit message must be one complete string (starting and ending with a quote)"
           exit 1
         fi
@@ -37,7 +37,7 @@ tasks:
       - cmd: git push
         ignore_error: true
     vars:
-      MESSAGE: '{{.CLI_ARGS | default "[skip ci] Development commit" | shellQuote}}'
+      MESSAGE: '{{.CLI_ARGS | default "[skip ci] Development commit"}}'
 
   update:
     desc: Update Git submodules to their latest version
