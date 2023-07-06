@@ -1,32 +1,28 @@
 version: '3'
 
-vars:
-  # Directories
-  CONFIG_DIR: './config'
-  SCRIPTS_DIR: './scripts'
-  BUILD_DIR: '{{.BUILD_DIR | default ".build"}}'
+# requires
+# - CONFIG_DIR
+# - SCRIPTS_DIR
+# - BUILD_DIR
 
 tasks:
   clean:
     desc: Clean up the project workspace
     summary: |
       This task removes the build directory, task cache, and bash history to clean up the project workspace.
-    cmds:
-      - rm -rf .task {{.BUILD_DIR}} .bash_history
+    cmd: rm -rf .task {{.BUILD_DIR}} .bash_history
 
   todo:
     desc: Find TODOs within the project
     summary: |
       This task searches for TODOs within the project files, excluding certain directories.
-    cmds:
-      - grep --exclude-dir={.cache,.git,.task,.build} -rwo -n . --regexp 'TODO[:(].*'
+    cmd: grep --exclude-dir={.cache,.git,.task,.build} -rwo -n . --regexp 'TODO[:(].*'
 
   graph:
     desc: Create a graph from a YAML file
     summary: |
       This task generates a graph representation of a YAML file and saves it as a PNG image.
-    cmds:
-      - yml2dot {{.CLI_ARGS}} | dot -Tpng > {{.CLI_ARGS}}.png
+    cmd: yml2dot {{.CLI_ARGS}} | dot -Tpng > {{.CLI_ARGS}}.png
 
   default:
     desc: Show the current project setup
@@ -41,6 +37,7 @@ tasks:
         echo Config directory: {{.CONFIG_DIR}}
         echo Scripts directory: {{.SCRIPTS_DIR}}
         echo Build directory: {{.BUILD_DIR}}
+        echo Current directory: $PWD
 
   bp:
     desc: Best practices
@@ -52,7 +49,6 @@ tasks:
     desc: |
       Copies the file '{{.CLI_ARGS}}/.vscode/settings.json', places it in '.vscode/settings.json',
       and replaces the string 'config/' with '{{.CLI_ARGS}}/config/''
-    cmds:
-      - |
-        cp {{.CLI_ARGS}}/.vscode/settings.json .vscode/settings.json
-        sed -i 's/config\//{{.CLI_ARGS}}\/config\//g' .vscode/settings.json
+    cmd: |
+      cp {{.CLI_ARGS}}/.vscode/settings.json .vscode/settings.json
+      sed -i 's/config\//{{.CLI_ARGS}}\/config\//g' .vscode/settings.json

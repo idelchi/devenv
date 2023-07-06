@@ -1,0 +1,27 @@
+{
+    "name": "Docker in Docker",
+    "containerUser": "user",
+    "remoteUser": "user",
+    "containerEnv": {},
+    // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+    //"image": "mcr.microsoft.com/devcontainers/base:bullseye",
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+    "features": {
+        "ghcr.io/devcontainers/features/docker-in-docker:2": {
+            "version": "latest",
+            "moby": "true"
+        },
+        "ghcr.io/eitsupi/devcontainer-features/go-task:1": {}
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "github.copilot",
+                "moshfeu.compare-folders",
+                "task.vscode-task"
+            ]
+        }
+    }
+}

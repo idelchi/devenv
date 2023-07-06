@@ -15,6 +15,9 @@ To track the dev branch instead of the default master branch, the following comm
 If using VS Code, copy the [.vscode](./.vscode) folder into the main project, and update the paths in
 [settings.json](./.vscode/settings.json) to point to the configuration folders used.
 
+[Taskfile.yml](./Taskfile.yml) contains the list of commands that can be run to format and lint the code,
+and can be used as a starting point for your own project.
+
 ## Table of Contents
 
 - [Task](#task)
@@ -73,6 +76,8 @@ Tools that are not linters or formatters, but are useful for development:
 - [terraform](https://github.com/hashicorp/terraform)
 - [just](https://github.com/casey/just)
 - [sphinx](https://www.sphinx-doc.org/)
+- [yq](https://github.com/mikefarah/yq)
+- [yaml2json](https://github.com/bronze1man/yaml2json)
 
 Compilers and interpreters:
 
@@ -90,3 +95,17 @@ To launch the container and mount the workspace, run:
     docker compose run devenv
 
 For more detailed instructions on how to use these tools, please refer to their respective documentation.
+
+## Usage & Integrations
+
+- As submodule (i.e reference it in your project)
+- As globally available environment (i.e install it on your machine and run it from anywhere with `task -g`)
+
+The root Taskfile expects `DEVENV` to be set in order to correctly include the subtasks.
+Either set it directly in the Taskfile, or provide it as an environment variable.
+The `.env` is used for the docker-compose service, as well as the subtasks.
+
+The published image contains the full configuration in the home folder and can be referenced with "task -g".
+
+Either use with docker-compose to mount the local directory and run with "task -g",
+or embed the configuration inside your project and run with "task docker".

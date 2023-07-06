@@ -1,8 +1,10 @@
 version: '3'
 
+# requires
+# - CONFIG_DIR
+
 vars:
-  # Directories
-  CONFIG_DIR: './config'
+  DIRECTORY: '{{.CLI_ARGS | default "."}}'
 
 tasks:
   lint:
@@ -10,11 +12,12 @@ tasks:
     summary: |
       This task checks Python code using black, isort, prospector, pyright, and ruff.
     cmds:
-      - black --check --config={{.CONFIG_PYPROJECT}} .
-      - isort --check --settings-file={{.CONFIG_PYPROJECT}} .
-      - ruff check --config={{.CONFIG_PYPROJECT}} .
-      - prospector --messages-only --profile={{.CONFIG_PROSPECTOR}}
-      - pyright --project={{.CONFIG_PYPROJECT}} .
+      - black --check --config={{.CONFIG_PYPROJECT}} {{.DIRECTORY}}
+      - isort --check --settings-file={{.CONFIG_PYPROJECT}} {{.DIRECTORY}}
+      - ruff check --config={{.CONFIG_PYPROJECT}} {{.DIRECTORY}}
+      - prospector --messages-only --profile={{.CONFIG_PROSPECTOR}} {{.DIRECTORY}}
+      - pyright --project={{.CONFIG_PYPROJECT}} {{.DIRECTORY}}
+      - mypy --config-file={{.CONFIG_PYPROJECT}} {{.DIRECTORY}}
     sources:
       - ./**/*.py
       - '{{.CONFIG_PYPROJECT}}'
@@ -22,15 +25,18 @@ tasks:
     vars:
       CONFIG_PYPROJECT: '{{.CONFIG_DIR}}/pyproject.toml'
       CONFIG_PROSPECTOR: '{{.CONFIG_DIR}}/.prospector.yml'
+    env:
+      # Important for pyright as it won't find imports otherwise
+      PYTHONPATH: '.'
 
   format:
     desc: Format Python code
     summary: |
       This task formats Python code using black, isort, and ruff.
     cmds:
-      - black --quiet --config={{.CONFIG_PYPROJECT}} .
-      - isort --quiet --settings-file={{.CONFIG_PYPROJECT}} .
-      - ruff check --fix-only --config={{.CONFIG_PYPROJECT}} .
+      - black --quiet --config={{.CONFIG_PYPROJECT}} {{.DIRECTORY}}
+      - isort --quiet --settings-file={{.CONFIG_PYPROJECT}} {{.DIRECTORY}}
+      - ruff check --fix-only --config={{.CONFIG_PYPROJECT}} {{.DIRECTORY}}
     sources:
       - ./**/*.py
       - '{{.CONFIG_PYPROJECT}}'
@@ -42,20 +48,19 @@ tasks:
     desc: Run pytest
     summary: |
       This task runs all tests with pytest.
-    cmds:
-      - pytest {{.CLI_ARGS}}
+    cmd: pytest {{.DIRECTORY}}
 
   cover:
     desc: Generate test coverage report
     summary: |
       This task generates a test coverage report (currently not implemented).
-    cmds:
-      - echo "not implemented"
+    cmd: echo "not implemented"
 
   clean:
     desc: Clean up temporary files
     summary: |
       This task cleans up temporary files created by python and pytest.
-    cmds:
-      - rm -rf .pytest_cache **/.pytest_cache **/__pycache__ .mypy_cache .ruff_cache
+    cmd: rm -rf .pytest_cache **/.pytest_cache **/__pycache__ .mypy_cache .ruff_cache
     shopt: [globstar]
+
+  share: 'find {{.DIRECTORY}} -name "*.py" -exec echo "" \; -exec echo "***** FILE: {} *****" \; -exec cat {} \; > share.py'

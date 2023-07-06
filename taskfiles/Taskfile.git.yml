@@ -1,9 +1,9 @@
 version: '3'
 
 vars:
-  # Directories
-  CONFIG_DIR: './config'
-  SCRIPTS_DIR: './scripts'
+  # requires
+  # - CONFIG_DIR
+  # - SCRIPTS_DIR
 
   _:
     sh: |
@@ -18,6 +18,7 @@ vars:
 
 tasks:
   push:
+    prompt: Commit and push changes?
     desc: Push changes to remote with a commit message
     summary: |
       This task pushes changes to the remote repository with a specified or default commit message.
@@ -25,6 +26,7 @@ tasks:
     cmds:
       - echo "Pushing changes to remote"
       - |
+        echo 'The message is: {{.MESSAGE}}'
         if [[ ! "{{.MESSAGE}}" =~ ^\'.*\'$ ]]; then
           echo "ERROR: MESSAGE must be one complete string (starting and ending with a quote)"
           exit 1
@@ -35,12 +37,11 @@ tasks:
       - cmd: git push
         ignore_error: true
     vars:
-      MESSAGE: '{{.CLI_ARGS | default "[skip ci] Development commit"}}'
+      MESSAGE: '{{.CLI_ARGS | default "[skip ci] Development commit" | shellQuote}}'
 
   update:
     desc: Update Git submodules to their latest version
-    cmds:
-      - git submodule update --remote
+    cmd: git submodule update --remote
 
   default:
     desc: Show Git branch, author, commit, and changes

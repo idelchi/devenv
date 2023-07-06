@@ -1,10 +1,10 @@
 version: '3'
 
 vars:
-  # Directories
-  CONFIG_DIR: './config'
-  SCRIPTS_DIR: './scripts'
-  BUILD_DIR: '{{.BUILD_DIR | default ".build"}}'
+  # requires
+  # - CONFIG_DIR
+  # - SCRIPTS_DIR
+  # - BUILD_DIR
 
   # Files
   LINT_REPORT: '{{.LINT_REPORT | default "lint-report"}}'
@@ -16,16 +16,14 @@ vars:
   PROJECT:
     sh: go list -m
   PACKAGES:
-    sh: |
-      echo $(go list ./...)
+    sh: echo $(go list ./...)
 
 tasks:
   # Utilities
   # ---------
   init:
     run: once
-    cmds:
-      - mkdir -p {{.BUILD_DIR}}
+    cmd: mkdir -p {{.BUILD_DIR}}
     status:
       - test -d {{.BUILD_DIR}}
 
@@ -42,8 +40,7 @@ tasks:
   # ---------
   build:
     desc: build go project
-    cmds:
-      - go build {{.FLAGS}} {{.CLI_ARGS}} -o {{.BUILD_DIR}}/ {{.PACKAGES}}
+    cmd: go build {{.FLAGS}} {{.CLI_ARGS}} -o {{.BUILD_DIR}}/ {{.PACKAGES}}
     env:
       GOOS: '{{.GOOS}}'
 
@@ -118,8 +115,7 @@ tasks:
   test:
     desc: test go project
     deps: [init]
-    cmds:
-      - go test {{.CLI_ARGS}} {{.TEST_FLAGS}} {{.PACKAGES}}
+    cmd: go test {{.CLI_ARGS}} {{.TEST_FLAGS}} {{.PACKAGES}}
     env:
       RUN_MONKEY_PATCH_TESTS: '{{.RUN_MONKEY_PATCH_TESTS}}'
 
@@ -159,45 +155,42 @@ tasks:
   genprofile:
     desc: generate profiles for go project
     deps: [init]
-    cmds:
-      - '{{.SCRIPTS_DIR}}/profilegen.sh {{.BENCH}} -d {{.BUILD_DIR}} -p {{.PROJECT}} {{.PACKAGES}}'
+    cmd: '{{.SCRIPTS_DIR}}/profilegen.sh {{.BENCH}} -d {{.BUILD_DIR}} -p {{.PROJECT}} {{.PACKAGES}}'
     vars:
       BENCH: '{{if eq .BENCH "true"}}-b{{else}}{{end}}'
 
   profile:
     desc: view profiles for go project
     deps: [genprofile]
-    cmds:
-      - '{{.SCRIPTS_DIR}}/profileview.sh -f {{.FRACTION}} -i {{.IP}} -b {{.BUILD_DIR}} -p {{.PROJECT}} {{.PACKAGES}}'
+    cmd: '{{.SCRIPTS_DIR}}/profileview.sh -f {{.FRACTION}} -i {{.IP}} -b {{.BUILD_DIR}} -p {{.PROJECT}} {{.PACKAGES}}'
     vars:
       FRACTION: '{{.FRACTION | default "0.0"}}'
       IP: '{{if eq OS "windows"}}localhost{{else}}0.0.0.0{{end}}'
 
   coverlines:
     deps: [cover]
-    cmds:
-      - |
-        lines=$(uncover {{.COVER_REPORT}}.cov)
+    cmd: |
+      lines=$(uncover {{.COVER_REPORT}}.cov)
 
-        if [ -z "$lines" ]; then
-          echo "no uncovered lines"
-          exit 0
-        fi
+      if [ -z "$lines" ]; then
+        echo "no uncovered lines"
+        exit 0
+      fi
 
-        count=0
-        ignore_tag="//cover:ignore"
-        while read -r line; do
-          if [[ $line =~ ^[[:space:]] ]]; then
-            if [[ $line != *"$ignore_tag"* ]]; then
-              ((count++))
-            fi
+      count=0
+      ignore_tag="//cover:ignore"
+      while read -r line; do
+        if [[ $line =~ ^[[:space:]] ]]; then
+          if [[ $line != *"$ignore_tag"* ]]; then
+            ((count++))
           fi
-        done <<< "$lines"
-
-        if [ $count -gt 0 ]; then
-          echo "uncovered lines: $count"
-          exit 1
         fi
+      done <<< "$lines"
+
+      if [ $count -gt 0 ]; then
+        echo "uncovered lines: $count"
+        exit 1
+      fi
     vars:
       COVER_REPORT: '{{.BUILD_DIR}}/{{.COVER_REPORT}}'
 
@@ -227,19 +220,18 @@ tasks:
   coverage:
     desc: calculate coverage value
     deps: [cover]
-    cmds:
-      - |
-        want={{.COVERAGE}}
-        coverage=$(go tool cover -func {{.COVER_REPORT}}.cov | grep total | awk '{print $3}')
-        echo "Coverage is ${coverage}"
-        got=${coverage%\%}; got=${got%.*}
-        want=${want%\%}; want=${want%.*}
-        echo "coverage: $got" > {{.BUILD_DIR}}/coverage-results
-        if (( got < want )); then
-          echo "Coverage (floored) ${got}% lower than expected ${want}%"
-          exit 1
-        fi
-        echo "Coverage (floored) ${got}% passes expected ${want}%"
+    cmd: |
+      want={{.COVERAGE}}
+      coverage=$(go tool cover -func {{.COVER_REPORT}}.cov | grep total | awk '{print $3}')
+      echo "Coverage is ${coverage}"
+      got=${coverage%\%}; got=${got%.*}
+      want=${want%\%}; want=${want%.*}
+      echo "coverage: $got" > {{.BUILD_DIR}}/coverage-results
+      if (( got < want )); then
+        echo "Coverage (floored) ${got}% lower than expected ${want}%"
+        exit 1
+      fi
+      echo "Coverage (floored) ${got}% passes expected ${want}%"
     vars:
       COVER_REPORT: '{{.BUILD_DIR}}/{{.COVER_REPORT}}'
 
@@ -282,5 +274,4 @@ tasks:
   graph:
     desc: output graph file showing dependencies
     deps: [init]
-    cmds:
-      - goda graph -short ./... | dot -T jpg -o {{.BUILD_DIR}}/dependencies.jpg
+    cmd: goda graph -short ./... | dot -T jpg -o {{.BUILD_DIR}}/dependencies.jpg

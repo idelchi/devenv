@@ -92,11 +92,17 @@
     /* ****** ****** ****** */
     /* ****** CONSOLE ****** */
     "terminal.integrated.env.windows": {
-        "PWD": "${workspaceFolder}"
+        "PWD": "${workspaceFolder}",
+        "DEVENV": "."
+    },
+    "terminal.integrated.env.linux": {
+        "PWD": "${workspaceFolder}",
+        "DEVENV": "."
     },
     "terminal.integrated.enableMultiLinePasteWarning": false,
     /* ****** ****** ****** */
     /* ****** SYSTEM ****** */
     "files.eol": "\n"
 }
+// Note that environment variables might not work in config path
 // TODO: https://code.visualstudio.com/docs/editor/intellisense

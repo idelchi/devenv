@@ -1,31 +1,27 @@
 version: '3'
 
-vars:
-  # Directories
-  CONFIG_DIR: './config'
-  SCRIPTS_DIR: './scripts'
-  BUILD_DIR: '{{.BUILD_DIR | default ".build"}}'
+# requires
+# - CONFIG_DIR
+# - SCRIPTS_DIR
+# - BUILD_DIR
+
+shopt: [globstar]
 
 tasks:
   ws:
     desc: Remove trailing whitespace from files
     summary: |
       This task removes trailing whitespace from all files except ignored paths.
-    cmds:
-      - wslint -w "**"
+    cmd: wslint -w "**" || exit 0
 
   docker:
     desc: Format Dockerfiles
     summary: |
-      This task formats Dockerfiles using dockerfile-utils and removes trailing whitespace.
+      This task formats Dockerfiles using dockerfile-utils.
     cmds:
       - |
-        for dockerfile in {{.DOCKERFILES}}
-        do
-          tfile="$(mktemp /tmp/Dockerfile.XXXXX)"
-          echo "$(cat $dockerfile)" > $tfile
-          dockerfile-utils format --spaces 4 $tfile > $dockerfile
-          rm -f $tfile
+        for dockerfile in {{.DOCKERFILES}}; do
+          output=$(dockerfile-utils format --spaces 4 $dockerfile) && echo "$output" > $dockerfile
         done
     vars:
       DOCKERFILES:
@@ -33,6 +29,8 @@ tasks:
     preconditions:
       - sh: 'command -v dockerfile-utils'
         msg: 'dockerfile-utils errors out, check if nodejs is having problems'
+    sources:
+      - ./**/Dockerfile
 
   json:
     desc: Format JSON files
@@ -51,8 +49,7 @@ tasks:
     desc: Format YAML files
     summary: |
       This task formats YAML files using prettier.
-    cmds:
-      - prettier --config={{.CONFIG}} --loglevel=silent --ignore-path={{.IGNORE}} --write "**/*.yaml" "**/*.yml"
+    cmd: prettier --config={{.CONFIG}} --loglevel=silent --ignore-path={{.IGNORE}} --write "**/*.yaml" "**/*.yml"
     vars:
       CONFIG: '{{.CONFIG_DIR}}/.prettierrc.yml'
       IGNORE: '{{.CONFIG_DIR}}/.ignore'
@@ -64,13 +61,12 @@ tasks:
     desc: Format Markdown files
     summary: |
       This task formats Markdown files using markdownlint and prettier.
-    cmds:
-      - |
-        files=$(find . -name "*.md")
-        test -z "$files" && echo "no markdown files found" && exit 0
+    cmd: |
+      files=./**/*.md
+      test -z "$files" && echo "no markdown files found" && exit 0
 
-        markdownlint --quiet --fix --config={{.CONFIG_MARKDOWNLINT}} --ignore-path={{.IGNORE}} "**/*.md"
-        prettier --config={{.CONFIG_PRETTIER}} --loglevel=silent --ignore-path={{.IGNORE}} --write "**/*.md"
+      markdownlint --quiet --fix --config={{.CONFIG_MARKDOWNLINT}} --ignore-path={{.IGNORE}} "**/*.md"
+      prettier --config={{.CONFIG_PRETTIER}} --loglevel=silent --ignore-path={{.IGNORE}} --write "**/*.md"
     vars:
       CONFIG_MARKDOWNLINT: '{{.CONFIG_DIR}}/.markdownlint.yaml'
       CONFIG_PRETTIER: '{{.CONFIG_DIR}}/.prettierrc.yml'

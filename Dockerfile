@@ -168,7 +168,9 @@ RUN pip install --no-cache-dir \
     pyright \
     black \
     isort \
-    ruff
+    ruff \
+    # Library stubs for typing
+    types-pyyaml
 
 # Useful packages
 # (split up for readability)
@@ -228,7 +230,7 @@ RUN go mod download \
     github.com/bmatcuk/doublestar/v4@latest \
     golang.org/x/exp@latest \
     golang.org/x/tools@latest \
-    golang.org/x/exp@v0.0.0-20230224173230-c95f2b4c22f2 \
+    golang.org/x/exp@v0.0.0-20230626212559-97b1e661b5df \
     gopkg.in/check.v1@v0.0.0-20161208181325-20d25e280405 \
     bou.ke/monkey@v1.0.2
 
@@ -238,6 +240,12 @@ ENV XDG_CONFIG_HOME=/tmp/.config
 ENV XDG_CACHE_HOME=/tmp/.cache
 ENV MYPY_CACHE_DIR=/tmp/.mypy_cache
 ENV RUFF_CACHE_DIR=/tmp/.ruff_cache
+ENV TASK_TEMP_DIR=/tmp/.task
 
 # Timezone
 ENV TZ=Europe/Zurich
+
+# TODO: Install "Mega-Linter"?
+
+# TODO: Embed the whole repository in the image?
+COPY . /home/user
