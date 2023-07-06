@@ -170,27 +170,27 @@ tasks:
   coverlines:
     deps: [cover]
     cmd: |
-        lines=$(uncover {{.COVER_REPORT}}.cov)
+      lines=$(uncover {{.COVER_REPORT}}.cov)
 
-        if [ -z "$lines" ]; then
-          echo "no uncovered lines"
-          exit 0
-        fi
+      if [ -z "$lines" ]; then
+        echo "no uncovered lines"
+        exit 0
+      fi
 
-        count=0
-        ignore_tag="//cover:ignore"
-        while read -r line; do
-          if [[ $line =~ ^[[:space:]] ]]; then
-            if [[ $line != *"$ignore_tag"* ]]; then
-              ((count++))
-            fi
+      count=0
+      ignore_tag="//cover:ignore"
+      while read -r line; do
+        if [[ $line =~ ^[[:space:]] ]]; then
+          if [[ $line != *"$ignore_tag"* ]]; then
+            ((count++))
           fi
-        done <<< "$lines"
-
-        if [ $count -gt 0 ]; then
-          echo "uncovered lines: $count"
-          exit 1
         fi
+      done <<< "$lines"
+
+      if [ $count -gt 0 ]; then
+        echo "uncovered lines: $count"
+        exit 1
+      fi
     vars:
       COVER_REPORT: '{{.BUILD_DIR}}/{{.COVER_REPORT}}'
 
@@ -221,17 +221,17 @@ tasks:
     desc: calculate coverage value
     deps: [cover]
     cmd: |
-        want={{.COVERAGE}}
-        coverage=$(go tool cover -func {{.COVER_REPORT}}.cov | grep total | awk '{print $3}')
-        echo "Coverage is ${coverage}"
-        got=${coverage%\%}; got=${got%.*}
-        want=${want%\%}; want=${want%.*}
-        echo "coverage: $got" > {{.BUILD_DIR}}/coverage-results
-        if (( got < want )); then
-          echo "Coverage (floored) ${got}% lower than expected ${want}%"
-          exit 1
-        fi
-        echo "Coverage (floored) ${got}% passes expected ${want}%"
+      want={{.COVERAGE}}
+      coverage=$(go tool cover -func {{.COVER_REPORT}}.cov | grep total | awk '{print $3}')
+      echo "Coverage is ${coverage}"
+      got=${coverage%\%}; got=${got%.*}
+      want=${want%\%}; want=${want%.*}
+      echo "coverage: $got" > {{.BUILD_DIR}}/coverage-results
+      if (( got < want )); then
+        echo "Coverage (floored) ${got}% lower than expected ${want}%"
+        exit 1
+      fi
+      echo "Coverage (floored) ${got}% passes expected ${want}%"
     vars:
       COVER_REPORT: '{{.BUILD_DIR}}/{{.COVER_REPORT}}'
 

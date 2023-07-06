@@ -50,5 +50,5 @@ tasks:
       Copies the file '{{.CLI_ARGS}}/.vscode/settings.json', places it in '.vscode/settings.json',
       and replaces the string 'config/' with '{{.CLI_ARGS}}/config/''
     cmd: |
-        cp {{.CLI_ARGS}}/.vscode/settings.json .vscode/settings.json
-        sed -i 's/config\//{{.CLI_ARGS}}\/config\//g' .vscode/settings.json
+      cp {{.CLI_ARGS}}/.vscode/settings.json .vscode/settings.json
+      sed -i 's/config\//{{.CLI_ARGS}}\/config\//g' .vscode/settings.json
