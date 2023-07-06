@@ -41,8 +41,7 @@ tasks:
 
   update:
     desc: Update Git submodules to their latest version
-    cmds:
-      - git submodule update --remote
+    cmd: git submodule update --remote
 
   default:
     desc: Show Git branch, author, commit, and changes

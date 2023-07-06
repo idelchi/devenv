@@ -10,22 +10,19 @@ tasks:
     desc: Clean up the project workspace
     summary: |
       This task removes the build directory, task cache, and bash history to clean up the project workspace.
-    cmds:
-      - rm -rf .task {{.BUILD_DIR}} .bash_history
+    cmd: rm -rf .task {{.BUILD_DIR}} .bash_history
 
   todo:
     desc: Find TODOs within the project
     summary: |
       This task searches for TODOs within the project files, excluding certain directories.
-    cmds:
-      - grep --exclude-dir={.cache,.git,.task,.build} -rwo -n . --regexp 'TODO[:(].*'
+    cmd: grep --exclude-dir={.cache,.git,.task,.build} -rwo -n . --regexp 'TODO[:(].*'
 
   graph:
     desc: Create a graph from a YAML file
     summary: |
       This task generates a graph representation of a YAML file and saves it as a PNG image.
-    cmds:
-      - yml2dot {{.CLI_ARGS}} | dot -Tpng > {{.CLI_ARGS}}.png
+    cmd: yml2dot {{.CLI_ARGS}} | dot -Tpng > {{.CLI_ARGS}}.png
 
   default:
     desc: Show the current project setup
@@ -52,7 +49,6 @@ tasks:
     desc: |
       Copies the file '{{.CLI_ARGS}}/.vscode/settings.json', places it in '.vscode/settings.json',
       and replaces the string 'config/' with '{{.CLI_ARGS}}/config/''
-    cmds:
-      - |
+    cmd: |
         cp {{.CLI_ARGS}}/.vscode/settings.json .vscode/settings.json
         sed -i 's/config\//{{.CLI_ARGS}}\/config\//g' .vscode/settings.json

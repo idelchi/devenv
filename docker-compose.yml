@@ -1,6 +1,8 @@
 ---
 version: '3.7'
 
+# .env file variables are available here.
+
 services:
   devenv:
     build:
@@ -18,11 +20,10 @@ services:
     user: user
     volumes:
       - .:/home/user/ws
-      - /C/Users/arash/Taskfile.yml:/home/user/Taskfile.yml
-      - /C/Users/arash/.devenv/Taskfile.yml:/home/user/.devenv/Taskfile.yml
-    #   - ${DEVENV}:${DEVENV} # Possible to mount it inside
-    # environment:
-    #   - DEVENV=${DEVENV} # Inherit the environment
+      # - $PWD:/home/user/ws
+      #   - ${DEVENV}:${DEVENV} # Possible to mount it inside
+      # environment:
+      #   - DEVENV=${DEVENV} # Inherit the environment
     extra_hosts:
       - host:host-gateway
     working_dir: /home/user/ws

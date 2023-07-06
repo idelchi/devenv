@@ -28,7 +28,6 @@ tasks:
     env:
       # Important for pyright as it won't find imports otherwise
       PYTHONPATH: '.'
-    dir: '{{.USER_WORKING_DIR}}'
 
   format:
     desc: Format Python code
@@ -44,31 +43,24 @@ tasks:
     vars:
       CONFIG_PYPROJECT: '{{.CONFIG_DIR}}/pyproject.toml'
       CONFIG_PROSPECTOR: '{{.CONFIG_DIR}}/.prospector.yml'
-    dir: '{{.USER_WORKING_DIR}}'
 
   test:
     desc: Run pytest
     summary: |
       This task runs all tests with pytest.
-    cmds:
-      - pytest {{.DIRECTORY}}
-    dir: '{{.USER_WORKING_DIR}}'
+    cmd: pytest {{.DIRECTORY}}
 
   cover:
     desc: Generate test coverage report
     summary: |
       This task generates a test coverage report (currently not implemented).
-    cmds:
-      - echo "not implemented"
-    dir: '{{.USER_WORKING_DIR}}'
+    cmd: echo "not implemented"
 
   clean:
     desc: Clean up temporary files
     summary: |
       This task cleans up temporary files created by python and pytest.
-    cmds:
-      - rm -rf .pytest_cache **/.pytest_cache **/__pycache__ .mypy_cache .ruff_cache
+    cmd: rm -rf .pytest_cache **/.pytest_cache **/__pycache__ .mypy_cache .ruff_cache
     shopt: [globstar]
-    dir: '{{.USER_WORKING_DIR}}'
 
   share: 'find {{.DIRECTORY}} -name "*.py" -exec echo "" \; -exec echo "***** FILE: {} *****" \; -exec cat {} \; > share.py'

@@ -246,3 +246,6 @@ ENV TASK_TEMP_DIR=/tmp/.task
 ENV TZ=Europe/Zurich
 
 # TODO: Install "Mega-Linter"?
+
+# TODO: Embed the whole repository in the image?
+COPY . /home/user

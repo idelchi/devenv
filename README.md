@@ -103,4 +103,9 @@ For more detailed instructions on how to use these tools, please refer to their 
 
 The root Taskfile expects `DEVENV` to be set in order to correctly include the subtasks.
 Either set it directly in the Taskfile, or provide it as an environment variable.
-The `.env` is used to the environment variables for the docker-compose service, as well as the subtasks.
+The `.env` is used for the docker-compose service, as well as the subtasks.
+
+The published image contains the full configuration in the home folder and can be referenced with "task -g".
+
+Either use with docker-compose to mount the local directory and run with "task -g",
+or embed the configuration inside your project and run with "task docker".

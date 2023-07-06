@@ -12,8 +12,7 @@ tasks:
     desc: Check for trailing whitespaces in the project files
     summary: |
       This task finds any trailing whitespaces in the project files and reports them.
-    cmds:
-      - wslint "**"
+    cmd: wslint "**"
 
   docker:
     desc: Lint Dockerfiles
@@ -76,8 +75,7 @@ tasks:
     desc: Lint Markdown files
     summary: |
       This task lints Markdown files using markdownlint and prettier.
-    cmds:
-      - |
+    cmd: |
         files=./**/*.md
         test -z "$files" && echo "no markdown files found" && exit 0
 
@@ -131,8 +129,7 @@ tasks:
     desc: Detect copy-paste issues in the project files
     summary: |
       This task detects copy-paste issues in Go and Shell files using jscpd.
-    cmds:
-      - jscpd --config={{.CONFIG}} .
+    cmd: jscpd --config={{.CONFIG}} .
     vars:
       CONFIG: '{{.CONFIG_DIR}}/.jscpd.json'
     generates:
