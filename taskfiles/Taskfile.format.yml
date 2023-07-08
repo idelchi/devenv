@@ -12,7 +12,7 @@ tasks:
     desc: Remove trailing whitespace from files
     summary: |
       This task removes trailing whitespace from all files except ignored paths.
-    cmd: wslint -w "**" || exit 0
+    cmd: wslint -w "**" > /dev/null 2>&1 || exit 0
 
   docker:
     desc: Format Dockerfiles
@@ -38,7 +38,7 @@ tasks:
       This task formats JSON files using jsonlint and prettier.
     cmds:
       - jsonlint --mode=cjson --pretty-print --quiet --in-place --indent "    " .
-      - prettier --config={{.CONFIG}} --loglevel=silent --ignore-path={{.IGNORE}} --write "**/*.json"
+      - prettier --config={{.CONFIG}} --log-level=silent --ignore-path={{.IGNORE}} --write "**/*.json"
     vars:
       CONFIG: '{{.CONFIG_DIR}}/.prettierrc.yml'
       IGNORE: '{{.CONFIG_DIR}}/.ignore'
@@ -49,7 +49,7 @@ tasks:
     desc: Format YAML files
     summary: |
       This task formats YAML files using prettier.
-    cmd: prettier --config={{.CONFIG}} --loglevel=silent --ignore-path={{.IGNORE}} --write "**/*.yaml" "**/*.yml"
+    cmd: prettier --config={{.CONFIG}} --log-level=silent --ignore-path={{.IGNORE}} --write "**/*.yaml" "**/*.yml"
     vars:
       CONFIG: '{{.CONFIG_DIR}}/.prettierrc.yml'
       IGNORE: '{{.CONFIG_DIR}}/.ignore'
@@ -66,7 +66,7 @@ tasks:
       test -z "$files" && echo "no markdown files found" && exit 0
 
       markdownlint --quiet --fix --config={{.CONFIG_MARKDOWNLINT}} --ignore-path={{.IGNORE}} "**/*.md"
-      prettier --config={{.CONFIG_PRETTIER}} --loglevel=silent --ignore-path={{.IGNORE}} --write "**/*.md"
+      prettier --config={{.CONFIG_PRETTIER}} --log-level=silent --ignore-path={{.IGNORE}} --write "**/*.md"
     vars:
       CONFIG_MARKDOWNLINT: '{{.CONFIG_DIR}}/.markdownlint.yaml'
       CONFIG_PRETTIER: '{{.CONFIG_DIR}}/.prettierrc.yml'
