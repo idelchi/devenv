@@ -23,6 +23,7 @@ and can be used as a starting point for your own project.
 - [Task](#task)
 - [Main Tools](#main-tools)
 - [Using Docker](#using-docker)
+- [Usage & Integrations](#usage--integrations)
 
 ## Task
 
@@ -98,9 +99,16 @@ For more detailed instructions on how to use these tools, please refer to their 
 
 ## Usage & Integrations
 
+`devenv` can be used in two ways:
 - As submodule (i.e reference it in your project)
 - As globally available environment, running with `task -g`. Either
     - use the published docker image which contains the latest version in $HOME
     - install this respository in your $HOME directory
 
 The root `Taskfile` as well as the `docker-compose` file expects `DEVENV` to be set in order to correctly function. For this purpose, the `.env` file needs to be configured and sourced.
+
+`.github` contains a GitHub Actions workflow that can be used to run the linters and formatters on pull requests.
+
+`.devcontainer` contains configurations to use the Docker image as a development container.
+
+`.vscode` contains configurations for usage in VS Code.
