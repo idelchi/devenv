@@ -12,7 +12,7 @@ tasks:
     desc: Remove trailing whitespace from files
     summary: |
       This task removes trailing whitespace from all files except ignored paths.
-    cmd: wslint -w "**" > /dev/null 2>&1 || exit 0
+    cmd: wslint -w -q "**" || exit 0
 
   docker:
     desc: Format Dockerfiles

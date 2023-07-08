@@ -212,7 +212,7 @@ RUN echo \
     github.com/rillig/gobco@latest \
     github.com/mikefarah/yq/v4@latest \
     github.com/bronze1man/yaml2json@latest \
-    github.com/idelchi/wslint@latest \
+    github.com/idelchi/wslint@dev \
     # Feed to 'go install'
     | xargs -n 1 go install
 
