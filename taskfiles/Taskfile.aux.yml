@@ -33,11 +33,10 @@ tasks:
         echo Running in: $(pwd) as $(whoami)
         echo OS: {{OS}}:{{ARCH}}
         echo Time: {{now | date "2006-01-02 15:04:05"}}
-        echo Build directory: {{.BUILD_DIR}}
+        echo Devenv directory: {{.DEVENV}}
         echo Config directory: {{.CONFIG_DIR}}
         echo Scripts directory: {{.SCRIPTS_DIR}}
         echo Build directory: {{.BUILD_DIR}}
-        echo Current directory: $PWD
 
   bp:
     desc: Best practices
@@ -45,10 +44,11 @@ tasks:
       - test -f README.md || echo "README.md missing"
       - test -f LICENSE || echo "LICENSE missing"
 
-  vs:
-    desc: |
-      Copies the file '{{.CLI_ARGS}}/.vscode/settings.json', places it in '.vscode/settings.json',
-      and replaces the string 'config/' with '{{.CLI_ARGS}}/config/''
-    cmd: |
-      cp {{.CLI_ARGS}}/.vscode/settings.json .vscode/settings.json
-      sed -i 's/config\//{{.CLI_ARGS}}\/config\//g' .vscode/settings.json
+  init:
+    desc: Copies and configures the folders '.vscode' and '.devcontainer'
+    cmds:
+      - cp -r {{.CLI_ARGS}}/.vscode {{.CLI_ARGS}}/.devcontainer .
+      - sed -i 's/config\//{{.CLI_ARGS}}\/config\//g' .vscode/settings.json
+      - cp {{.CLI_ARGS}}/.env .
+      - sed -i 's#^DEVENV=.*#DEVENV='"$(pwd)"'#' .env
+      - cp {{.CLI_ARGS}}/Taskfile.yml Taskfile.base.yml

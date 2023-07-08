@@ -212,7 +212,7 @@ RUN echo \
     github.com/rillig/gobco@latest \
     github.com/mikefarah/yq/v4@latest \
     github.com/bronze1man/yaml2json@latest \
-    github.com/idelchi/wslint@latest \
+    github.com/idelchi/wslint@dev \
     # Feed to 'go install'
     | xargs -n 1 go install
 
@@ -245,7 +245,9 @@ ENV TASK_TEMP_DIR=/tmp/.task
 # Timezone
 ENV TZ=Europe/Zurich
 
-# TODO: Install "Mega-Linter"?
+# Embed the project
+ENV DEVENV=/home/user
+COPY --chown=user:user . ${DEVENV}
+RUN sed -i 's#^DEVENV=.*#DEVENV='"${DEVENV}"'#' ${DEVENV}/.env
 
-# TODO: Embed the whole repository in the image?
-COPY . /home/user
+# TODO: Install "Mega-Linter"?
