@@ -102,7 +102,7 @@ For more detailed instructions on how to use these tools, please refer to their 
 `devenv` can be used in one of the following ways:
 
 - As a submodule, i.e., referenced in your project.
-- As a globally available environment, running with task -g.
+- As a globally available environment, running with `task -g`.
   This can be achieved by either utilizing the published Docker image,
   which contains the latest version in your home directory,
   or by installing this repository directly in your home directory.
