@@ -10,6 +10,7 @@
     },
     "features": {
         // Docker in Docker
+        // Rerun /usr/local/share/docker-init.sh in case of problems
         "ghcr.io/devcontainers/features/docker-in-docker:2": {
             "version": "latest",
             "moby": "true"
