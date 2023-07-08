@@ -5,10 +5,10 @@ version: '3.7'
 
 services:
   devenv:
-    build:
-      context: ${DEVENV}
-    pull_policy: never
-    image: idelchi/devenv:local
+    # build:
+    #   context: ${DEVENV}
+    # pull_policy: never
+    image: idelchi/devenv:dev
     container_name: devenv
     hostname: devenv
     ports:
