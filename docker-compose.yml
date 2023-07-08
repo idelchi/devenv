@@ -16,6 +16,8 @@ services:
       - '8888:8888' # GoDoc
       - '10000-10200:10000-10200' # Go Profilers
       - '9090:6419' # grip
+    environment:
+      - DEVENV=${DEVENV}
     network_mode: bridge
     user: user
     volumes:
