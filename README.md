@@ -1,6 +1,6 @@
 # devenv
 
-`devenv ` is a repository offering a collection of common settings for linters and formatters, managed by Taskfiles. Additionally, it builds and pushes a Docker image loaded with all the required tools to Docker Hub."
+`devenv` is a repository offering a collection of common settings for linters and formatters, managed by Taskfiles. Additionally, it builds and pushes a Docker image loaded with all the required tools to Docker Hub.
 
 To use `devenv` in your project, include it as a submodule.
 
@@ -99,14 +99,9 @@ For more detailed instructions on how to use these tools, please refer to their 
 ## Usage & Integrations
 
 `devenv` can be used in one of the following ways:
-  - As a submodule, i.e., referenced in your project.
-  - As a globally available environment, running with task -g. This can be achieved by either utilizing the published Docker image, which contains the latest version in your home directory, or by installing this repository directly in your home directory."
 
-`devenv` can be used in two ways:
-- As submodule (i.e reference it in your project)
-- As globally available environment, running with `task -g`. Either
-    - use the published docker image which contains the latest version in $HOME
-    - install this respository in your $HOME directory
+- As a submodule, i.e., referenced in your project.
+- As a globally available environment, running with task -g. This can be achieved by either utilizing the published Docker image, which contains the latest version in your home directory, or by installing this repository directly in your home directory."
 
 Both the root `Taskfile` and the `docker-compose` file require `DEVENV` to be set to function correctly. For this, the `.env` file should be appropriately configured and sourced.
 
