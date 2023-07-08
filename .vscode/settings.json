@@ -102,7 +102,25 @@
     "terminal.integrated.enableMultiLinePasteWarning": false,
     /* ****** ****** ****** */
     /* ****** SYSTEM ****** */
-    "files.eol": "\n"
+    "files.eol": "\n",
+    /* ****** ****** ****** */
+    /* ****** COPILOT ****** */
+    "editor.inlineSuggest.enabled": true,
+    "github.copilot.enable": {
+        "*": true,
+        "plaintext": true,
+        "markdown": true,
+        "yaml": true,
+        "python": true,
+        "go": true,
+        "rust": true,
+        "groovy": true,
+        "dockerfile": true,
+        "dockercompose": true,
+        "json": true,
+        "jsonc": true,
+        "csharp": true
+    }
 }
 // Note that environment variables might not work in config path
 // TODO: https://code.visualstudio.com/docs/editor/intellisense

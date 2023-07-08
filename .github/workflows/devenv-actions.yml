@@ -1,0 +1,47 @@
+name: DevEnv Actions
+on:
+  workflow_call:
+
+jobs:
+  info:
+    runs-on: ubuntu-22.04
+    container: idelchi/devenv:latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          fetch-depth: 0
+      - run: task info
+
+  lint:
+    needs: info
+    runs-on: ubuntu-22.04
+    container: idelchi/devenv:latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          fetch-depth: 0
+      - run: task lint go:lint
+
+  test:
+    needs: info
+    runs-on: ubuntu-22.04
+    container: idelchi/devenv:latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          fetch-depth: 0
+      - run: task test
+
+  build:
+    needs: info
+    runs-on: ubuntu-22.04
+    container: idelchi/devenv:latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          fetch-depth: 0
+      - run: task build

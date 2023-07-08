@@ -8,7 +8,7 @@ services:
     build:
       context: ${DEVENV}
     pull_policy: never
-    image: devenv:local
+    image: idelchi/devenv:local
     container_name: devenv
     hostname: devenv
     ports:
@@ -22,10 +22,7 @@ services:
     user: user
     volumes:
       - .:/home/user/ws
-      # - $PWD:/home/user/ws
       #   - ${DEVENV}:${DEVENV} # Possible to mount it inside
-      # environment:
-      #   - DEVENV=${DEVENV} # Inherit the environment
     extra_hosts:
       - host:host-gateway
     working_dir: /home/user/ws

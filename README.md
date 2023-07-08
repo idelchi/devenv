@@ -99,13 +99,8 @@ For more detailed instructions on how to use these tools, please refer to their 
 ## Usage & Integrations
 
 - As submodule (i.e reference it in your project)
-- As globally available environment (i.e install it on your machine and run it from anywhere with `task -g`)
+- As globally available environment, running with `task -g`. Either
+    - use the published docker image which contains the latest version in $HOME
+    - install this respository in your $HOME directory
 
-The root Taskfile expects `DEVENV` to be set in order to correctly include the subtasks.
-Either set it directly in the Taskfile, or provide it as an environment variable.
-The `.env` is used for the docker-compose service, as well as the subtasks.
-
-The published image contains the full configuration in the home folder and can be referenced with "task -g".
-
-Either use with docker-compose to mount the local directory and run with "task -g",
-or embed the configuration inside your project and run with "task docker".
+The root `Taskfile` as well as the `docker-compose` file expects `DEVENV` to be set in order to correctly function. For this purpose, the `.env` file needs to be configured and sourced.

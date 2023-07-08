@@ -1,16 +1,13 @@
 {
-    "name": "Docker in Docker",
+    "name": "devenv",
     "containerUser": "user",
     "remoteUser": "user",
-    "containerEnv": {},
-    // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-    //"image": "mcr.microsoft.com/devcontainers/base:bullseye",
     "build": {
         "dockerfile": "Dockerfile"
     },
     "features": {
         // Docker in Docker
-        // Rerun /usr/local/share/docker-init.sh in case of problems
+        // Rerun '/usr/local/share/docker-init.sh' in case of problems
         "ghcr.io/devcontainers/features/docker-in-docker:2": {
             "version": "latest",
             "moby": "true"
