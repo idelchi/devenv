@@ -111,7 +111,13 @@ tasks:
       - misspell -error {{.FILES}}
       - codespell --ignore-words={{.WORDLIST}} {{.FILES}}
       - typos
-      - cspell lint --show-suggestions --config={{.CONFIG}} --no-progress "**/*.go" "**/*.py" "**/*.sh"
+      - |
+        # if there's project specific configurations, we need to make some amendments to the
+        # cspell config file to include them
+        if [ -f {{.CSPELL_CONFIG}} ]; then
+          # add an import statement, and defer its removal
+        fi
+        cspell lint --show-suggestions --config={{.CONFIG}} --no-progress "**/*.go" "**/*.py" "**/*.sh"
     vars:
       CONFIG: '{{.CONFIG_DIR}}/cspell.yaml'
       WORDLIST: '{{.CONFIG_DIR}}/project-words'
