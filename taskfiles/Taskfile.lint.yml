@@ -111,11 +111,11 @@ tasks:
       - misspell -error {{.FILES}}
       - codespell --ignore-words={{.WORDLIST}} {{.FILES}}
       - typos
+      - defer: mv {{.CONFIG}}.bak {{.CONFIG}} >/dev/null 2>&1
+        ignore_errors: true
       - |
-        # if there's project specific configurations, we need to make some amendments to the
-        # cspell config file to include them
-        if [ -f {{.CSPELL_CONFIG}} ]; then
-          # add an import statement, and defer its removal
+        if [ -f "{{.CSPELL_CONFIG}}" ]; then
+          sed -i.bak "s|import: \[\]|import: ['{{.CSPELL_CONFIG}}']|" "{{.CONFIG}}"
         fi
         cspell lint --show-suggestions --config={{.CONFIG}} --no-progress "**/*.go" "**/*.py" "**/*.sh"
     vars:
