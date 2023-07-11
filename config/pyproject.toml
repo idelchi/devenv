@@ -16,6 +16,7 @@ ignore = [
   "G004",   # Logging statement uses string formatting
   "INP001", # File is part of an implicit namespace package. Add an `__init__.py`.
   "ANN401", # Dynamically typed expressions (typing.Any) are disallowed in ...
+  "PERF203",# `try`-`except` within a loop incurs performance overhead
 ]
 
 [tool.ruff.pydocstyle]
@@ -30,6 +31,7 @@ reportUnknownParameterType = false
 reportUnknownMemberType = false
 reportUnknownArgumentType = false
 reportMissingTypeStubs = false
+reportMissingImports = false
 
 # MYPY
 [tool.mypy]

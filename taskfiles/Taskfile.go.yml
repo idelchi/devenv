@@ -1,11 +1,11 @@
 version: '3'
 
-vars:
-  # requires
-  # - CONFIG_DIR
-  # - SCRIPTS_DIR
-  # - BUILD_DIR
+# requires
+# - CONFIG_DIR
+# - SCRIPTS_DIR
+# - BUILD_DIR
 
+vars:
   # Files
   LINT_REPORT: '{{.LINT_REPORT | default "lint-report"}}'
   COVER_REPORT: '{{.COVER_REPORT | default "coverage-report"}}'
@@ -80,7 +80,7 @@ tasks:
       GOLANGCI_LINT_CFG: '{{.CONFIG_DIR}}/.golangci.yml'
     sources:
       - ./**/*.go
-      - ./.golangci.yml
+      - '{{.CONFIG_DIR}}/.golangci.yml'
     preconditions:
       - sh: test $(which golines)
         msg: 'golines is missing'
@@ -103,7 +103,7 @@ tasks:
       LINT_REPORT: '{{.BUILD_DIR}}/{{.LINT_REPORT}}'
     sources:
       - ./**/*.go
-      - ./.golangci.yml
+      - '{{.CONFIG_DIR}}/.golangci.yml'
     preconditions:
       - sh: '[[ -z $(gofmt -l -d -s -e .) ]]'
         msg: 'go files have not been formatted with gofmt'
