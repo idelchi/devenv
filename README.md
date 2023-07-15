@@ -54,6 +54,7 @@ To display the available commands along with their descriptions, run:
 - Dockerfile
   - [hadolint](https://github.com/hadolint/hadolint)
   - [dockerfilelint](https://github.com/replicatedhq/dockerfilelint)
+  - [dockerfile-utils](https://github.com/rcjsuen/dockerfile-utils)
 - Markdown
   - [prettier](https://github.com/prettier/prettier)
   - [markdownlint](https://github.com/DavidAnson/markdownlint)
