@@ -37,6 +37,7 @@ tasks:
       - cmd: git push
         ignore_error: true
     vars:
+      # TODO: This is still not working correctly
       MESSAGE: '{{.CLI_ARGS | default "[skip ci] Development commit"}}'
 
   update:

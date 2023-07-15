@@ -143,12 +143,13 @@ ARG TASK_VERSION=v3.26.0
 RUN wget -qO- https://github.com/go-task/task/releases/download/${TASK_VERSION}/task_linux_amd64.tar.gz | tar -xz -C /usr/local/bin
 
 # Create CI User (Debian/Ubuntu)
-RUN groupadd -r -g 1001 user && \
-    useradd -r -u 1001 -g 1001 -m -c "user account" -d /home/user -s /bin/bash user
+ARG USER=user
+RUN groupadd -r -g 1001 ${USER} && \
+    useradd -r -u 1001 -g 1001 -m -c "${USER} account" -d /home/${USER} -s /bin/bash ${USER}
 
 # Install Rust
 ARG RUST_DIR=/opt/rust
-RUN mkdir -p ${RUST_DIR} && chown -R user:user ${RUST_DIR}
+RUN mkdir -p ${RUST_DIR} && chown -R ${USER}:${USER} ${RUST_DIR}
 
 ENV RUSTUP_HOME=${RUST_DIR}/.rustup
 ENV CARGO_HOME=${RUST_DIR}/.cargo
@@ -183,16 +184,16 @@ RUN pip install --no-cache-dir \
     fastapi
 
 # Install Go
-ARG GO_VERSION=go1.20.5.linux-amd64
+ARG GO_VERSION=go1.20.6.linux-amd64
 RUN wget -qO- https://go.dev/dl/${GO_VERSION}.tar.gz | tar -xz -C /usr/local
 ENV PATH="/usr/local/go/bin:$PATH"
 
 ENV GOPATH=/opt/go
-RUN mkdir ${GOPATH} && chown -R user:user ${GOPATH}
+RUN mkdir ${GOPATH} && chown -R ${USER}:${USER} ${GOPATH}
 ENV PATH="${GOPATH}/bin:$PATH"
 
-USER user
-WORKDIR /home/user
+USER ${USER}
+WORKDIR /home/${USER}
 
 # Go tooling
 RUN echo \
@@ -246,8 +247,8 @@ ENV TASK_TEMP_DIR=/tmp/.task
 ENV TZ=Europe/Zurich
 
 # Embed the project
-ENV DEVENV=/home/user
-COPY --chown=user:user . ${DEVENV}
+ENV DEVENV=/home/${USER}
+COPY --chown=${USER}:${USER} . ${DEVENV}
 RUN sed -i 's#^DEVENV=.*#DEVENV='"${DEVENV}"'#' ${DEVENV}/.env
 
 # TODO: Install "Mega-Linter"?

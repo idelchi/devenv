@@ -1,7 +1,7 @@
 # devenv
 
-`devenv` is a repository that provides a collection of common basic settings for linters and formatters, driven by Taskfiles.
-It also builds and pushes a Docker image to Docker Hub containing all the necessary tools.
+`devenv` is a repository offering a collection of common settings for linters and formatters, managed by Taskfiles.
+Additionally, it builds and pushes a Docker image loaded with all the required tools to Docker Hub.
 
 To use `devenv` in your project, include it as a submodule.
 
@@ -12,8 +12,8 @@ To track the dev branch instead of the default master branch, the following comm
     git submodule set-branch -b dev .devenv
     git submodule update --init --recursive --remote
 
-If using VS Code, copy the [.vscode](./.vscode) folder into the main project, and update the paths in
-[settings.json](./.vscode/settings.json) to point to the configuration folders used.
+If using VS Code, copy the [.vscode](./.vscode) folder into the main project, and adjust the paths in
+[settings.json](./.vscode/settings.json) to correspond with the configuration folders used.
 
 [Taskfile.yml](./Taskfile.yml) contains the list of commands that can be run to format and lint the code,
 and can be used as a starting point for your own project.
@@ -23,6 +23,7 @@ and can be used as a starting point for your own project.
 - [Task](#task)
 - [Main Tools](#main-tools)
 - [Using Docker](#using-docker)
+- [Usage & Integrations](#usage--integrations)
 
 ## Task
 
@@ -53,6 +54,7 @@ To display the available commands along with their descriptions, run:
 - Dockerfile
   - [hadolint](https://github.com/hadolint/hadolint)
   - [dockerfilelint](https://github.com/replicatedhq/dockerfilelint)
+  - [dockerfile-utils](https://github.com/rcjsuen/dockerfile-utils)
 - Markdown
   - [prettier](https://github.com/prettier/prettier)
   - [markdownlint](https://github.com/DavidAnson/markdownlint)
@@ -98,14 +100,19 @@ For more detailed instructions on how to use these tools, please refer to their 
 
 ## Usage & Integrations
 
-- As submodule (i.e reference it in your project)
-- As globally available environment (i.e install it on your machine and run it from anywhere with `task -g`)
+`devenv` can be used in one of the following ways:
 
-The root Taskfile expects `DEVENV` to be set in order to correctly include the subtasks.
-Either set it directly in the Taskfile, or provide it as an environment variable.
-The `.env` is used for the docker-compose service, as well as the subtasks.
+- As a submodule, i.e., referenced in your project.
+- As a globally available environment, running with `task -g`.
+  This can be achieved by either utilizing the published Docker image,
+  which contains the latest version in your home directory,
+  or by installing this repository directly in your home directory.
 
-The published image contains the full configuration in the home folder and can be referenced with "task -g".
+Both the root `Taskfile` and the `docker-compose` file require `DEVENV` to be set to function correctly.
+For this, the `.env` file should be appropriately configured and sourced.
 
-Either use with docker-compose to mount the local directory and run with "task -g",
-or embed the configuration inside your project and run with "task docker".
+`.github` contains a GitHub Actions workflow that can be used to run the linters, tests and build.
+
+`.devcontainer` contains configurations to use the Docker image as a development container.
+
+`.vscode` contains configurations for usage in VS Code.

@@ -9,7 +9,7 @@ dictionaries:
 dictionaryDefinitions:
   - name: project-words
     path: project-words
-  - name: project-words
-    path: config/project-words
 
 allowCompoundWords: true
+
+import: []
