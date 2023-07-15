@@ -22,7 +22,7 @@ jobs:
         with:
           submodules: recursive
           fetch-depth: 0
-      - run: task lint go:lint
+      - run: task lint
 
   test:
     needs: info
