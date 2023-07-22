@@ -17,7 +17,7 @@ ignore = [
   "INP001", # File is part of an implicit namespace package. Add an `__init__.py`.
   "ANN401", # Dynamically typed expressions (typing.Any) are disallowed in ...
   "PERF203",# `try`-`except` within a loop incurs performance overhead
-  "I",		# isort should run before ruff
+  "I",		  # isort should run before ruff
 ]
 
 [tool.ruff.pydocstyle]
