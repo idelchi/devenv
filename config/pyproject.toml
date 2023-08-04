@@ -11,13 +11,18 @@ profile = "black"
 line-length = 120
 select = ["ALL"]
 ignore = [
+  "A003",   # Class attribute is shadowing a Python builtin
   "ANN101", # Missing type annotation for self in method
   "EXE002", # The file is executable but no shebang is present
   "G004",   # Logging statement uses string formatting
   "INP001", # File is part of an implicit namespace package. Add an `__init__.py`.
   "ANN401", # Dynamically typed expressions (typing.Any) are disallowed in ...
   "PERF203",# `try`-`except` within a loop incurs performance overhead
-  "I",		  # isort should run before ruff
+  "I",      # isort runs before ruff
+  "FBT001", # Boolean positional arg in function definition
+  "FBT002", # Boolean default value in function definition
+  "TRY301", # Abstract `raise` to an inner function
+  "TRY300", # Consider moving this statement to an `else` block
 ]
 
 [tool.ruff.pydocstyle]

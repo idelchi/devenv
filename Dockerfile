@@ -30,6 +30,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     # Tools
     graphviz \
+    iputils-ping \
+    gettext-base \
+    moreutils \
+    # Editors
+    ne \
+    nano \
+    vim \
+    neovim \
     # ssh
     openssh-client \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -156,7 +164,7 @@ ENV CARGO_HOME=${RUST_DIR}/.cargo
 RUN wget -qO- https://sh.rustup.rs | bash -s -- -y
 ENV PATH="${CARGO_HOME}/bin:${PATH}"
 
-# Additional Rust based tools.
+# Additional Rust based tools
 RUN cargo install \
     typos-cli \
     just
@@ -172,6 +180,14 @@ RUN pip install --no-cache-dir \
     ruff \
     # Library stubs for typing
     types-pyyaml
+
+# Python tooling for packaging
+# (split up for readability)
+# hadolint ignore=DL3059
+RUN pip install --no-cache-dir \
+    build \
+    twine \
+    poetry
 
 # Useful packages
 # (split up for readability)
