@@ -63,4 +63,69 @@ tasks:
     cmd: rm -rf .pytest_cache **/.pytest_cache **/__pycache__ .mypy_cache .ruff_cache
     shopt: [globstar]
 
+  publish:
+    desc: Publish Python code
+    cmds:
+      - |
+        output=$(pip index versions -i $PYPI_REPOSITORY_URL/simple {{.CLI_ARGS}} 2> /dev/null)
+        # Extract the line of the output, which contains the available versions
+        versions=$(echo "$output" | grep -oP '(?<=Available versions: ).*')
+        echo "Found versions: $versions"
+        # Convert the available versions into an array
+        version_array=()
+        for version in $(echo $versions | tr ',' ' '); do
+            version_array+=("$version")
+        done
+
+        # Check if PYPI_VERSION is in the list of available versions
+        if [[ "$PYPI_VERSION" == "0.0" ]]; then
+            echo "PYPI_VERSION is 0.0, allowing development overwrite."
+            exit 0
+        elif [[ " ${version_array[@]} " =~ " ${PYPI_VERSION} " ]]; then
+            echo "PYPI_VERSION is already in the list of available versions."
+            exit 1
+        fi
+      # Workaround for volume mounts having issues when copying from /tmp to /
+      - defer: |
+          pwd=$(pwd)
+          rm -rf /tmp/imio && cd $pwd
+      - |
+        rm -rf /tmp/imio && cp -r . /tmp/imio && cd /tmp/imio
+        poetry version $PYPI_VERSION
+        poetry config repositories.remote $PYPI_REPOSITORY_URL
+        poetry config http-basic.remote $PYPI_USERNAME $PYPI_PASSWORD
+        poetry build
+        poetry publish -r remote
+    env:
+      PYPI_REPOSITORY_URL: ''
+      PYPI_USERNAME: ''
+      PYPI_PASSWORD: ''
+      PYPI_VERSION: ''
+
+  update:
+    desc: Update poetry lock file
+    cmds:
+      - rm -rf $HOME/.cache/pypoetry
+      - rm -f poetry.lock
+      - poetry lock
+
+  metadata:
+    desc: Generate metadata file
+    cmds:
+      - 'echo "author: $AUTHOR" > {{.ARGS}}'
+      - 'echo "branch: $BRANCH_NAME" >> {{.ARGS}}'
+      - 'echo "build: $BUILD_NUMBER" >> {{.ARGS}}'
+      - 'echo "commit: $GIT_COMMIT" >> {{.ARGS}}'
+      - 'echo "date: $(date)" >> {{.ARGS}}'
+    vars:
+      ARGS: '{{.CLI_ARGS | default "metadata"}}'
+    env:
+      AUTHOR:
+        sh: whoami
+      BRANCH_NAME:
+        sh: git rev-parse --abbrev-ref HEAD
+      BUILD_NUMBER: 'unknown'
+      GIT_COMMIT:
+        sh: git rev-parse HEAD
+
   share: 'find {{.DIRECTORY}} -name "*.py" -exec echo "" \; -exec echo "***** FILE: {} *****" \; -exec cat {} \; > share.py'

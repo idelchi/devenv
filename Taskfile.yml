@@ -6,6 +6,7 @@ version: '3'
 dotenv: ['.env']
 
 vars:
+  # This environment variable must exist (i.e it's not enough that it's set in the .env file)
   DEVENV: $DEVENV
 
 includes:
