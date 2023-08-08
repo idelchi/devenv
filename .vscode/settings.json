@@ -47,6 +47,7 @@
         "editor.formatOnType": true,
         "editor.defaultFormatter": "ms-python.black-formatter"
     },
+    // TODO(Idelchi): Migrate to latest supported by Microsoft - (ruff?)
     "python.defaultInterpreterPath": "python3",
     "python.languageServer": "Pylance",
     "python.linting.enabled": true,
