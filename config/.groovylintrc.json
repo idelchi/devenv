@@ -1,6 +1,9 @@
 {
     "extends": "recommended-jenkinsfile",
     "rules": {
-        "DuplicateStringLiteral": "off"
+        "DuplicateStringLiteral": "off",
+        "LineLength": {
+            "length": 150
+        }
     }
 }
