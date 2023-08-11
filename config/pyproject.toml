@@ -24,6 +24,7 @@ ignore = [
   "FIX002", # Line contains TODO
   "ANN102", # Missing type annotation for `cls` in classmethod
   "TD003",  # Missing issue link on the line following this TODO
+  "FA102",  # Missing `from __future__ import annotations`, but uses PEP 585 collection
 ]
 
 unfixable = ["I"]
