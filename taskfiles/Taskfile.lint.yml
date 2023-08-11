@@ -27,9 +27,9 @@ tasks:
     vars:
       CONFIG: '{{.CONFIG_DIR}}/.hadolint.yaml'
       DOCKERFILES:
-        sh: find . -name "Dockerfile" | tr '\n' ' '
+        sh: find . -name "Dockerfile*" | tr '\n' ' '
     sources:
-      - ./**/Dockerfile
+      - ./**/Dockerfile*
       - '{{.CONFIG}}'
     preconditions:
       - sh: |
