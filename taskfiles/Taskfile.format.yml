@@ -5,7 +5,7 @@ version: '3'
 # - SCRIPTS_DIR
 # - BUILD_DIR
 
-shopt: [globstar]
+shopt: [globstar] # Is not working at the moment (?)
 
 tasks:
   ws:
@@ -19,13 +19,8 @@ tasks:
     summary: |
       This task formats Dockerfiles using dockerfile-utils.
     cmds:
-      - |
-        for dockerfile in {{.DOCKERFILES}}; do
-          output=$(dockerfile-utils format --spaces 4 $dockerfile) && echo "$output" > $dockerfile
-        done
-    vars:
-      DOCKERFILES:
-        sh: find . -name "Dockerfile*" | tr '\n' ' '
+      - for: sources
+        cmd: dockerfile-utils format --spaces 4 {{.ITEM}} | sponge {{.ITEM}}
     preconditions:
       - sh: 'command -v dockerfile-utils'
         msg: 'dockerfile-utils errors out, check if nodejs is having problems'
@@ -61,12 +56,11 @@ tasks:
     desc: Format Markdown files
     summary: |
       This task formats Markdown files using markdownlint and prettier.
-    cmd: |
-      files=./**/*.md
-      test -z "$files" && echo "no markdown files found" && exit 0
-
-      markdownlint --quiet --fix --config={{.CONFIG_MARKDOWNLINT}} --ignore-path={{.IGNORE}} "**/*.md"
-      prettier --config={{.CONFIG_PRETTIER}} --log-level=silent --ignore-path={{.IGNORE}} --write "**/*.md"
+    cmds:
+      - for: sources
+        cmd: |
+          markdownlint --quiet --fix --config={{.CONFIG_MARKDOWNLINT}} --ignore-path={{.IGNORE}} "**/*.md"
+          prettier --config={{.CONFIG_PRETTIER}} --log-level=silent --ignore-path={{.IGNORE}} --write "**/*.md"
     vars:
       CONFIG_MARKDOWNLINT: '{{.CONFIG_DIR}}/.markdownlint.yaml'
       CONFIG_PRETTIER: '{{.CONFIG_DIR}}/.prettierrc.yml'
@@ -79,16 +73,16 @@ tasks:
     summary: |
       This task formats shell scripts using shfmt and applies shellcheck recommendations.
     cmds:
-      - shfmt -i 2 -ci -s -w {{.SCRIPTS_DIR}}/**/*.sh
-      - |
-        for check in {{.CHECKS}}; do
-          shellcheck --shell=bash --enable=$check --severity=style --source-path=SCRIPTDIR -f diff {{.SCRIPTS_DIR}}/**/*.sh | patch -p1 > /dev/null
-        done
-      - shellcheck --shell=bash --enable=all --severity=style --source-path=SCRIPTDIR -f diff {{.SCRIPTS_DIR}}/**/*.sh | patch -p1 > /dev/null
+      - shfmt -i 2 -ci -s -w {{.FILES}}
+      - for: {var: CHECKS}
+        cmd: shellcheck --shell=bash --enable={{.ITEM}} --severity=style --source-path=SCRIPTDIR -f diff {{.FILES}} | patch -p1 > /dev/null
+      - shellcheck --shell=bash --enable=all --severity=style --source-path=SCRIPTDIR -f diff {{.FILES}} | patch -p1 > /dev/null
     vars:
+      FILES:
+        sh: find . -type f -name "*.sh" | tr '\n' ' '
       CHECKS: quote-safe-variables require-double-brackets require-variable-braces
     sources:
-      - ./{{.SCRIPTS_DIR}}/**/*.sh
+      - ./**/*.sh
 
   jenkins:
     desc: Format Jenkinsfiles
