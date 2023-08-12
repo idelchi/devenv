@@ -80,6 +80,12 @@ Tools that are not linters or formatters, but are useful for development:
 - [sphinx](https://www.sphinx-doc.org/)
 - [yq](https://github.com/mikefarah/yq)
 - [yaml2json](https://github.com/bronze1man/yaml2json)
+- [poetry](https://python-poetry.org/)
+- [build](https://pypa-build.readthedocs.io/en/latest/)
+- [twine](https://twine.readthedocs.io/en/stable/)
+- [envsubst](https://www.gnu.org/software/gettext/manual/html_node/envsubst-Invocation.html)
+- [sponge](https://linux.die.net/man/1/sponge)
+- [nano](https://www.nano-editor.org/)
 
 Compilers and interpreters:
 

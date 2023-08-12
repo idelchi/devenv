@@ -76,8 +76,7 @@ tasks:
     summary: |
       This task lints Markdown files using markdownlint and prettier.
     cmd: |
-      files=./**/*.md
-      test -z "$files" && echo "no markdown files found" && exit 0
+      test -z "{{.FILES}}" && echo "no markdown files found" && exit 0
 
       markdownlint --config={{.CONFIG_MARKDOWNLINT}} --ignore-path={{.IGNORE}} "**/*.md"
       prettier --config={{.CONFIG_PRETTIER}} --ignore-path={{.IGNORE}} --check "**/*.md"
@@ -85,6 +84,8 @@ tasks:
       CONFIG_MARKDOWNLINT: '{{.CONFIG_DIR}}/.markdownlint.yaml'
       CONFIG_PRETTIER: '{{.CONFIG_DIR}}/.prettierrc.yml'
       IGNORE: '{{.CONFIG_DIR}}/.ignore'
+      FILES:
+        sh: find . -type f -name "*.md" | tr '\n' ' '
     sources:
       - ./**/*.md
       - '{{.IGNORE}}'
@@ -94,12 +95,15 @@ tasks:
     summary: |
       This task lints shell scripts using shfmt and shellcheck.
     cmds:
-      - shfmt -i 2 -ci -d -l -s {{.SCRIPTS_DIR}}/**/*.sh
-      - shellcheck --shell=bash --enable=all --severity=style --source-path=SCRIPTDIR {{.SCRIPTS_DIR}}/**/*.sh
+      - shfmt -i 2 -ci -d -l -s {{.FILES}}
+      - shellcheck --shell=bash --enable=all --severity=style --source-path=SCRIPTDIR {{.FILES}}
+    vars:
+      FILES:
+        sh: find . -type f -name "*.sh" | tr '\n' ' '
     sources:
-      - ./{{.SCRIPTS_DIR}}/**/*.sh
+      - ./**/*.sh
     preconditions:
-      - sh: shfmt -i 2 -ci -d -l -s {{.SCRIPTS_DIR}}/**/*.sh
+      - sh: shfmt -i 2 -ci -d -l -s {{.FILES}}
         msg: 'shell/bash files have not been formatted with shfmt'
 
   spell:

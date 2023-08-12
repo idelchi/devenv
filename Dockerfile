@@ -234,7 +234,7 @@ RUN echo \
     | xargs -n 1 go install
 
 # Install golangci-lint
-ARG GOLANGCI_LINT_VERSION=v1.54.0
+ARG GOLANGCI_LINT_VERSION=v1.54.1
 RUN wget -qO- https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b "$(go env GOPATH)/bin" ${GOLANGCI_LINT_VERSION}
 
 # Pre-download some useful packages and dependencies
