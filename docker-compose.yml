@@ -5,8 +5,7 @@ version: '3.7'
 
 services:
   devenv:
-    build:
-      context: ${DEVENV}
+    build: ${DEVENV}
     pull_policy: if_not_present
     image: idelchi/devenv:dev
     container_name: devenv
@@ -17,12 +16,12 @@ services:
       - '10000-10200:10000-10200' # Go Profilers
       - '9090:6419' # grip
     environment:
-      - DEVENV=${DEVENV}
+      - DEVENV
     network_mode: bridge
     user: user
     volumes:
-      - .:/home/user/ws
-      #   - ${DEVENV}:${DEVENV} # Possible to mount it inside
+      - ${PWD}:/home/user/ws
+      # - ${DEVENV}:${DEVENV} # Possible to mount it inside
     extra_hosts:
       - host:host-gateway
     working_dir: /home/user/ws

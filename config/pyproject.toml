@@ -16,8 +16,18 @@ ignore = [
   "G004",   # Logging statement uses string formatting
   "INP001", # File is part of an implicit namespace package. Add an `__init__.py`.
   "ANN401", # Dynamically typed expressions (typing.Any) are disallowed in ...
-  "PERF203",# `try`-`except` within a loop incurs performance overhead
+  "I",      # isort runs before ruff
+  "FBT001", # Boolean positional arg in function definition
+  "FBT002", # Boolean default value in function definition
+  "TRY301", # Abstract `raise` to an inner function
+  "TRY300", # Consider moving this statement to an `else` block
+  "FIX002", # Line contains TODO
+  "ANN102", # Missing type annotation for `cls` in classmethod
+  "TD003",  # Missing issue link on the line following this TODO
+  "FA102",  # Missing `from __future__ import annotations`, but uses PEP 585 collection
 ]
+
+unfixable = ["I"]
 
 [tool.ruff.pydocstyle]
 convention = "google"
@@ -43,3 +53,18 @@ disallow_any_generics = false
 warn_return_any = false
 
 ignore_missing_imports = true
+
+# Pylint
+[tool.pylint]
+[tool.pylint.messages_control]
+max-line-length = 120
+
+disable = [
+  "logging-fstring-interpolation",
+  "too-few-public-methods",
+  "relative-beyond-top-level",
+  "import-error",
+]
+
+[tool.pylint.basic]
+good-names = ["f"]

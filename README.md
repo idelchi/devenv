@@ -80,6 +80,12 @@ Tools that are not linters or formatters, but are useful for development:
 - [sphinx](https://www.sphinx-doc.org/)
 - [yq](https://github.com/mikefarah/yq)
 - [yaml2json](https://github.com/bronze1man/yaml2json)
+- [poetry](https://python-poetry.org/)
+- [build](https://pypa-build.readthedocs.io/en/latest/)
+- [twine](https://twine.readthedocs.io/en/stable/)
+- [envsubst](https://www.gnu.org/software/gettext/manual/html_node/envsubst-Invocation.html)
+- [sponge](https://linux.die.net/man/1/sponge)
+- [nano](https://www.nano-editor.org/)
 
 Compilers and interpreters:
 
@@ -116,3 +122,8 @@ For this, the `.env` file should be appropriately configured and sourced.
 `.devcontainer` contains configurations to use the Docker image as a development container.
 
 `.vscode` contains configurations for usage in VS Code.
+
+## Contributing
+
+git config --global user.name "Arash Idelchi"
+git config --global user.email "<64003206+idelchi@users.noreply.github.com>"

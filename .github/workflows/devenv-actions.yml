@@ -1,11 +1,17 @@
 name: DevEnv Actions
 on:
   workflow_call:
+    inputs:
+      image:
+        description: 'Docker Image to use'
+        default: 'idelchi/devenv:latest'
+        required: false
+        type: string
 
 jobs:
   info:
     runs-on: ubuntu-22.04
-    container: idelchi/devenv:latest
+    container: ${{ inputs.image }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -16,18 +22,18 @@ jobs:
   lint:
     needs: info
     runs-on: ubuntu-22.04
-    container: idelchi/devenv:latest
+    container: ${{ inputs.image }}
     steps:
       - uses: actions/checkout@v3
         with:
           submodules: recursive
           fetch-depth: 0
-      - run: task lint go:lint
+      - run: task lint
 
   test:
     needs: info
     runs-on: ubuntu-22.04
-    container: idelchi/devenv:latest
+    container: ${{ inputs.image }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -38,7 +44,7 @@ jobs:
   build:
     needs: info
     runs-on: ubuntu-22.04
-    container: idelchi/devenv:latest
+    container: ${{ inputs.image }}
     steps:
       - uses: actions/checkout@v3
         with:

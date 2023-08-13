@@ -30,6 +30,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     # Tools
     graphviz \
+    iputils-ping \
+    gettext-base \
+    moreutils \
+    # Editors
+    ne \
+    nano \
+    vim \
+    neovim \
     # ssh
     openssh-client \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -139,7 +147,7 @@ RUN pip install --no-cache-dir \
     sphinx
 
 # Install Task
-ARG TASK_VERSION=v3.26.0
+ARG TASK_VERSION=v3.28.0
 RUN wget -qO- https://github.com/go-task/task/releases/download/${TASK_VERSION}/task_linux_amd64.tar.gz | tar -xz -C /usr/local/bin
 
 # Create CI User (Debian/Ubuntu)
@@ -156,7 +164,7 @@ ENV CARGO_HOME=${RUST_DIR}/.cargo
 RUN wget -qO- https://sh.rustup.rs | bash -s -- -y
 ENV PATH="${CARGO_HOME}/bin:${PATH}"
 
-# Additional Rust based tools.
+# Additional Rust based tools
 RUN cargo install \
     typos-cli \
     just
@@ -173,6 +181,14 @@ RUN pip install --no-cache-dir \
     # Library stubs for typing
     types-pyyaml
 
+# Python tooling for packaging
+# (split up for readability)
+# hadolint ignore=DL3059
+RUN pip install --no-cache-dir \
+    build \
+    twine \
+    poetry
+
 # Useful packages
 # (split up for readability)
 # hadolint ignore=DL3059
@@ -184,7 +200,7 @@ RUN pip install --no-cache-dir \
     fastapi
 
 # Install Go
-ARG GO_VERSION=go1.20.6.linux-amd64
+ARG GO_VERSION=go1.21.0.linux-amd64
 RUN wget -qO- https://go.dev/dl/${GO_VERSION}.tar.gz | tar -xz -C /usr/local
 ENV PATH="/usr/local/go/bin:$PATH"
 
@@ -218,7 +234,7 @@ RUN echo \
     | xargs -n 1 go install
 
 # Install golangci-lint
-ARG GOLANGCI_LINT_VERSION=v1.53.3
+ARG GOLANGCI_LINT_VERSION=v1.54.1
 RUN wget -qO- https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b "$(go env GOPATH)/bin" ${GOLANGCI_LINT_VERSION}
 
 # Pre-download some useful packages and dependencies
@@ -231,7 +247,6 @@ RUN go mod download \
     github.com/bmatcuk/doublestar/v4@latest \
     golang.org/x/exp@latest \
     golang.org/x/tools@latest \
-    golang.org/x/exp@v0.0.0-20230626212559-97b1e661b5df \
     gopkg.in/check.v1@v0.0.0-20161208181325-20d25e280405 \
     bou.ke/monkey@v1.0.2
 
