@@ -5,8 +5,7 @@ version: '3.7'
 
 services:
   devenv:
-    build:
-      context: ${DEVENV}
+    build: ${DEVENV}
     pull_policy: if_not_present
     image: idelchi/devenv:dev
     container_name: devenv
