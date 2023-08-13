@@ -18,22 +18,21 @@ tasks:
     desc: Lint Dockerfiles
     summary: |
       This task lints Dockerfiles using hadolint, dockerfilelint, and dockerfile-utils.
-    cmds:
-      - |
-        test -z "{{.DOCKERFILES}}" && echo "no Dockerfiles found" && exit 0
-        hadolint --config={{.CONFIG}} {{.DOCKERFILES}}
-        dockerfilelint {{.DOCKERFILES}}
-        dockerfile-utils lint {{.DOCKERFILES}}
+    cmd: |
+      test -z "{{.FILES}}" && echo "no Dockerfiles found" && exit 0
+      hadolint --config={{.CONFIG}} {{.FILES}}
+      dockerfilelint {{.FILES}}
+      dockerfile-utils lint {{.FILES}}
     vars:
       CONFIG: '{{.CONFIG_DIR}}/.hadolint.yaml'
-      DOCKERFILES:
-        sh: find . -name "Dockerfile*" | tr '\n' ' '
+      FILES:
+        sh: find . -type f -name "Dockerfile*" | tr '\n' ' '
     sources:
       - ./**/Dockerfile*
       - '{{.CONFIG}}'
     preconditions:
       - sh: |
-          for dockerfile in {{.DOCKERFILES}}; do
+          for dockerfile in {{.FILES}}; do
             diff <(dockerfile-utils format --spaces 4 $dockerfile) <(cat $dockerfile) || exit 1
           done
         msg: 'Dockerfiles have not been formatted with dockerfile-utils'
@@ -76,7 +75,7 @@ tasks:
     summary: |
       This task lints Markdown files using markdownlint and prettier.
     cmd: |
-      [ {{.FILES}} == "./**/*.md" ] && echo "no markdown files found" && exit 0
+      test -z "{{.FILES}}" && echo "no markdown files found" && exit 0
 
       markdownlint --config={{.CONFIG_MARKDOWNLINT}} --ignore-path={{.IGNORE}} "**/*.md"
       prettier --config={{.CONFIG_PRETTIER}} --ignore-path={{.IGNORE}} --check "**/*.md"
@@ -85,7 +84,8 @@ tasks:
       CONFIG_MARKDOWNLINT: '{{.CONFIG_DIR}}/.markdownlint.yaml'
       CONFIG_PRETTIER: '{{.CONFIG_DIR}}/.prettierrc.yml'
       IGNORE: '{{.CONFIG_DIR}}/.ignore'
-      FILES: ./**/*.md
+      FILES:
+        sh: find . -type f -name "*.md" | tr '\n' ' '
     sources:
       - ./**/*.md
       - '{{.IGNORE}}'
@@ -94,12 +94,14 @@ tasks:
     desc: Lint shell scripts
     summary: |
       This task lints shell scripts using shfmt and shellcheck.
-    cmds:
-      - shfmt -i 2 -ci -d -l -s {{.FILES}}
-      - shellcheck --shell=bash --enable=all --severity=style --source-path=SCRIPTDIR {{.FILES}}
-    shopt: [globstar]
+    cmd: |
+      test -z "{{.FILES}}" && echo "no shell files found" && exit 0
+
+      shfmt -i 2 -ci -d -l -s {{.FILES}}
+      shellcheck --shell=bash --enable=all --severity=style --source-path=SCRIPTDIR {{.FILES}}
     vars:
-      FILES: ./**/*.sh
+      FILES:
+        sh: find . -type f -name "*.sh" | tr '\n' ' '
     sources:
       - ./**/*.sh
     preconditions:
