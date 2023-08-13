@@ -76,16 +76,16 @@ tasks:
     summary: |
       This task lints Markdown files using markdownlint and prettier.
     cmd: |
-      test -z "{{.FILES}}" && echo "no markdown files found" && exit 0
+      [ {{.FILES}} == "./**/*.md" ] && echo "no markdown files found" && exit 0
 
       markdownlint --config={{.CONFIG_MARKDOWNLINT}} --ignore-path={{.IGNORE}} "**/*.md"
       prettier --config={{.CONFIG_PRETTIER}} --ignore-path={{.IGNORE}} --check "**/*.md"
+    shopt: [globstar]
     vars:
       CONFIG_MARKDOWNLINT: '{{.CONFIG_DIR}}/.markdownlint.yaml'
       CONFIG_PRETTIER: '{{.CONFIG_DIR}}/.prettierrc.yml'
       IGNORE: '{{.CONFIG_DIR}}/.ignore'
-      FILES:
-        sh: find . -type f -name "*.md" | tr '\n' ' '
+      FILES: ./**/*.md
     sources:
       - ./**/*.md
       - '{{.IGNORE}}'
@@ -97,9 +97,9 @@ tasks:
     cmds:
       - shfmt -i 2 -ci -d -l -s {{.FILES}}
       - shellcheck --shell=bash --enable=all --severity=style --source-path=SCRIPTDIR {{.FILES}}
+    shopt: [globstar]
     vars:
-      FILES:
-        sh: find . -type f -name "*.sh" | tr '\n' ' '
+      FILES: ./**/*.sh
     sources:
       - ./**/*.sh
     preconditions:

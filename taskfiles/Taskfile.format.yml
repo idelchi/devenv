@@ -5,7 +5,7 @@ version: '3'
 # - SCRIPTS_DIR
 # - BUILD_DIR
 
-shopt: [globstar] # Is not working at the moment (?)
+shopt: [globstar] # NOTE(Idelchi): Doesn't seem to work on a global level or in vars for some reason.
 
 tasks:
   ws:
@@ -77,9 +77,9 @@ tasks:
       - for: {var: CHECKS}
         cmd: shellcheck --shell=bash --enable={{.ITEM}} --severity=style --source-path=SCRIPTDIR -f diff {{.FILES}} | patch -p1 > /dev/null
       - shellcheck --shell=bash --enable=all --severity=style --source-path=SCRIPTDIR -f diff {{.FILES}} | patch -p1 > /dev/null
+    shopt: [globstar]
     vars:
-      FILES:
-        sh: find . -type f -name "*.sh" | tr '\n' ' '
+      FILES: ./**/*.sh
       CHECKS: quote-safe-variables require-double-brackets require-variable-braces
     sources:
       - ./**/*.sh
