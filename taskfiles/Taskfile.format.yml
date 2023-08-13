@@ -72,14 +72,16 @@ tasks:
     desc: Format Shell scripts
     summary: |
       This task formats shell scripts using shfmt and applies shellcheck recommendations.
-    cmds:
-      - shfmt -i 2 -ci -s -w {{.FILES}}
-      - for: {var: CHECKS}
-        cmd: shellcheck --shell=bash --enable={{.ITEM}} --severity=style --source-path=SCRIPTDIR -f diff {{.FILES}} | patch -p1 > /dev/null
-      - shellcheck --shell=bash --enable=all --severity=style --source-path=SCRIPTDIR -f diff {{.FILES}} | patch -p1 > /dev/null
-    shopt: [globstar]
+    cmd: |
+      test -z "{{.FILES}}" && echo "no shell files found" && exit 0
+      shfmt -i 2 -ci -s -w {{.FILES}}
+      for check in {{.CHECKS}}; do
+        shellcheck --shell=bash --enable=$check --severity=style --source-path=SCRIPTDIR -f diff {{.FILES}} | patch -p1 > /dev/null
+      done
+      shellcheck --shell=bash --enable=all --severity=style --source-path=SCRIPTDIR -f diff {{.FILES}} | patch -p1 > /dev/null
     vars:
-      FILES: ./**/*.sh
+      FILES:
+        sh: find . -type f -name "*.sh" | tr '\n' ' '
       CHECKS: quote-safe-variables require-double-brackets require-variable-braces
     sources:
       - ./**/*.sh

@@ -63,4 +63,3 @@ tasks:
       - task: git
       - task: git:push
     dir: '{{.USER_WORKING_DIR}}'
-
