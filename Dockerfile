@@ -33,6 +33,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     iputils-ping \
     gettext-base \
     moreutils \
+    tree \
     # Editors
     ne \
     nano \
