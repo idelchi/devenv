@@ -1,4 +1,4 @@
-name: DevEnv Actions
+name: devenv actions
 on:
   workflow_call:
     inputs:

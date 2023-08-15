@@ -230,14 +230,13 @@ RUN echo \
     github.com/rillig/gobco@latest \
     github.com/mikefarah/yq/v4@latest \
     github.com/bronze1man/yaml2json@latest \
-    github.com/idelchi/wslint@dev \
+    github.com/idelchi/wslint/cmd/wslint@dev \
     # Feed to 'go install'
     | xargs -n 1 go install
 
 # Install golangci-lint
 ARG GOLANGCI_LINT_VERSION=v1.54.1
 RUN wget -qO- https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b "$(go env GOPATH)/bin" ${GOLANGCI_LINT_VERSION}
-
 # Pre-download some useful packages and dependencies
 RUN go mod download \
     github.com/stretchr/testify@latest \
