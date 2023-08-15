@@ -241,15 +241,16 @@ RUN wget -qO- https://raw.githubusercontent.com/golangci/golangci-lint/master/in
 # Pre-download some useful packages and dependencies
 RUN go mod download \
     github.com/stretchr/testify@latest \
-    github.com/davecgh/go-spew@latest \
-    gopkg.in/yaml.v3@latest \
     github.com/gin-gonic/gin@latest \
-    github.com/jinzhu/configor@latest \
     github.com/bmatcuk/doublestar/v4@latest \
+    gopkg.in/yaml.v3@latest \
+    github.com/fatih/color@latest \
+    github.com/jinzhu/configor@latest \
+    github.com/davecgh/go-spew@latest \
     golang.org/x/exp@latest \
     golang.org/x/tools@latest \
     gopkg.in/check.v1@v0.0.0-20161208181325-20d25e280405 \
-    bou.ke/monkey@v1.0.2
+    bou.ke/monkey@latest
 
 # Reroute cache to /tmp
 ENV NPM_CONFIG_CACHE=/tmp/.npm
