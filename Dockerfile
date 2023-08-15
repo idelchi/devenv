@@ -246,6 +246,10 @@ RUN go mod download \
     github.com/fatih/color@latest \
     github.com/jinzhu/configor@latest \
     github.com/davecgh/go-spew@latest \
+    github.com/mattn/go-colorable@v0.1.13 \
+    github.com/mattn/go-isatty@v0.0.17 \
+    github.com/pmezard/go-difflib@v1.0.0 \
+    golang.org/x/sys@v0.11.0 \
     golang.org/x/exp@latest \
     golang.org/x/tools@latest \
     gopkg.in/check.v1@v0.0.0-20161208181325-20d25e280405 \
