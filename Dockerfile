@@ -213,6 +213,7 @@ USER ${USER}
 WORKDIR /home/${USER}
 
 # Go tooling
+# TODO: Move to logical groups instead (e.g. "linters", "formatters", etc.)
 RUN echo \
     # Commands to install
     golang.org/x/tools/cmd/godoc@latest \
@@ -230,7 +231,6 @@ RUN echo \
     github.com/rillig/gobco@latest \
     github.com/mikefarah/yq/v4@latest \
     github.com/bronze1man/yaml2json@latest \
-    github.com/idelchi/wslint/cmd/wslint@dev \
     # Feed to 'go install'
     | xargs -n 1 go install
 
@@ -271,5 +271,10 @@ ENV TZ=Europe/Zurich
 ENV DEVENV=/home/${USER}
 COPY --chown=${USER}:${USER} . ${DEVENV}
 RUN sed -i 's#^DEVENV=.*#DEVENV='"${DEVENV}"'#' ${DEVENV}/.env
+
+# Install wslint
+# (split up for readability)
+# hadolint ignore=DL3059
+RUN go install github.com/idelchi/wslint/cmd/wslint@dev
 
 # TODO: Install "Mega-Linter"?
