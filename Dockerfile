@@ -273,8 +273,7 @@ COPY --chown=${USER}:${USER} . ${DEVENV}
 RUN sed -i 's#^DEVENV=.*#DEVENV='"${DEVENV}"'#' ${DEVENV}/.env
 
 # Install wslint
-# (split up for readability)
-# hadolint ignore=DL3059
+ARG CACHEBUST
 RUN go install github.com/idelchi/wslint/cmd/wslint@dev
 
 # TODO: Install "Mega-Linter"?
