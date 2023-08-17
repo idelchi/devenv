@@ -125,5 +125,5 @@ For this, the `.env` file should be appropriately configured and sourced.
 
 ## Contributing
 
-git config --global user.name "Arash Idelchi"
-git config --global user.email "<64003206+idelchi@users.noreply.github.com>"
+git config user.name "Arash Idelchi"
+git config user.email "<64003206+idelchi@users.noreply.github.com>"
