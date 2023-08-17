@@ -246,6 +246,7 @@ RUN go mod download \
     github.com/fatih/color@latest \
     github.com/jinzhu/configor@latest \
     github.com/davecgh/go-spew@latest \
+    github.com/natefinch/atomic@latest \
     github.com/mattn/go-colorable@v0.1.13 \
     github.com/mattn/go-isatty@v0.0.17 \
     github.com/pmezard/go-difflib@v1.0.0 \
