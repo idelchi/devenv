@@ -213,6 +213,7 @@ USER ${USER}
 WORKDIR /home/${USER}
 
 # Go tooling
+# TODO: Move to logical groups instead (e.g. "linters", "formatters", etc.)
 RUN echo \
     # Commands to install
     golang.org/x/tools/cmd/godoc@latest \
@@ -230,26 +231,30 @@ RUN echo \
     github.com/rillig/gobco@latest \
     github.com/mikefarah/yq/v4@latest \
     github.com/bronze1man/yaml2json@latest \
-    github.com/idelchi/wslint@dev \
     # Feed to 'go install'
     | xargs -n 1 go install
 
 # Install golangci-lint
 ARG GOLANGCI_LINT_VERSION=v1.54.1
 RUN wget -qO- https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b "$(go env GOPATH)/bin" ${GOLANGCI_LINT_VERSION}
-
 # Pre-download some useful packages and dependencies
 RUN go mod download \
     github.com/stretchr/testify@latest \
-    github.com/davecgh/go-spew@latest \
-    gopkg.in/yaml.v3@latest \
     github.com/gin-gonic/gin@latest \
-    github.com/jinzhu/configor@latest \
     github.com/bmatcuk/doublestar/v4@latest \
+    gopkg.in/yaml.v3@latest \
+    github.com/fatih/color@latest \
+    github.com/jinzhu/configor@latest \
+    github.com/davecgh/go-spew@latest \
+    github.com/natefinch/atomic@latest \
+    github.com/mattn/go-colorable@v0.1.13 \
+    github.com/mattn/go-isatty@v0.0.17 \
+    github.com/pmezard/go-difflib@v1.0.0 \
+    golang.org/x/sys@v0.11.0 \
     golang.org/x/exp@latest \
     golang.org/x/tools@latest \
     gopkg.in/check.v1@v0.0.0-20161208181325-20d25e280405 \
-    bou.ke/monkey@v1.0.2
+    bou.ke/monkey@latest
 
 # Reroute cache to /tmp
 ENV NPM_CONFIG_CACHE=/tmp/.npm
@@ -266,5 +271,10 @@ ENV TZ=Europe/Zurich
 ENV DEVENV=/home/${USER}
 COPY --chown=${USER}:${USER} . ${DEVENV}
 RUN sed -i 's#^DEVENV=.*#DEVENV='"${DEVENV}"'#' ${DEVENV}/.env
+
+# Install wslint
+# (split up for readability)
+# hadolint ignore=DL3059
+RUN go install github.com/idelchi/wslint/cmd/wslint@dev
 
 # TODO: Install "Mega-Linter"?
