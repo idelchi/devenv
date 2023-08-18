@@ -274,6 +274,6 @@ RUN sed -i 's#^DEVENV=.*#DEVENV='"${DEVENV}"'#' ${DEVENV}/.env
 
 # Install wslint
 ARG CACHEBUST
-RUN go install github.com/idelchi/wslint/cmd/wslint@dev
+RUN go install github.com/idelchi/wslint@dev
 
 # TODO: Install "Mega-Linter"?
