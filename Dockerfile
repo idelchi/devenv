@@ -273,6 +273,7 @@ RUN sed -i 's#^DEVENV=.*#DEVENV='"${DEVENV}"'#' ${DEVENV}/.env
 
 # Install wslint
 ARG CACHEBUST
-RUN go install github.com/idelchi/wslint@dev
+# TODO(Idelchi): Implement versioning in wslint instead.
+RUN go install -ldflags='-s -w -X "main.versionStamp=unofficial & built from dev branch"' github.com/idelchi/wslint@dev
 
 # TODO: Install "Mega-Linter"?
