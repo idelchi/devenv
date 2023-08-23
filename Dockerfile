@@ -43,13 +43,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     openssh-client \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install Java & Node (version 11 of Java due to npm-groovy-lint)
-RUN echo "deb http://deb.debian.org/debian/ bullseye main" >> /etc/apt/sources.list && \
-    apt-get update && apt-get install -y --no-install-recommends \
-    openjdk-11-jdk \
-    && apt-get clean && rm -rf /var/lib/apt/lists/* && \
-    rm /etc/apt/sources.list
+# Install Java & Node
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    default-jdk \
     nodejs \
     npm \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -211,6 +207,9 @@ ENV PATH="${GOPATH}/bin:$PATH"
 
 USER ${USER}
 WORKDIR /home/${USER}
+
+# Run npm-groovy-lint once to download its preferred version of Java
+RUN npm-groovy-lint --version
 
 # Go tooling
 # TODO: Move to logical groups instead (e.g. "linters", "formatters", etc.)
