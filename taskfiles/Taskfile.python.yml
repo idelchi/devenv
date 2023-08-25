@@ -4,6 +4,7 @@ version: '3'
 # - CONFIG_DIR
 
 vars:
+  # TODO: Unclear if this is actually passed correctly (try it)
   DIRECTORY: '{{.CLI_ARGS | default "."}}'
 
 tasks:
