@@ -122,8 +122,3 @@ For this, the `.env` file should be appropriately configured and sourced.
 `.devcontainer` contains configurations to use the Docker image as a development container.
 
 `.vscode` contains configurations for usage in VS Code.
-
-## Contributing
-
-git config user.name "Arash Idelchi"
-git config user.email "<64003206+idelchi@users.noreply.github.com>"
