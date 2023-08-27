@@ -144,7 +144,7 @@ RUN pip install --no-cache-dir \
     sphinx
 
 # Install Task
-ARG TASK_VERSION=v3.28.0
+ARG TASK_VERSION=v3.29.1
 RUN wget -qO- https://github.com/go-task/task/releases/download/${TASK_VERSION}/task_linux_amd64.tar.gz | tar -xz -C /usr/local/bin
 
 # Create CI User (Debian/Ubuntu)
