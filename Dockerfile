@@ -36,6 +36,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gettext-base \
     moreutils \
     tree \
+    file \
     # Editors
     ne \
     nano \
@@ -290,6 +291,7 @@ RUN echo \
     github.com/amit-davidson/Chronos/cmd/chronos@latest \
     github.com/gulyasm/jsonui@latest \
     github.com/boyter/scc/v3@latest \
+    github.com/derailed/k9s@latest \
     # Feed to 'go install'
     | xargs -n 1 go install
 
