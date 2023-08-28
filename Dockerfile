@@ -28,6 +28,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
     git \
     ca-certificates \
+    sudo \
     # Tools
     graphviz \
     iputils-ping \
@@ -255,6 +256,27 @@ RUN go mod download \
     gopkg.in/check.v1@v0.0.0-20161208181325-20d25e280405 \
     bou.ke/monkey@latest
 
+# Additional tools (subject to frequent change)
+USER root
+RUN cargo install \
+    navi
+# hadolint ignore=DL3059
+RUN npm install -g dockly
+RUN curl -sSL https://get.docker.com/ | sh && \
+    usermod -aG docker ${USER} && \
+    adduser ${USER} sudo && \
+    echo "${USER}  ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+RUN pip install --no-cache-dir \
+    kube-shell
+USER ${USER}
+RUN echo \
+    github.com/jesseduffield/lazydocker@latest \
+    github.com/c-bata/kube-prompt@latest \
+    github.com/amit-davidson/Chronos/cmd/chronos@latest \
+    github.com/gulyasm/jsonui@latest \
+    # Feed to 'go install'
+    | xargs -n 1 go install
+
 # Reroute cache to /tmp
 ENV NPM_CONFIG_CACHE=/tmp/.npm
 ENV XDG_CONFIG_HOME=/tmp/.config
@@ -274,6 +296,6 @@ RUN sed -i 's#^DEVENV=.*#DEVENV='"${DEVENV}"'#' ${DEVENV}/.env
 # Install wslint
 ARG CACHEBUST
 # TODO(Idelchi): Implement versioning in wslint instead.
-RUN go install -ldflags='-s -w -X "main.versionStamp=unofficial & built from dev branch"' github.com/idelchi/wslint@dev
+RUN go install -ldflags='-s -w -X "main.version=unofficial & built from dev branch"' github.com/idelchi/wslint@dev
 
 # TODO: Install "Mega-Linter"?

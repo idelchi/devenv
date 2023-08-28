@@ -21,6 +21,7 @@ services:
     user: user
     volumes:
       - ${PWD}:/home/user/ws
+      - /var/run/docker.sock:/var/run/docker.sock
       # - ${DEVENV}:${DEVENV} # Possible to mount it inside
     extra_hosts:
       - host:host-gateway

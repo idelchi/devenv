@@ -86,6 +86,14 @@ Tools that are not linters or formatters, but are useful for development:
 - [envsubst](https://www.gnu.org/software/gettext/manual/html_node/envsubst-Invocation.html)
 - [sponge](https://linux.die.net/man/1/sponge)
 - [nano](https://www.nano-editor.org/)
+- [navi](https://github.com/denisidoro/navi)
+- [jsonui](https://github.com/gulyasm/jsonui)
+- [dockly](https://github.com/lirantal/dockly)
+- [slim](https://github.com/slimtoolkit/slim)
+- [lazydocker](https://github.com/jesseduffield/lazydocker)
+- [kube-shell](https://github.com/cloudnativelabs/kube-shell)
+- [kube-prompt](https://github.com/c-bata/kube-prompt)
+- [docker](https://www.docker.com/)
 
 Compilers and interpreters:
 
