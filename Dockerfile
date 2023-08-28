@@ -5,6 +5,7 @@
 #   - Rust
 #   - Linters
 #   - Formatters
+#   - and many, many, more...
 #]=======================================================================]
 
 FROM debian:bookworm
@@ -137,6 +138,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     terraform \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
+# kubectl, helm & minikube
+RUN \
+    # kubectl
+    curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && \
+    install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl && \
+    # helm
+    curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash && \
+    # minikube
+    curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 && \
+    install minikube-linux-amd64 /usr/local/bin/minikube
+
 # Various tools
 RUN pip install --no-cache-dir \
     # (bind to 0.0.0.0 to allow access from outside)
@@ -262,6 +274,8 @@ RUN cargo install \
     navi
 # hadolint ignore=DL3059
 RUN npm install -g dockly
+RUN curl -sSf https://moncho.github.io/dry/dryup.sh | sh && \
+    chmod 755 /usr/local/bin/dry
 RUN curl -sSL https://get.docker.com/ | sh && \
     usermod -aG docker ${USER} && \
     adduser ${USER} sudo && \
@@ -275,6 +289,7 @@ RUN echo \
     github.com/c-bata/kube-prompt@latest \
     github.com/amit-davidson/Chronos/cmd/chronos@latest \
     github.com/gulyasm/jsonui@latest \
+    github.com/boyter/scc/v3@latest \
     # Feed to 'go install'
     | xargs -n 1 go install
 
