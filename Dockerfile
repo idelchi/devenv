@@ -268,6 +268,7 @@ RUN curl -sSL https://get.docker.com/ | sh && \
     echo "${USER}  ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 RUN pip install --no-cache-dir \
     kube-shell
+RUN curl -sL https://raw.githubusercontent.com/slimtoolkit/slim/master/scripts/install-slim.sh | bash -
 USER ${USER}
 RUN echo \
     github.com/jesseduffield/lazydocker@latest \
