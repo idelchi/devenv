@@ -29,21 +29,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
     git \
     ca-certificates \
-    sudo \
     # Tools
     graphviz \
-    iputils-ping \
-    gettext-base \
-    moreutils \
-    tree \
-    file \
-    # Editors
-    ne \
-    nano \
-    vim \
-    neovim \
-    # ssh
-    openssh-client \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install Java & Node
@@ -107,55 +94,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && pip install --no-cache-dir \
     codespell \
     scspell3k
-
-# Powershell
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl \
-    gnupg \
-    apt-transport-https \
-    && curl https://packages.microsoft.com/keys/microsoft.asc | gpg --yes --dearmor --output /usr/share/keyrings/microsoft.gpg && \
-    sh -c 'echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/microsoft-debian-bullseye-prod bullseye main" > /etc/apt/sources.list.d/microsoft.list' && \
-    apt-get update && apt-get install -y --no-install-recommends \
-    powershell \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# .NET
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    dotnet-runtime-7.0 \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# Ansible
-RUN pip install --no-cache-dir ansible
-
-# Terraform
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    gnupg \
-    software-properties-common \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
-RUN wget -qO- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | tee /usr/share/keyrings/hashicorp-archive-keyring.gpg
-RUN echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | \
-    tee /etc/apt/sources.list.d/hashicorp.list
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    terraform \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# kubectl, helm & minikube
-RUN \
-    # kubectl
-    curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && \
-    install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl && \
-    # helm
-    curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash && \
-    # minikube
-    curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 && \
-    install minikube-linux-amd64 /usr/local/bin/minikube
-
-# Various tools
-RUN pip install --no-cache-dir \
-    # (bind to 0.0.0.0 to allow access from outside)
-    grip \
-    gitlint \
-    sphinx
 
 # Install Task
 ARG TASK_VERSION=v3.29.1
@@ -235,15 +173,10 @@ RUN echo \
     github.com/client9/misspell/cmd/misspell@latest \
     mvdan.cc/gofumpt@latest \
     mvdan.cc/sh/v3/cmd/shfmt@latest \
-    github.com/loov/goda@latest \
-    github.com/lucasepe/yml2dot@latest \
     github.com/segmentio/golines@latest \
     golang.org/x/tools/cmd/guru@latest \
-    honnef.co/go/implements@latest \
     rsc.io/tmp/uncover@latest \
     github.com/rillig/gobco@latest \
-    github.com/mikefarah/yq/v4@latest \
-    github.com/bronze1man/yaml2json@latest \
     # Feed to 'go install'
     | xargs -n 1 go install
 
@@ -268,32 +201,6 @@ RUN go mod download \
     golang.org/x/tools@latest \
     gopkg.in/check.v1@v0.0.0-20161208181325-20d25e280405 \
     bou.ke/monkey@latest
-
-# Additional tools (subject to frequent change)
-USER root
-RUN cargo install \
-    navi
-# hadolint ignore=DL3059
-RUN npm install -g dockly
-RUN curl -sSf https://moncho.github.io/dry/dryup.sh | sh && \
-    chmod 755 /usr/local/bin/dry
-RUN curl -sSL https://get.docker.com/ | sh && \
-    usermod -aG docker ${USER} && \
-    adduser ${USER} sudo && \
-    echo "${USER}  ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-RUN pip install --no-cache-dir \
-    kube-shell
-RUN curl -sL https://raw.githubusercontent.com/slimtoolkit/slim/master/scripts/install-slim.sh | bash -
-USER ${USER}
-RUN echo \
-    github.com/jesseduffield/lazydocker@latest \
-    github.com/c-bata/kube-prompt@latest \
-    github.com/amit-davidson/Chronos/cmd/chronos@latest \
-    github.com/gulyasm/jsonui@latest \
-    github.com/boyter/scc/v3@latest \
-    github.com/derailed/k9s@latest \
-    # Feed to 'go install'
-    | xargs -n 1 go install
 
 # Reroute cache to /tmp
 ENV NPM_CONFIG_CACHE=/tmp/.npm

@@ -103,6 +103,8 @@ Compilers and interpreters:
 - [gcc](https://gcc.gnu.org/)
 - [clang](https://clang.llvm.org/)
 
+The tools are split over two Dockerfiles, depending on usage.
+
 ## Using Docker
 
 You can use the accompanying Docker image to run native tasks with full support for all commands listed in the Taskfile.
