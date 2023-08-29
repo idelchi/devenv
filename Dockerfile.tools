@@ -175,6 +175,7 @@ RUN echo 'deb http://download.opensuse.org/repositories/shells:/fish:/release:/3
 RUN apt-get update && apt-get install -y --no-install-recommends \
     bat \
     exa \
+    fzf \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install Go
