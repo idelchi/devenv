@@ -8,6 +8,11 @@ LABEL maintainer=arash.idelchi
 
 USER root
 
+# Create User (Debian/Ubuntu)
+ARG USER=user
+RUN groupadd -r -g 1001 ${USER} && \
+    useradd -r -u 1001 -g 1001 -m -c "${USER} account" -d /home/${USER} -s /bin/bash ${USER}
+
 ARG DEBIAN_FRONTEND=noninteractive
 
 # Basic good practices
@@ -36,6 +41,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     nano \
     vim \
     neovim \
+    micro  \
     # ssh
     openssh-client \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -52,6 +58,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
     python3-pip \
     python3-venv \
+    python3-launchpadlib \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Pip override to allow breaking packages
@@ -88,6 +95,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     terraform \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
+# Docker
+RUN curl -sSL https://get.docker.com/ | sh && \
+    usermod -aG docker ${USER} && \
+    adduser ${USER} sudo && \
+    echo "${USER}  ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
 # kubectl, helm & minikube
 RUN \
     # kubectl
@@ -99,21 +112,45 @@ RUN \
     curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 && \
     install minikube-linux-amd64 /usr/local/bin/minikube
 
+# Docker related tooling
+RUN \
+    # dockly
+    npm install -g dockly && \
+    # dry
+    curl -sSf https://moncho.github.io/dry/dryup.sh | sh && \
+    chmod 755 /usr/local/bin/dry && \
+    # kube-shell
+    pip install --no-cache-dir \
+    kube-shell \
+    # slim
+    && curl -sL https://raw.githubusercontent.com/slimtoolkit/slim/master/scripts/install-slim.sh | bash - && \
+    # kdash
+    curl https://raw.githubusercontent.com/kdash-rs/kdash/main/deployment/getLatest.sh | bash && \
+    apt-get update && apt-get install -y --no-install-recommends \
+    kubectx \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+WORKDIR /tmp
+RUN export DIVE_VERSION=$(curl -sL "https://api.github.com/repos/wagoodman/dive/releases/latest" | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/') && \
+    curl -OL https://github.com/wagoodman/dive/releases/download/v${DIVE_VERSION}/dive_${DIVE_VERSION}_linux_amd64.deb && \
+    apt install ./dive_${DIVE_VERSION}_linux_amd64.deb
+
 # Various tools
 RUN pip install --no-cache-dir \
     # (bind to 0.0.0.0 to allow access from outside)
     grip \
     gitlint \
-    sphinx
+    sphinx \
+    thefuck \
+    howdoi
+RUN curl -L https://raw.githubusercontent.com/kamranahmedse/git-standup/master/installer.sh | sh
+RUN npm install -g \
+    semantic-git-commit-cli \
+    commitizen \
+    tldr
 
 # Install Task
 ARG TASK_VERSION=v3.29.1
 RUN wget -qO- https://github.com/go-task/task/releases/download/${TASK_VERSION}/task_linux_amd64.tar.gz | tar -xz -C /usr/local/bin
-
-# Create CI User (Debian/Ubuntu)
-ARG USER=user
-RUN groupadd -r -g 1001 ${USER} && \
-    useradd -r -u 1001 -g 1001 -m -c "${USER} account" -d /home/${USER} -s /bin/bash ${USER}
 
 # Install Rust
 ARG RUST_DIR=/opt/rust
@@ -123,6 +160,22 @@ ENV RUSTUP_HOME=${RUST_DIR}/.rustup
 ENV CARGO_HOME=${RUST_DIR}/.cargo
 RUN wget -qO- https://sh.rustup.rs | bash -s -- -y
 ENV PATH="${CARGO_HOME}/bin:${PATH}"
+
+RUN cargo install \
+    navi \
+    dua-cli
+RUN curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash
+
+# Fish shell
+RUN echo 'deb http://download.opensuse.org/repositories/shells:/fish:/release:/3/Debian_12/ /' | tee /etc/apt/sources.list.d/shells:fish:release:3.list && \
+    curl -fsSL https://download.opensuse.org/repositories/shells:fish:release:3/Debian_12/Release.key | gpg --dearmor | tee /etc/apt/trusted.gpg.d/shells_fish_release_3.gpg > /dev/null && \
+    apt-get update && apt-get install -y --no-install-recommends \
+    fish
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    bat \
+    exa \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install Go
 ARG GO_VERSION=go1.21.0.linux-amd64
@@ -136,45 +189,21 @@ ENV PATH="${GOPATH}/bin:$PATH"
 USER ${USER}
 WORKDIR /home/${USER}
 
-# Run npm-groovy-lint once to download its preferred version of Java
-RUN npm-groovy-lint --version
-
 # Go tooling
-# TODO: Move to logical groups instead (e.g. "linters", "formatters", etc.)
 RUN echo \
     # Commands to install
-    github.com/loov/goda@latest \
-    github.com/lucasepe/yml2dot@latest \
-    golang.org/x/tools/cmd/guru@latest \
-    honnef.co/go/implements@latest \
-    github.com/mikefarah/yq/v4@latest \
-    github.com/bronze1man/yaml2json@latest \
-    # Feed to 'go install'
-    | xargs -n 1 go install
-
-# Additional tools (subject to frequent change)
-USER root
-RUN cargo install \
-    navi
-# hadolint ignore=DL3059
-RUN npm install -g dockly
-RUN curl -sSf https://moncho.github.io/dry/dryup.sh | sh && \
-    chmod 755 /usr/local/bin/dry
-RUN curl -sSL https://get.docker.com/ | sh && \
-    usermod -aG docker ${USER} && \
-    adduser ${USER} sudo && \
-    echo "${USER}  ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-RUN pip install --no-cache-dir \
-    kube-shell
-RUN curl -sL https://raw.githubusercontent.com/slimtoolkit/slim/master/scripts/install-slim.sh | bash -
-USER ${USER}
-RUN echo \
-    github.com/jesseduffield/lazydocker@latest \
-    github.com/c-bata/kube-prompt@latest \
-    github.com/amit-davidson/Chronos/cmd/chronos@latest \
-    github.com/gulyasm/jsonui@latest \
     github.com/boyter/scc/v3@latest \
+    github.com/bronze1man/yaml2json@latest \
+    github.com/c-bata/kube-prompt@latest \
     github.com/derailed/k9s@latest \
+    github.com/gulyasm/jsonui@latest \
+    github.com/jesseduffield/lazydocker@latest \
+    github.com/lucasepe/yml2dot@latest \
+    github.com/mikefarah/yq/v4@latest \
+    github.com/antonmedv/fx@latest \
+    github.com/jesseduffield/lazygit@latest \
+    github.com/charmbracelet/glow@latest \
+    github.com/gsamokovarov/jump@latest \
     # Feed to 'go install'
     | xargs -n 1 go install
 

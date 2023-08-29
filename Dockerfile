@@ -14,6 +14,11 @@ LABEL maintainer=arash.idelchi
 
 USER root
 
+# Create User (Debian/Ubuntu)
+ARG USER=user
+RUN groupadd -r -g 1001 ${USER} && \
+    useradd -r -u 1001 -g 1001 -m -c "${USER} account" -d /home/${USER} -s /bin/bash ${USER}
+
 ARG DEBIAN_FRONTEND=noninteractive
 
 # Basic good practices
@@ -99,11 +104,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 ARG TASK_VERSION=v3.29.1
 RUN wget -qO- https://github.com/go-task/task/releases/download/${TASK_VERSION}/task_linux_amd64.tar.gz | tar -xz -C /usr/local/bin
 
-# Create CI User (Debian/Ubuntu)
-ARG USER=user
-RUN groupadd -r -g 1001 ${USER} && \
-    useradd -r -u 1001 -g 1001 -m -c "${USER} account" -d /home/${USER} -s /bin/bash ${USER}
-
 # Install Rust
 ARG RUST_DIR=/opt/rust
 RUN mkdir -p ${RUST_DIR} && chown -R ${USER}:${USER} ${RUST_DIR}
@@ -167,16 +167,19 @@ RUN npm-groovy-lint --version
 # TODO: Move to logical groups instead (e.g. "linters", "formatters", etc.)
 RUN echo \
     # Commands to install
-    golang.org/x/tools/cmd/godoc@latest \
-    gotest.tools/gotestsum@latest \
-    github.com/t-yuki/gocover-cobertura@latest \
+    github.com/amit-davidson/Chronos/cmd/chronos@latest \
     github.com/client9/misspell/cmd/misspell@latest \
+    github.com/loov/goda@latest \
+    github.com/rillig/gobco@latest \
+    github.com/segmentio/golines@latest \
+    github.com/t-yuki/gocover-cobertura@latest \
+    golang.org/x/tools/cmd/godoc@latest \
+    golang.org/x/tools/cmd/guru@latest \
+    gotest.tools/gotestsum@latest \
+    honnef.co/go/implements@latest \
     mvdan.cc/gofumpt@latest \
     mvdan.cc/sh/v3/cmd/shfmt@latest \
-    github.com/segmentio/golines@latest \
-    golang.org/x/tools/cmd/guru@latest \
     rsc.io/tmp/uncover@latest \
-    github.com/rillig/gobco@latest \
     # Feed to 'go install'
     | xargs -n 1 go install
 
