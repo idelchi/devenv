@@ -136,6 +136,7 @@ RUN pip install --no-cache-dir \
     grip \
     gitlint \
     sphinx \
+    httpie \
     thefuck \
     howdoi  \
     && \
