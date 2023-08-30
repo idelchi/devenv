@@ -36,6 +36,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     # Tools
     graphviz \
+    gettext-base \
+    moreutils \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install Java & Node

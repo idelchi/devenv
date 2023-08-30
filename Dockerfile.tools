@@ -22,12 +22,14 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN apt-get update && apt-get install -y --no-install-recommends \
     # Build tools
     build-essential \
-    clang \
     # Auxiliaries
     curl \
     wget \
     git \
     ca-certificates \
+    gnupg \
+    apt-transport-https \
+    software-properties-common \
     sudo \
     # Tools
     graphviz \
@@ -65,11 +67,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN echo -e "[global]\nbreak-system-packages=true" >> /etc/pip.conf
 
 # Powershell
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl \
-    gnupg \
-    apt-transport-https \
-    && curl https://packages.microsoft.com/keys/microsoft.asc | gpg --yes --dearmor --output /usr/share/keyrings/microsoft.gpg && \
+RUN curl https://packages.microsoft.com/keys/microsoft.asc | gpg --yes --dearmor --output /usr/share/keyrings/microsoft.gpg && \
     sh -c 'echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/microsoft-debian-bullseye-prod bullseye main" > /etc/apt/sources.list.d/microsoft.list' && \
     apt-get update && apt-get install -y --no-install-recommends \
     powershell \
@@ -84,14 +82,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN pip install --no-cache-dir ansible
 
 # Terraform
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    gnupg \
-    software-properties-common \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
-RUN wget -qO- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | tee /usr/share/keyrings/hashicorp-archive-keyring.gpg
-RUN echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | \
-    tee /etc/apt/sources.list.d/hashicorp.list
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN wget -qO- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | tee /usr/share/keyrings/hashicorp-archive-keyring.gpg && \
+    echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | \
+    tee /etc/apt/sources.list.d/hashicorp.list && \
+    apt-get update && apt-get install -y --no-install-recommends \
     terraform \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
@@ -129,10 +123,12 @@ RUN \
     apt-get update && apt-get install -y --no-install-recommends \
     kubectx \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
+# Dive
 WORKDIR /tmp
 RUN export DIVE_VERSION=$(curl -sL "https://api.github.com/repos/wagoodman/dive/releases/latest" | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/') && \
     curl -OL https://github.com/wagoodman/dive/releases/download/v${DIVE_VERSION}/dive_${DIVE_VERSION}_linux_amd64.deb && \
-    apt install ./dive_${DIVE_VERSION}_linux_amd64.deb
+    apt install ./dive_${DIVE_VERSION}_linux_amd64.deb && \
+    rm -f ./dive_${DIVE_VERSION}_linux_amd64.deb
 
 # Various tools
 RUN pip install --no-cache-dir \
@@ -141,12 +137,14 @@ RUN pip install --no-cache-dir \
     gitlint \
     sphinx \
     thefuck \
-    howdoi
-RUN curl -L https://raw.githubusercontent.com/kamranahmedse/git-standup/master/installer.sh | sh
-RUN npm install -g \
+    howdoi  \
+    && \
+    npm install -g \
     semantic-git-commit-cli \
     commitizen \
-    tldr
+    tldr \
+    && \
+    curl -L https://raw.githubusercontent.com/kamranahmedse/git-standup/master/installer.sh | sh
 
 # Install Task
 ARG TASK_VERSION=v3.29.1
