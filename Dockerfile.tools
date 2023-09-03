@@ -28,6 +28,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     ca-certificates \
     gnupg \
+    lsb-release \
     apt-transport-https \
     software-properties-common \
     sudo \
@@ -90,10 +91,34 @@ RUN wget -qO- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | tee /usr/
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Docker
-RUN curl -sSL https://get.docker.com/ | sh && \
+RUN groupadd docker && \
     usermod -aG docker ${USER} && \
     adduser ${USER} sudo && \
     echo "${USER}  ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+RUN install -m 0755 -d /etc/apt/keyrings && \
+    curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg && \
+    chmod a+r /etc/apt/keyrings/docker.gpg && \
+    echo \
+    "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
+    "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
+    tee /etc/apt/sources.list.d/docker.list > /dev/null && \
+    apt-get update && apt-get install -y --no-install-recommends \
+    docker-ce \
+    docker-ce-cli \
+    containerd.io \
+    docker-buildx-plugin \
+    docker-compose-plugin\
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Brew
+RUN useradd -m -s /bin/bash linuxbrew && \
+    echo 'linuxbrew ALL=(ALL) NOPASSWD:ALL' >>/etc/sudoers
+USER linuxbrew
+RUN sudo curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh | sudo bash
+ENV PATH="/home/linuxbrew/.linuxbrew/bin:${PATH}"
+USER root
+RUN chown -R $USER:$USER /home/linuxbrew/.linuxbrew
 
 # kubectl, helm & minikube
 RUN \
@@ -122,7 +147,10 @@ RUN \
     curl https://raw.githubusercontent.com/kdash-rs/kdash/main/deployment/getLatest.sh | bash && \
     apt-get update && apt-get install -y --no-install-recommends \
     kubectx \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+    && apt-get clean && rm -rf /var/lib/apt/lists/* && \
+    # Kdash
+    curl https://raw.githubusercontent.com/kdash-rs/kdash/main/deployment/getLatest.sh | bash
+
 # Dive
 WORKDIR /tmp
 RUN export DIVE_VERSION=$(curl -sL "https://api.github.com/repos/wagoodman/dive/releases/latest" | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/') && \
@@ -175,6 +203,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     bat \
     exa \
     fzf \
+    duf \
+    hyperfine \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+RUN curl -fsSL https://azlux.fr/repo.gpg.key | sudo gpg --dearmor -o /usr/share/keyrings/azlux-archive-keyring.gpg && \
+    echo \
+    "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/azlux-archive-keyring.gpg] http://packages.azlux.fr/debian \
+    $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/azlux.list >/dev/null && \
+    apt-get update && apt-get install -y --no-install-recommends\
+    docker-ctop \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install Go
