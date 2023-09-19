@@ -40,9 +40,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     moreutils \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install Java & Node
+# Install Java & Node (version 11 of Java due to npm-groovy-lint)
+RUN echo "deb http://deb.debian.org/debian/ bullseye main" >> /etc/apt/sources.list && \
+    apt-get update && apt-get install -y --no-install-recommends \
+    openjdk-11-jdk \
+    && apt-get clean && rm -rf /var/lib/apt/lists/* && \
+    rm /etc/apt/sources.list
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    default-jdk \
+    # default-jdk \
     nodejs \
     npm \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -103,7 +108,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     scspell3k
 
 # Install Task
-ARG TASK_VERSION=v3.29.1
+ARG TASK_VERSION=v3.30.1
 RUN wget -qO- https://github.com/go-task/task/releases/download/${TASK_VERSION}/task_linux_amd64.tar.gz | tar -xz -C /usr/local/bin
 
 # Install Rust
@@ -151,7 +156,7 @@ RUN pip install --no-cache-dir \
     fastapi
 
 # Install Go
-ARG GO_VERSION=go1.21.0.linux-amd64
+ARG GO_VERSION=go1.21.1.linux-amd64
 RUN wget -qO- https://go.dev/dl/${GO_VERSION}.tar.gz | tar -xz -C /usr/local
 ENV PATH="/usr/local/go/bin:$PATH"
 
@@ -163,7 +168,7 @@ USER ${USER}
 WORKDIR /home/${USER}
 
 # Run npm-groovy-lint once to download its preferred version of Java
-RUN npm-groovy-lint --version
+# RUN npm cache clean --force && npm-groovy-lint --version
 
 # Go tooling
 # TODO: Move to logical groups instead (e.g. "linters", "formatters", etc.)

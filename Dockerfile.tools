@@ -96,6 +96,8 @@ RUN groupadd docker && \
     adduser ${USER} sudo && \
     echo "${USER}  ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
+# (shellcheck: not a valid warning)
+# hadolint ignore=SC1091
 RUN install -m 0755 -d /etc/apt/keyrings && \
     curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg && \
     chmod a+r /etc/apt/keyrings/docker.gpg && \
@@ -115,6 +117,8 @@ RUN install -m 0755 -d /etc/apt/keyrings && \
 RUN useradd -m -s /bin/bash linuxbrew && \
     echo 'linuxbrew ALL=(ALL) NOPASSWD:ALL' >>/etc/sudoers
 USER linuxbrew
+# (sudo is required for the install script)
+# hadolint ignore=DL3004
 RUN sudo curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh | sudo bash
 ENV PATH="/home/linuxbrew/.linuxbrew/bin:${PATH}"
 USER root
@@ -141,22 +145,22 @@ RUN \
     # kube-shell
     pip install --no-cache-dir \
     kube-shell \
-    # slim
+    slim \
     && curl -sL https://raw.githubusercontent.com/slimtoolkit/slim/master/scripts/install-slim.sh | bash - && \
-    # kdash
-    curl https://raw.githubusercontent.com/kdash-rs/kdash/main/deployment/getLatest.sh | bash && \
     apt-get update && apt-get install -y --no-install-recommends \
     kubectx \
-    && apt-get clean && rm -rf /var/lib/apt/lists/* && \
-    # Kdash
-    curl https://raw.githubusercontent.com/kdash-rs/kdash/main/deployment/getLatest.sh | bash
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+# kdash
+RUN curl https://raw.githubusercontent.com/kdash-rs/kdash/main/deployment/getLatest.sh | bash
 
 # Dive
 WORKDIR /tmp
+# (shellcheck: cannot declare and assign at the same time)
+# hadolint ignore=SC2155
 RUN export DIVE_VERSION=$(curl -sL "https://api.github.com/repos/wagoodman/dive/releases/latest" | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/') && \
-    curl -OL https://github.com/wagoodman/dive/releases/download/v${DIVE_VERSION}/dive_${DIVE_VERSION}_linux_amd64.deb && \
-    apt install ./dive_${DIVE_VERSION}_linux_amd64.deb && \
-    rm -f ./dive_${DIVE_VERSION}_linux_amd64.deb
+    curl -OL "https://github.com/wagoodman/dive/releases/download/v${DIVE_VERSION}/dive_${DIVE_VERSION}_linux_amd64.deb" && \
+    apt-get install -y --no-install-recommends "./dive_${DIVE_VERSION}_linux_amd64.deb" && \
+    rm -f "./dive_${DIVE_VERSION}_linux_amd64.deb"
 
 # Various tools
 RUN pip install --no-cache-dir \
@@ -176,7 +180,7 @@ RUN pip install --no-cache-dir \
     curl -L https://raw.githubusercontent.com/kamranahmedse/git-standup/master/installer.sh | sh
 
 # Install Task
-ARG TASK_VERSION=v3.29.1
+ARG TASK_VERSION=v3.30.1
 RUN wget -qO- https://github.com/go-task/task/releases/download/${TASK_VERSION}/task_linux_amd64.tar.gz | tar -xz -C /usr/local/bin
 
 # Install Rust
@@ -197,7 +201,8 @@ RUN curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.s
 RUN echo 'deb http://download.opensuse.org/repositories/shells:/fish:/release:/3/Debian_12/ /' | tee /etc/apt/sources.list.d/shells:fish:release:3.list && \
     curl -fsSL https://download.opensuse.org/repositories/shells:fish:release:3/Debian_12/Release.key | gpg --dearmor | tee /etc/apt/trusted.gpg.d/shells_fish_release_3.gpg > /dev/null && \
     apt-get update && apt-get install -y --no-install-recommends \
-    fish
+    fish \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     bat \
@@ -207,16 +212,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     hyperfine \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-RUN curl -fsSL https://azlux.fr/repo.gpg.key | sudo gpg --dearmor -o /usr/share/keyrings/azlux-archive-keyring.gpg && \
+RUN curl -fsSL https://azlux.fr/repo.gpg.key | gpg --dearmor -o /usr/share/keyrings/azlux-archive-keyring.gpg && \
     echo \
     "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/azlux-archive-keyring.gpg] http://packages.azlux.fr/debian \
-    $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/azlux.list >/dev/null && \
+    $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/azlux.list >/dev/null && \
     apt-get update && apt-get install -y --no-install-recommends\
     docker-ctop \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install Go
-ARG GO_VERSION=go1.21.0.linux-amd64
+ARG GO_VERSION=go1.21.1.linux-amd64
 RUN wget -qO- https://go.dev/dl/${GO_VERSION}.tar.gz | tar -xz -C /usr/local
 ENV PATH="/usr/local/go/bin:$PATH"
 
