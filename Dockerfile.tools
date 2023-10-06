@@ -124,6 +124,8 @@ ENV PATH="/home/linuxbrew/.linuxbrew/bin:${PATH}"
 USER root
 RUN chown -R $USER:$USER /home/linuxbrew/.linuxbrew
 
+# TODO(Idelchi): Install tools using Brew instead
+
 # kubectl, helm & minikube
 RUN \
     # kubectl
@@ -221,7 +223,7 @@ RUN curl -fsSL https://azlux.fr/repo.gpg.key | gpg --dearmor -o /usr/share/keyri
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install Go
-ARG GO_VERSION=go1.21.1.linux-amd64
+ARG GO_VERSION=go1.21.2.linux-amd64
 RUN wget -qO- https://go.dev/dl/${GO_VERSION}.tar.gz | tar -xz -C /usr/local
 ENV PATH="/usr/local/go/bin:$PATH"
 

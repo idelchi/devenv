@@ -151,7 +151,7 @@ RUN pip install --no-cache-dir \
     fastapi
 
 # Install Go
-ARG GO_VERSION=go1.21.1.linux-amd64
+ARG GO_VERSION=go1.21.2.linux-amd64
 RUN wget -qO- https://go.dev/dl/${GO_VERSION}.tar.gz | tar -xz -C /usr/local
 ENV PATH="/usr/local/go/bin:$PATH"
 
