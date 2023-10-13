@@ -37,14 +37,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     iputils-ping \
     gettext-base \
     moreutils \
-    tree \
     file \
-    # Editors
-    ne \
-    nano \
-    vim \
-    neovim \
-    micro  \
+    expect \
     # ssh
     openssh-client \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -67,102 +61,44 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Pip override to allow breaking packages
 RUN echo -e "[global]\nbreak-system-packages=true" >> /etc/pip.conf
 
-# Powershell
-RUN curl https://packages.microsoft.com/keys/microsoft.asc | gpg --yes --dearmor --output /usr/share/keyrings/microsoft.gpg && \
-    sh -c 'echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/microsoft-debian-bullseye-prod bullseye main" > /etc/apt/sources.list.d/microsoft.list' && \
-    apt-get update && apt-get install -y --no-install-recommends \
-    powershell \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# .NET
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    dotnet-runtime-7.0 \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# Ansible
-RUN pip install --no-cache-dir ansible
-
-# Terraform
-RUN wget -qO- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | tee /usr/share/keyrings/hashicorp-archive-keyring.gpg && \
-    echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | \
-    tee /etc/apt/sources.list.d/hashicorp.list && \
-    apt-get update && apt-get install -y --no-install-recommends \
-    terraform \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+# Install Task
+ARG TASK_VERSION=v3.31.0
+RUN wget -qO- https://github.com/go-task/task/releases/download/${TASK_VERSION}/task_linux_amd64.tar.gz | tar -xz -C /usr/local/bin
 
 # Docker
 RUN groupadd docker && \
     usermod -aG docker ${USER} && \
     adduser ${USER} sudo && \
-    echo "${USER}  ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+    echo "${USER}  ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/${USER}
 
-# (shellcheck: not a valid warning)
-# hadolint ignore=SC1091
-RUN install -m 0755 -d /etc/apt/keyrings && \
-    curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg && \
-    chmod a+r /etc/apt/keyrings/docker.gpg && \
-    echo \
-    "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
-    "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
-    tee /etc/apt/sources.list.d/docker.list > /dev/null && \
-    apt-get update && apt-get install -y --no-install-recommends \
-    docker-ce \
-    docker-ce-cli \
-    containerd.io \
-    docker-buildx-plugin \
-    docker-compose-plugin\
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+# Install miniconda
+ENV CONDA_DIR /opt/conda
+RUN mkdir -p ${CONDA_DIR} && \
+    chown -R ${USER}:${USER} ${CONDA_DIR}
 
-# Brew
-RUN useradd -m -s /bin/bash linuxbrew && \
-    echo 'linuxbrew ALL=(ALL) NOPASSWD:ALL' >>/etc/sudoers
-USER linuxbrew
+USER ${USER}
+WORKDIR /home/${USER}
+
+RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /tmp/miniconda.sh && \
+    bash /tmp/miniconda.sh -u -b -p ${CONDA_DIR} && \
+    rm -rf /tmp/miniconda.sh
+ENV PATH=$CONDA_DIR/bin:$PATH
+
+# Install Brew
+USER ${USER}
 # (sudo is required for the install script)
 # hadolint ignore=DL3004
-RUN sudo curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh | sudo bash
+RUN sudo curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh | sudo bash && \
+    sudo chown -R $USER:$USER /home/linuxbrew/.linuxbrew
 ENV PATH="/home/linuxbrew/.linuxbrew/bin:${PATH}"
+
+# TODO(Idelchi): Use conda for everything?
+## Tool installations ##
 USER root
-RUN chown -R $USER:$USER /home/linuxbrew/.linuxbrew
-
-# TODO(Idelchi): Install tools using Brew instead
-
-# kubectl, helm & minikube
-RUN \
-    # kubectl
-    curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && \
-    install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl && \
-    # helm
-    curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash && \
-    # minikube (minikube start --driver=docker --force)
-    curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 && \
-    install minikube-linux-amd64 /usr/local/bin/minikube
-
-# Docker related tooling
-RUN \
-    # dockly
-    npm install -g dockly && \
-    # dry
-    curl -sSf https://moncho.github.io/dry/dryup.sh | sh && \
-    chmod 755 /usr/local/bin/dry && \
-    # kube-shell
-    pip install --no-cache-dir \
-    kube-shell \
-    slim \
-    && curl -sL https://raw.githubusercontent.com/slimtoolkit/slim/master/scripts/install-slim.sh | bash - && \
-    apt-get update && apt-get install -y --no-install-recommends \
-    kubectx \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
-# kdash
-RUN curl https://raw.githubusercontent.com/kdash-rs/kdash/main/deployment/getLatest.sh | bash
-
-# Dive
-WORKDIR /tmp
-# (shellcheck: cannot declare and assign at the same time)
-# hadolint ignore=SC2155
-RUN export DIVE_VERSION=$(curl -sL "https://api.github.com/repos/wagoodman/dive/releases/latest" | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/') && \
-    curl -OL "https://github.com/wagoodman/dive/releases/download/v${DIVE_VERSION}/dive_${DIVE_VERSION}_linux_amd64.deb" && \
-    apt-get install -y --no-install-recommends "./dive_${DIVE_VERSION}_linux_amd64.deb" && \
-    rm -f "./dive_${DIVE_VERSION}_linux_amd64.deb"
+RUN npm install -g \
+    dockly  \
+    && pip install --no-cache-dir \
+    kube-shell
 
 # Various tools
 RUN pip install --no-cache-dir \
@@ -177,27 +113,29 @@ RUN pip install --no-cache-dir \
     npm install -g \
     semantic-git-commit-cli \
     commitizen \
-    tldr \
-    && \
-    curl -L https://raw.githubusercontent.com/kamranahmedse/git-standup/master/installer.sh | sh
+    tldr
 
-# Install Task
-ARG TASK_VERSION=v3.30.1
-RUN wget -qO- https://github.com/go-task/task/releases/download/${TASK_VERSION}/task_linux_amd64.tar.gz | tar -xz -C /usr/local/bin
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    bat \
+    exa \
+    fzf \
+    duf \
+    hyperfine \
+    tree \
+    # Editors
+    ne \
+    nano \
+    vim \
+    neovim \
+    micro  \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install Rust
-ARG RUST_DIR=/opt/rust
-RUN mkdir -p ${RUST_DIR} && chown -R ${USER}:${USER} ${RUST_DIR}
-
-ENV RUSTUP_HOME=${RUST_DIR}/.rustup
-ENV CARGO_HOME=${RUST_DIR}/.cargo
-RUN wget -qO- https://sh.rustup.rs | bash -s -- -y
-ENV PATH="${CARGO_HOME}/bin:${PATH}"
-
-RUN cargo install \
-    navi \
-    dua-cli
-RUN curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash
+# Powershell
+RUN curl https://packages.microsoft.com/keys/microsoft.asc | gpg --yes --dearmor --output /usr/share/keyrings/microsoft.gpg && \
+    sh -c 'echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/microsoft-debian-bullseye-prod bullseye main" > /etc/apt/sources.list.d/microsoft.list' && \
+    apt-get update && apt-get install -y --no-install-recommends \
+    powershell \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Fish shell
 RUN echo 'deb http://download.opensuse.org/repositories/shells:/fish:/release:/3/Debian_12/ /' | tee /etc/apt/sources.list.d/shells:fish:release:3.list && \
@@ -206,59 +144,96 @@ RUN echo 'deb http://download.opensuse.org/repositories/shells:/fish:/release:/3
     fish \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    bat \
-    exa \
-    fzf \
-    duf \
-    hyperfine \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-RUN curl -fsSL https://azlux.fr/repo.gpg.key | gpg --dearmor -o /usr/share/keyrings/azlux-archive-keyring.gpg && \
-    echo \
-    "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/azlux-archive-keyring.gpg] http://packages.azlux.fr/debian \
-    $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/azlux.list >/dev/null && \
-    apt-get update && apt-get install -y --no-install-recommends\
-    docker-ctop \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# Install Go
-ARG GO_VERSION=go1.21.2.linux-amd64
-RUN wget -qO- https://go.dev/dl/${GO_VERSION}.tar.gz | tar -xz -C /usr/local
-ENV PATH="/usr/local/go/bin:$PATH"
-
-ENV GOPATH=/opt/go
-RUN mkdir ${GOPATH} && chown -R ${USER}:${USER} ${GOPATH}
-ENV PATH="${GOPATH}/bin:$PATH"
-
 USER ${USER}
-WORKDIR /home/${USER}
+# Docker and related toolset (most will require sudo to run)
+RUN brew install \
+    docker \
+    kubectl \
+    helm \
+    minikube
+
+# Tooling
+# TODO(Idelchi): Organize by topic
+# (split up for readability)
+# hadolint ignore=DL3059
+RUN brew install  \
+    k9s \
+    c-bata/kube-prompt/kube-prompt \
+    moncho/dry/dry \
+    docker-slim \
+    lazydocker \
+    kubectx \
+    kdash-rs/kdash/kdash \
+    jesseduffield/lazydocker/lazydocker \
+    dive \
+    ctop \
+    # other
+    zoxide \
+    # eza is newer than exa
+    eza \
+    git-standup \
+    navi \
+    dua-cli \
+    terraform \
+    scc \
+    yq \
+    lazygit \
+    glow \
+    jump \
+    fx \
+    dotnet \
+    ansible \
+    go
 
 # Go tooling
 RUN echo \
     # Commands to install
-    github.com/boyter/scc/v3@latest \
     github.com/bronze1man/yaml2json@latest \
-    github.com/c-bata/kube-prompt@latest \
-    github.com/derailed/k9s@latest \
     github.com/gulyasm/jsonui@latest \
-    github.com/jesseduffield/lazydocker@latest \
     github.com/lucasepe/yml2dot@latest \
-    github.com/mikefarah/yq/v4@latest \
-    github.com/antonmedv/fx@latest \
-    github.com/jesseduffield/lazygit@latest \
-    github.com/charmbracelet/glow@latest \
-    github.com/gsamokovarov/jump@latest \
     # Feed to 'go install'
     | xargs -n 1 go install
 
+USER root
+
+# Tool configuration
+USER root
+# ($PREFIX should not be expanded)
+# hadolint ignore=SC2016
+RUN mkdir -p /etc/fish && \
+    echo 'eval "$($(brew --prefix)/bin/brew shellenv)"' >> tee -a /etc/bash.bashrc && \
+    echo 'set PREFIX (brew --prefix)' >> /etc/fish/config.fish && \
+    echo 'eval ($PREFIX/bin/brew shellenv)' >> /etc/fish/config.fish && \
+    echo 'alias howdoi="howdoi -e bing"' | tee -a /etc/bash.bashrc /etc/fish/config.fish && \
+    echo 'eval $(thefuck --alias f)' >> /etc/bash.bashrc && \
+    echo 'thefuck --alias f | source' >> /etc/fish/config.fish && \
+    echo 'eval "$(jump shell)"' >> /etc/bash.bashrc && \
+    echo 'jump shell fish | source' >> /etc/fish/config.fish && \
+    echo 'eval "$(zoxide init bash)"' >> /etc/bash.bashrc && \
+    echo 'zoxide init fish | source' >> /etc/fish/config.fish
+
+# Keep PATH when using sudo - as a workaround, use alias
+# ($PATH should not be expanded)
+# hadolint ignore=SC2016
+RUN echo 'alias el="echo running elevated... && sudo --preserve-env env PATH=$PATH"' | tee -a /etc/bash.bashrc /etc/fish/config.fish
+
+# batcat -> bat
+RUN ln -s /usr/bin/batcat /usr/local/bin/bat
+
+# Add navi repository
+# (do not expand escape sequences)
+# hadolint ignore=SC2028
+RUN echo 'spawn navi repo add denisidoro/cheats; expect "Do you want to import all files from this repo?"; send "Yes\r"; expect "curl, http"; exit;' > /tmp/.expect && \
+    expect /tmp/.expect && \
+    rm -rf /tmp/.expect
+
 # Reroute cache to /tmp
 ENV NPM_CONFIG_CACHE=/tmp/.npm
-ENV XDG_CONFIG_HOME=/tmp/.config
 ENV XDG_CACHE_HOME=/tmp/.cache
-ENV MYPY_CACHE_DIR=/tmp/.mypy_cache
-ENV RUFF_CACHE_DIR=/tmp/.ruff_cache
 ENV TASK_TEMP_DIR=/tmp/.task
 
 # Timezone
 ENV TZ=Europe/Zurich
+
+USER ${USER}
+WORKDIR /home/${USER}
