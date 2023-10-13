@@ -1,0 +1,20 @@
+{
+    "name": "devenv",
+    "containerUser": "user",
+    "remoteUser": "user",
+    "build": {
+        "dockerfile": "../Dockerfile.dev",
+        "context": "..",
+        "args": {
+            "POETRY_VERSION": "1.6.1",
+            "IMAGE_REPOSITORY": "docker.io"
+        }
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": ["ms-python.python", "ms-python.vscode-pylance"]
+        }
+    },
+    "postCreateCommand": "poetry install --with dev"
+    // "postCreateCommand": "bash -c 'pip install --user --requirement <(poetry export --with dev --format requirements.txt)'"
+}
