@@ -117,6 +117,7 @@ RUN pip install --no-cache-dir \
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     bat \
+    exa \
     fzf \
     duf \
     hyperfine \
@@ -180,11 +181,9 @@ RUN brew install \
     navi \
     dua-cli \
     fx \
-    exa \
     # eza is newer than exa
     eza \
     zoxide
-
 
 # Terminal augmentations (fails if run together with above)
 # (split up for readability)
@@ -214,9 +213,28 @@ RUN brew install \
 # Go-based tooling
 RUN echo \
     # Commands to install
-    github.com/bronze1man/yaml2json@latest \
     github.com/gulyasm/jsonui@latest \
+    github.com/bronze1man/yaml2json@latest \
     github.com/lucasepe/yml2dot@latest \
+
+    # github.com/jesseduffield/lazydocker@latest \
+    # github.com/c-bata/kube-prompt@latest \
+    # github.com/derailed/k9s@latest \
+
+
+    # github.com/gulyasm/jsonui@latest \
+    # github.com/mikefarah/yq/v4@latest \
+
+    # github.com/lucasepe/yml2dot@latest \
+    # github.com/bronze1man/yaml2json@latest \
+
+    # github.com/gsamokovarov/jump@latest \
+    # github.com/antonmedv/fx@latest \
+    # github.com/jesseduffield/lazygit@latest \
+    # github.com/charmbracelet/glow@latest \
+
+    # github.com/boyter/scc/v3@latest \
+
     # Feed to 'go install'
     | xargs -n 1 go install
 
