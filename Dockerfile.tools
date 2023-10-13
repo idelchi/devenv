@@ -117,7 +117,6 @@ RUN pip install --no-cache-dir \
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     bat \
-    exa \
     fzf \
     duf \
     hyperfine \
@@ -148,11 +147,17 @@ USER ${USER}
 # Docker and related toolset (most will require sudo to run)
 RUN brew install \
     docker \
+    docker-compose \
     kubectl \
     helm \
     minikube
+ENV DOCKER_CONFIG=/opt/.docker
+USER root
+RUN mkdir -p ${DOCKER_CONFIG}/cli-plugins && \
+    ln -sfn "$(brew --prefix)/opt/docker-compose/bin/docker-compose" ${DOCKER_CONFIG}/cli-plugins/docker-compose
 
-# Tooling
+USER ${USER}
+# Docker Tooling
 # TODO(Idelchi): Organize by topic
 # (split up for readability)
 # hadolint ignore=DL3059
@@ -166,26 +171,47 @@ RUN brew install  \
     kdash-rs/kdash/kdash \
     jesseduffield/lazydocker/lazydocker \
     dive \
-    ctop \
-    # other
-    zoxide \
-    # eza is newer than exa
-    eza \
-    git-standup \
+    ctop
+
+# Terminal augmentations
+# (split up for readability)
+# hadolint ignore=DL3059
+RUN brew install \
     navi \
     dua-cli \
+    fx \
+    exa \
+    # eza is newer than exa
+    eza \
+    zoxide
+
+
+# Terminal augmentations (fails if run together with above)
+# (split up for readability)
+# hadolint ignore=DL3059
+RUN brew install \
+    jump
+
+# Programming languages & automation frameworks
+# (split up for readability)
+# hadolint ignore=DL3059
+RUN brew install \
     terraform \
+    ansible \
+    dotnet \
+    go
+
+# Other
+# (split up for readability)
+# hadolint ignore=DL3059
+RUN brew install \
+    git-standup \
     scc \
     yq \
     lazygit \
-    glow \
-    jump \
-    fx \
-    dotnet \
-    ansible \
-    go
+    glow
 
-# Go tooling
+# Go-based tooling
 RUN echo \
     # Commands to install
     github.com/bronze1man/yaml2json@latest \
