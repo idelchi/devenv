@@ -209,8 +209,8 @@ RUN mkdir -p /etc/fish && \
     echo 'set PREFIX (brew --prefix)' >> /etc/fish/config.fish && \
     echo 'eval ($PREFIX/bin/brew shellenv)' >> /etc/fish/config.fish && \
     echo 'alias howdoi="howdoi -e bing"' | tee -a /etc/bash.bashrc /etc/fish/config.fish && \
-    echo 'eval $(thefuck --alias f)' >> /etc/bash.bashrc && \
-    echo 'thefuck --alias f | source' >> /etc/fish/config.fish && \
+    echo 'eval $(thefuck --alias fuk)' >> /etc/bash.bashrc && \
+    echo 'thefuck --alias fuk | source' >> /etc/fish/config.fish && \
     echo 'eval "$(jump shell)"' >> /etc/bash.bashrc && \
     echo 'jump shell fish | source' >> /etc/fish/config.fish && \
     echo 'eval "$(zoxide init bash)"' >> /etc/bash.bashrc && \
