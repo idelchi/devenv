@@ -32,6 +32,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     apt-transport-https \
     software-properties-common \
     sudo \
+    procps \
     # Tools
     graphviz \
     iputils-ping \
@@ -39,6 +40,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     moreutils \
     file \
     expect \
+    less \
     # ssh
     openssh-client \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -86,10 +88,7 @@ ENV PATH=$CONDA_DIR/bin:$PATH
 
 # Install Brew
 USER ${USER}
-# (sudo is required for the install script)
-# hadolint ignore=DL3004
-RUN sudo curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh | sudo bash && \
-    sudo chown -R $USER:$USER /home/linuxbrew/.linuxbrew
+RUN /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ENV PATH="/home/linuxbrew/.linuxbrew/bin:${PATH}"
 
 # TODO(Idelchi): Use conda for everything?
@@ -117,7 +116,6 @@ RUN pip install --no-cache-dir \
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     bat \
-    exa \
     fzf \
     duf \
     hyperfine \
@@ -127,7 +125,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     nano \
     vim \
     neovim \
-    micro  \
+    micro \
+    # Shells
+    fish \
+    zsh \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# fasd
+RUN add-apt-repository ppa:aacebedo/fasd && \
+    apt-get update && apt-get install -y --no-install-recommends \
+    fasd \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Powershell
@@ -135,13 +142,6 @@ RUN curl https://packages.microsoft.com/keys/microsoft.asc | gpg --yes --dearmor
     sh -c 'echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/microsoft-debian-bullseye-prod bullseye main" > /etc/apt/sources.list.d/microsoft.list' && \
     apt-get update && apt-get install -y --no-install-recommends \
     powershell \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# Fish shell
-RUN echo 'deb http://download.opensuse.org/repositories/shells:/fish:/release:/3/Debian_12/ /' | tee /etc/apt/sources.list.d/shells:fish:release:3.list && \
-    curl -fsSL https://download.opensuse.org/repositories/shells:fish:release:3/Debian_12/Release.key | gpg --dearmor | tee /etc/apt/trusted.gpg.d/shells_fish_release_3.gpg > /dev/null && \
-    apt-get update && apt-get install -y --no-install-recommends \
-    fish \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 USER ${USER}
@@ -157,53 +157,34 @@ USER root
 RUN mkdir -p ${DOCKER_CONFIG}/cli-plugins && \
     ln -sfn "$(brew --prefix)/opt/docker-compose/bin/docker-compose" ${DOCKER_CONFIG}/cli-plugins/docker-compose
 
+# Tools
 USER ${USER}
-# Docker Tooling
-# TODO(Idelchi): Organize by topic
-# (split up for readability)
-# hadolint ignore=DL3059
 RUN brew install  \
+    # Docker
     k9s \
     c-bata/kube-prompt/kube-prompt \
     moncho/dry/dry \
     docker-slim \
-    lazydocker \
     kubectx \
     kdash-rs/kdash/kdash \
     jesseduffield/lazydocker/lazydocker \
     dive \
-    ctop
-
-# Terminal augmentations
-# (split up for readability)
-# hadolint ignore=DL3059
-RUN brew install \
+    ctop\
+    # Terminal augmentations
     navi \
     dua-cli \
     fx \
-    # eza is newer than exa
+    exa \
+    # (eza is newer than exa)
     eza \
-    zoxide
-
-# Terminal augmentations (fails if run together with above)
-# (split up for readability)
-# hadolint ignore=DL3059
-RUN brew install \
-    jump
-
-# Programming languages & automation frameworks
-# (split up for readability)
-# hadolint ignore=DL3059
-RUN brew install \
+    zoxide \
+    jump \
+    # Programming languages & automation frameworks
     terraform \
     ansible \
     dotnet \
-    go
-
-# Other
-# (split up for readability)
-# hadolint ignore=DL3059
-RUN brew install \
+    go \
+    # other
     git-standup \
     scc \
     yq \
@@ -213,32 +194,11 @@ RUN brew install \
 # Go-based tooling
 RUN echo \
     # Commands to install
-    github.com/gulyasm/jsonui@latest \
-    github.com/bronze1man/yaml2json@latest \
     github.com/lucasepe/yml2dot@latest \
-
-    # github.com/jesseduffield/lazydocker@latest \
-    # github.com/c-bata/kube-prompt@latest \
-    # github.com/derailed/k9s@latest \
-
-
-    # github.com/gulyasm/jsonui@latest \
-    # github.com/mikefarah/yq/v4@latest \
-
-    # github.com/lucasepe/yml2dot@latest \
-    # github.com/bronze1man/yaml2json@latest \
-
-    # github.com/gsamokovarov/jump@latest \
-    # github.com/antonmedv/fx@latest \
-    # github.com/jesseduffield/lazygit@latest \
-    # github.com/charmbracelet/glow@latest \
-
-    # github.com/boyter/scc/v3@latest \
-
+    github.com/bronze1man/yaml2json@latest \
+    github.com/gulyasm/jsonui@latest \
     # Feed to 'go install'
     | xargs -n 1 go install
-
-USER root
 
 # Tool configuration
 USER root
@@ -254,7 +214,8 @@ RUN mkdir -p /etc/fish && \
     echo 'eval "$(jump shell)"' >> /etc/bash.bashrc && \
     echo 'jump shell fish | source' >> /etc/fish/config.fish && \
     echo 'eval "$(zoxide init bash)"' >> /etc/bash.bashrc && \
-    echo 'zoxide init fish | source' >> /etc/fish/config.fish
+    echo 'zoxide init fish | source' >> /etc/fish/config.fish && \
+    fish -c fish_update_completions
 
 # Keep PATH when using sudo - as a workaround, use alias
 # ($PATH should not be expanded)
@@ -281,3 +242,5 @@ ENV TZ=Europe/Zurich
 
 USER ${USER}
 WORKDIR /home/${USER}
+
+# TODO(Idelchi): https://jvns.ca/blog/2022/04/12/a-list-of-new-ish--command-line-tools/
