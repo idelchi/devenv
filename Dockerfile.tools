@@ -112,7 +112,8 @@ RUN pip install --no-cache-dir \
     npm install -g \
     semantic-git-commit-cli \
     commitizen \
-    tldr
+    tldr \
+    hget
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     bat \
@@ -189,7 +190,8 @@ RUN brew install  \
     scc \
     yq \
     lazygit \
-    glow
+    glow \
+    jdupes
 
 # Go-based tooling
 RUN echo \
