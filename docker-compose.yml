@@ -5,7 +5,7 @@ version: '3.7'
 
 services:
   devenv:
-    build: ${DEVENV}
+    build: .
     pull_policy: if_not_present
     image: idelchi/devenv:dev
     container_name: devenv
@@ -21,6 +21,33 @@ services:
     user: user
     volumes:
       - ${PWD}:/home/user/ws
+      - /var/run/docker.sock:/var/run/docker.sock
+      # - ${DEVENV}:${DEVENV} # Possible to mount it inside
+    extra_hosts:
+      - host:host-gateway
+    working_dir: /home/user/ws
+
+  tools:
+    build:
+      dockerfile: Dockerfile.tools
+    pull_policy: if_not_present
+    image: idelchi/devenv:tools
+    container_name: tools
+    hostname: tools
+    ports:
+      # <host:container>
+      - '8888:8888' # GoDoc
+      - '10000-10200:10000-10200' # Go Profilers
+      - '9090:6419' # grip
+    environment:
+      - DEVENV
+      - KUBECONFIG=/kube/config
+    network_mode: bridge
+    user: user
+    volumes:
+      - ${PWD}:/home/user/ws
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${HOME}/.kube/config:/home/user/.kube/config
       # - ${DEVENV}:${DEVENV} # Possible to mount it inside
     extra_hosts:
       - host:host-gateway

@@ -12,7 +12,7 @@ tasks:
     desc: Check for trailing whitespaces in the project files
     summary: |
       This task finds any trailing whitespaces in the project files and reports them.
-    cmd: wslint -q "**"
+    cmd: wslint -q -a -e "**/.build/**" "**"
 
   docker:
     desc: Lint Dockerfiles
@@ -20,11 +20,11 @@ tasks:
       This task lints Dockerfiles using hadolint, dockerfilelint, and dockerfile-utils.
     cmd: |
       test -z "{{.FILES}}" && echo "no Dockerfiles found" && exit 0
-      hadolint --config={{.CONFIG}} {{.FILES}}
-      dockerfilelint {{.FILES}}
+      hadolint --config={{.CONFIG_HADOLINT}} {{.FILES}}
+      dockerfilelint --config={{.CONFIG_DIR}} {{.FILES}}
       dockerfile-utils lint {{.FILES}}
     vars:
-      CONFIG: '{{.CONFIG_DIR}}/.hadolint.yaml'
+      CONFIG_HADOLINT: '{{.CONFIG_DIR}}/.hadolint.yaml'
       FILES:
         sh: find . -type f -name "Dockerfile*" | tr '\n' ' '
     sources:

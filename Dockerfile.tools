@@ -1,0 +1,248 @@
+#[=======================================================================[
+# Description : Docker image containing various experimental tooling
+#]=======================================================================]
+
+FROM debian:bookworm
+
+LABEL maintainer=arash.idelchi
+
+USER root
+
+# Create User (Debian/Ubuntu)
+ARG USER=user
+RUN groupadd -r -g 1001 ${USER} && \
+    useradd -r -u 1001 -g 1001 -m -c "${USER} account" -d /home/${USER} -s /bin/bash ${USER}
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+# Basic good practices
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+# Basic tooling
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    # Build tools
+    build-essential \
+    # Auxiliaries
+    curl \
+    wget \
+    git \
+    ca-certificates \
+    gnupg \
+    lsb-release \
+    apt-transport-https \
+    software-properties-common \
+    sudo \
+    procps \
+    # Tools
+    graphviz \
+    iputils-ping \
+    gettext-base \
+    moreutils \
+    file \
+    expect \
+    less \
+    # ssh
+    openssh-client \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Install Java & Node
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    default-jdk \
+    nodejs \
+    npm \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Python
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 \
+    python3-pip \
+    python3-venv \
+    python3-launchpadlib \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Pip override to allow breaking packages
+RUN echo -e "[global]\nbreak-system-packages=true" >> /etc/pip.conf
+
+# Install Task
+ARG TASK_VERSION=v3.31.0
+RUN wget -qO- https://github.com/go-task/task/releases/download/${TASK_VERSION}/task_linux_amd64.tar.gz | tar -xz -C /usr/local/bin
+
+# Docker
+RUN groupadd docker && \
+    usermod -aG docker ${USER} && \
+    adduser ${USER} sudo && \
+    echo "${USER}  ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/${USER}
+
+# Install miniconda
+ENV CONDA_DIR /opt/conda
+RUN mkdir -p ${CONDA_DIR} && \
+    chown -R ${USER}:${USER} ${CONDA_DIR}
+
+USER ${USER}
+WORKDIR /home/${USER}
+
+RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /tmp/miniconda.sh && \
+    bash /tmp/miniconda.sh -u -b -p ${CONDA_DIR} && \
+    rm -rf /tmp/miniconda.sh
+ENV PATH=$CONDA_DIR/bin:$PATH
+
+# Install Brew
+USER ${USER}
+RUN /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+ENV PATH="/home/linuxbrew/.linuxbrew/bin:${PATH}"
+
+# TODO(Idelchi): Use conda for everything?
+## Tool installations ##
+USER root
+RUN npm install -g \
+    dockly  \
+    && pip install --no-cache-dir \
+    kube-shell
+
+# Various tools
+RUN pip install --no-cache-dir \
+    # (bind to 0.0.0.0 to allow access from outside)
+    grip \
+    gitlint \
+    sphinx \
+    httpie \
+    thefuck \
+    howdoi  \
+    && \
+    npm install -g \
+    semantic-git-commit-cli \
+    commitizen \
+    tldr \
+    hget
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    bat \
+    fzf \
+    duf \
+    hyperfine \
+    tree \
+    # Editors
+    ne \
+    nano \
+    vim \
+    neovim \
+    micro \
+    # Shells
+    fish \
+    zsh \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# fasd
+RUN add-apt-repository ppa:aacebedo/fasd && \
+    apt-get update && apt-get install -y --no-install-recommends \
+    fasd \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Powershell
+RUN curl https://packages.microsoft.com/keys/microsoft.asc | gpg --yes --dearmor --output /usr/share/keyrings/microsoft.gpg && \
+    sh -c 'echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/microsoft-debian-bullseye-prod bullseye main" > /etc/apt/sources.list.d/microsoft.list' && \
+    apt-get update && apt-get install -y --no-install-recommends \
+    powershell \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+USER ${USER}
+# Docker and related toolset (most will require sudo to run)
+RUN brew install \
+    docker \
+    docker-compose \
+    kubectl \
+    helm \
+    minikube
+ENV DOCKER_CONFIG=/opt/.docker
+USER root
+RUN mkdir -p ${DOCKER_CONFIG}/cli-plugins && \
+    ln -sfn "$(brew --prefix)/opt/docker-compose/bin/docker-compose" ${DOCKER_CONFIG}/cli-plugins/docker-compose
+
+# Tools
+USER ${USER}
+RUN brew install  \
+    # Docker
+    k9s \
+    c-bata/kube-prompt/kube-prompt \
+    moncho/dry/dry \
+    docker-slim \
+    kubectx \
+    kdash-rs/kdash/kdash \
+    jesseduffield/lazydocker/lazydocker \
+    dive \
+    ctop\
+    # Terminal augmentations
+    navi \
+    dua-cli \
+    fx \
+    exa \
+    # (eza is newer than exa)
+    eza \
+    zoxide \
+    jump \
+    # Programming languages & automation frameworks
+    terraform \
+    ansible \
+    dotnet \
+    go \
+    # other
+    git-standup \
+    scc \
+    yq \
+    lazygit \
+    glow \
+    jdupes
+
+# Go-based tooling
+RUN echo \
+    # Commands to install
+    github.com/lucasepe/yml2dot@latest \
+    github.com/bronze1man/yaml2json@latest \
+    github.com/gulyasm/jsonui@latest \
+    # Feed to 'go install'
+    | xargs -n 1 go install
+
+# Tool configuration
+USER root
+# ($PREFIX should not be expanded)
+# hadolint ignore=SC2016
+RUN mkdir -p /etc/fish && \
+    echo 'eval "$($(brew --prefix)/bin/brew shellenv)"' >> tee -a /etc/bash.bashrc && \
+    echo 'set PREFIX (brew --prefix)' >> /etc/fish/config.fish && \
+    echo 'eval ($PREFIX/bin/brew shellenv)' >> /etc/fish/config.fish && \
+    echo 'alias howdoi="howdoi -e bing"' | tee -a /etc/bash.bashrc /etc/fish/config.fish && \
+    echo 'eval $(thefuck --alias fuk)' >> /etc/bash.bashrc && \
+    echo 'thefuck --alias fuk | source' >> /etc/fish/config.fish && \
+    echo 'eval "$(jump shell)"' >> /etc/bash.bashrc && \
+    echo 'jump shell fish | source' >> /etc/fish/config.fish && \
+    echo 'eval "$(zoxide init bash)"' >> /etc/bash.bashrc && \
+    echo 'zoxide init fish | source' >> /etc/fish/config.fish && \
+    fish -c fish_update_completions
+
+# Keep PATH when using sudo - as a workaround, use alias
+# ($PATH should not be expanded)
+# hadolint ignore=SC2016
+RUN echo 'alias el="echo running elevated... && sudo --preserve-env env PATH=$PATH"' | tee -a /etc/bash.bashrc /etc/fish/config.fish
+
+# batcat -> bat
+RUN ln -s /usr/bin/batcat /usr/local/bin/bat
+
+# Add navi repository
+# (do not expand escape sequences)
+# hadolint ignore=SC2028
+RUN echo 'spawn navi repo add denisidoro/cheats; expect "Do you want to import all files from this repo?"; send "Yes\r"; expect "curl, http"; exit;' > /tmp/.expect && \
+    expect /tmp/.expect && \
+    rm -rf /tmp/.expect
+
+# Reroute cache to /tmp
+ENV NPM_CONFIG_CACHE=/tmp/.npm
+ENV XDG_CACHE_HOME=/tmp/.cache
+ENV TASK_TEMP_DIR=/tmp/.task
+
+# Timezone
+ENV TZ=Europe/Zurich
+
+USER ${USER}
+WORKDIR /home/${USER}
+
+# TODO(Idelchi): https://jvns.ca/blog/2022/04/12/a-list-of-new-ish--command-line-tools/

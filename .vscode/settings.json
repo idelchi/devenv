@@ -43,7 +43,7 @@
     "prettier.configPath": "config/.prettierrc.yml",
     /* ****** ****** ****** */
     /* ****** PYTHON ****** */
-    "python.defaultInterpreterPath": "python3",
+    "python.defaultInterpreterPath": "python",
     "python.languageServer": "Pylance",
     "python.analysis.autoImportCompletions": true,
     "autoDocstring.docstringFormat": "google",

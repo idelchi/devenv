@@ -86,6 +86,14 @@ Tools that are not linters or formatters, but are useful for development:
 - [envsubst](https://www.gnu.org/software/gettext/manual/html_node/envsubst-Invocation.html)
 - [sponge](https://linux.die.net/man/1/sponge)
 - [nano](https://www.nano-editor.org/)
+- [navi](https://github.com/denisidoro/navi)
+- [jsonui](https://github.com/gulyasm/jsonui)
+- [dockly](https://github.com/lirantal/dockly)
+- [slim](https://github.com/slimtoolkit/slim)
+- [lazydocker](https://github.com/jesseduffield/lazydocker)
+- [kube-shell](https://github.com/cloudnativelabs/kube-shell)
+- [kube-prompt](https://github.com/c-bata/kube-prompt)
+- [docker](https://www.docker.com/)
 
 Compilers and interpreters:
 
@@ -94,6 +102,8 @@ Compilers and interpreters:
 - [rust](https://www.rust-lang.org/)
 - [gcc](https://gcc.gnu.org/)
 - [clang](https://clang.llvm.org/)
+
+The tools are split over two Dockerfiles, depending on usage.
 
 ## Using Docker
 
@@ -122,8 +132,3 @@ For this, the `.env` file should be appropriately configured and sourced.
 `.devcontainer` contains configurations to use the Docker image as a development container.
 
 `.vscode` contains configurations for usage in VS Code.
-
-## Contributing
-
-git config user.name "Arash Idelchi"
-git config user.email "<64003206+idelchi@users.noreply.github.com>"

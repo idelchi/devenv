@@ -5,6 +5,7 @@
 #   - Rust
 #   - Linters
 #   - Formatters
+#   - and many, many, more...
 #]=======================================================================]
 
 FROM debian:bookworm
@@ -12,6 +13,11 @@ FROM debian:bookworm
 LABEL maintainer=arash.idelchi
 
 USER root
+
+# Create User (Debian/Ubuntu)
+ARG USER=user
+RUN groupadd -r -g 1001 ${USER} && \
+    useradd -r -u 1001 -g 1001 -m -c "${USER} account" -d /home/${USER} -s /bin/bash ${USER}
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -30,26 +36,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     # Tools
     graphviz \
-    iputils-ping \
     gettext-base \
     moreutils \
-    tree \
-    # Editors
-    ne \
-    nano \
-    vim \
-    neovim \
-    # ssh
-    openssh-client \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install Java & Node (version 11 of Java due to npm-groovy-lint)
-RUN echo "deb http://deb.debian.org/debian/ bullseye main" >> /etc/apt/sources.list && \
-    apt-get update && apt-get install -y --no-install-recommends \
-    openjdk-11-jdk \
-    && apt-get clean && rm -rf /var/lib/apt/lists/* && \
-    rm /etc/apt/sources.list
+# Install Java & Node
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    default-jdk \
     nodejs \
     npm \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -109,52 +102,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     codespell \
     scspell3k
 
-# Powershell
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl \
-    gnupg \
-    apt-transport-https \
-    && curl https://packages.microsoft.com/keys/microsoft.asc | gpg --yes --dearmor --output /usr/share/keyrings/microsoft.gpg && \
-    sh -c 'echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/microsoft-debian-bullseye-prod bullseye main" > /etc/apt/sources.list.d/microsoft.list' && \
-    apt-get update && apt-get install -y --no-install-recommends \
-    powershell \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# .NET
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    dotnet-runtime-7.0 \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# Ansible
-RUN pip install --no-cache-dir ansible
-
-# Terraform
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    gnupg \
-    software-properties-common \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
-RUN wget -qO- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | tee /usr/share/keyrings/hashicorp-archive-keyring.gpg
-RUN echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | \
-    tee /etc/apt/sources.list.d/hashicorp.list
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    terraform \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# Various tools
-RUN pip install --no-cache-dir \
-    # (bind to 0.0.0.0 to allow access from outside)
-    grip \
-    gitlint \
-    sphinx
-
 # Install Task
-ARG TASK_VERSION=v3.28.0
+ARG TASK_VERSION=v3.31.0
 RUN wget -qO- https://github.com/go-task/task/releases/download/${TASK_VERSION}/task_linux_amd64.tar.gz | tar -xz -C /usr/local/bin
-
-# Create CI User (Debian/Ubuntu)
-ARG USER=user
-RUN groupadd -r -g 1001 ${USER} && \
-    useradd -r -u 1001 -g 1001 -m -c "${USER} account" -d /home/${USER} -s /bin/bash ${USER}
 
 # Install Rust
 ARG RUST_DIR=/opt/rust
@@ -201,7 +151,7 @@ RUN pip install --no-cache-dir \
     fastapi
 
 # Install Go
-ARG GO_VERSION=go1.21.0.linux-amd64
+ARG GO_VERSION=go1.21.3.linux-amd64
 RUN wget -qO- https://go.dev/dl/${GO_VERSION}.tar.gz | tar -xz -C /usr/local
 ENV PATH="/usr/local/go/bin:$PATH"
 
@@ -212,30 +162,31 @@ ENV PATH="${GOPATH}/bin:$PATH"
 USER ${USER}
 WORKDIR /home/${USER}
 
+# Run npm-groovy-lint once to download its preferred version of Java
+RUN npm-groovy-lint --version
+
 # Go tooling
 # TODO: Move to logical groups instead (e.g. "linters", "formatters", etc.)
 RUN echo \
     # Commands to install
-    golang.org/x/tools/cmd/godoc@latest \
-    gotest.tools/gotestsum@latest \
-    github.com/t-yuki/gocover-cobertura@latest \
+    github.com/amit-davidson/Chronos/cmd/chronos@latest \
     github.com/client9/misspell/cmd/misspell@latest \
+    github.com/loov/goda@latest \
+    github.com/rillig/gobco@latest \
+    github.com/segmentio/golines@latest \
+    github.com/t-yuki/gocover-cobertura@latest \
+    golang.org/x/tools/cmd/godoc@latest \
+    golang.org/x/tools/cmd/guru@latest \
+    gotest.tools/gotestsum@latest \
+    honnef.co/go/implements@latest \
     mvdan.cc/gofumpt@latest \
     mvdan.cc/sh/v3/cmd/shfmt@latest \
-    github.com/loov/goda@latest \
-    github.com/lucasepe/yml2dot@latest \
-    github.com/segmentio/golines@latest \
-    golang.org/x/tools/cmd/guru@latest \
-    honnef.co/go/implements@latest \
     rsc.io/tmp/uncover@latest \
-    github.com/rillig/gobco@latest \
-    github.com/mikefarah/yq/v4@latest \
-    github.com/bronze1man/yaml2json@latest \
     # Feed to 'go install'
     | xargs -n 1 go install
 
 # Install golangci-lint
-ARG GOLANGCI_LINT_VERSION=v1.54.1
+ARG GOLANGCI_LINT_VERSION=v1.55.0
 RUN wget -qO- https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b "$(go env GOPATH)/bin" ${GOLANGCI_LINT_VERSION}
 # Pre-download some useful packages and dependencies
 RUN go mod download \
@@ -258,7 +209,6 @@ RUN go mod download \
 
 # Reroute cache to /tmp
 ENV NPM_CONFIG_CACHE=/tmp/.npm
-ENV XDG_CONFIG_HOME=/tmp/.config
 ENV XDG_CACHE_HOME=/tmp/.cache
 ENV MYPY_CACHE_DIR=/tmp/.mypy_cache
 ENV RUFF_CACHE_DIR=/tmp/.ruff_cache
@@ -274,6 +224,7 @@ RUN sed -i 's#^DEVENV=.*#DEVENV='"${DEVENV}"'#' ${DEVENV}/.env
 
 # Install wslint
 ARG CACHEBUST
-RUN go install github.com/idelchi/wslint@dev
+# TODO(Idelchi): Implement versioning in wslint instead.
+RUN go install -ldflags='-s -w -X "main.version=unofficial & built from dev branch"' github.com/idelchi/wslint@dev
 
 # TODO: Install "Mega-Linter"?

@@ -1,9 +1,12 @@
 default: true
 
-# MD013/line-length - Line length
+# line-length - Line length
 MD013:
   line_length: 120
 
 # no-duplicate-heading/no-duplicate-header Multiple headings with the same content
 MD024:
   siblings_only: true
+
+# no-inline-html Inline HTML
+MD033: false
