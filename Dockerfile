@@ -186,7 +186,7 @@ RUN echo \
     | xargs -n 1 go install
 
 # Install golangci-lint
-ARG GOLANGCI_LINT_VERSION=v1.55.0
+ARG GOLANGCI_LINT_VERSION=v1.55.1
 RUN wget -qO- https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b "$(go env GOPATH)/bin" ${GOLANGCI_LINT_VERSION}
 # Pre-download some useful packages and dependencies
 RUN go mod download \
@@ -224,7 +224,7 @@ RUN sed -i 's#^DEVENV=.*#DEVENV='"${DEVENV}"'#' ${DEVENV}/.env
 
 # Install wslint
 ARG CACHEBUST
-# TODO(Idelchi): Implement versioning in wslint instead.
+# TODO: Implement versioning in wslint instead.
 RUN go install -ldflags='-s -w -X "main.version=unofficial & built from dev branch"' github.com/idelchi/wslint@dev
 
 # TODO: Install "Mega-Linter"?

@@ -1,5 +1,7 @@
 version: '3'
 
+# TODO: Formatters should (probably) not have non-zero exit codes unless they completely fail.
+
 # requires
 # - CONFIG_DIR
 # - SCRIPTS_DIR
