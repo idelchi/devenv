@@ -242,7 +242,12 @@ ENV TASK_TEMP_DIR=/tmp/.task
 # Timezone
 ENV TZ=Europe/Zurich
 
+# Install Azure CLI
+RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash
+
 USER ${USER}
 WORKDIR /home/${USER}
 
 # TODO: https://jvns.ca/blog/2022/04/12/a-list-of-new-ish--command-line-tools/
+ENTRYPOINT ["/bin/sh", "-c", "sudo chmod 777 /var/run/docker.sock && exec bash"]
+CMD ["/bin/bash"]
