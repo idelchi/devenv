@@ -14,9 +14,9 @@ vars:
   COVERAGE: '{{.COVERAGE | default "100%"}}'
   COVER: '{{.COVER | default "."}}'
   PROJECT:
-    sh: go list -m
+    sh: echo $(go list -m) 2> /dev/null
   PACKAGES:
-    sh: echo $(go list ./...)
+    sh: echo $(go list ./...) 2> /dev/null
 
 tasks:
   # Utilities

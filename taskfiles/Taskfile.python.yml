@@ -78,13 +78,15 @@ tasks:
             version_array+=("$version")
         done
 
-        # Check if PYPI_VERSION is in the list of available versions
-        if [[ "$PYPI_VERSION" == "0.0" ]]; then
-            echo "PYPI_VERSION is 0.0, allowing development overwrite."
+        # Check if PYPI_VERSION is in the list of special cases
+        if [[ "$PYPI_VERSION" =~ \.dev$ ]] || [[ "$PYPI_VERSION" =~ \+[a-zA-Z0-9_-]+$ ]]; then
+            echo "PYPI_VERSION '$PYPI_VERSION' allows development overwrite."
             exit 0
         elif [[ " ${version_array[@]} " =~ " ${PYPI_VERSION} " ]]; then
-            echo "PYPI_VERSION is already in the list of available versions."
+            echo "PYPI_VERSION '$PYPI_VERSION' is already in the list of available versions."
             exit 1
+        else
+            echo "PYPI_VERSION '$PYPI_VERSION' doesn't exist, uploading."
         fi
       # Workaround for volume mounts having issues when copying from /tmp to /
       - defer: |
@@ -118,6 +120,7 @@ tasks:
       - 'echo "build: $BUILD_NUMBER" >> {{.ARGS}}'
       - 'echo "commit: $GIT_COMMIT" >> {{.ARGS}}'
       - 'echo "date: $(date)" >> {{.ARGS}}'
+      - 'echo "version: $PYPI_VERSION" >> {{.ARGS}}'
     vars:
       ARGS: '{{.CLI_ARGS | default "metadata"}}'
     env:
@@ -126,6 +129,7 @@ tasks:
       BRANCH_NAME:
         sh: git rev-parse --abbrev-ref HEAD
       BUILD_NUMBER: 'unknown'
+      PYPI_VERSION: 'unknown'
       GIT_COMMIT:
         sh: git rev-parse HEAD
 

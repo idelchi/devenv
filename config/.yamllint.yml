@@ -7,3 +7,7 @@ rules:
   truthy:
     ignore: |
       **/.github/workflows
+
+ignore:
+  # YAML files in templates directory are assumed to be Helm templates
+  '**/templates/*.yaml'

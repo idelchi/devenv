@@ -53,6 +53,19 @@ tasks:
     interactive: true
     dir: '{{.USER_WORKING_DIR}}'
 
+  tools:
+    desc: Run commands inside the Docker container
+    summary: |
+      This task allows you to run commands inside the Docker container.
+      Usage:
+        - `task tools` to launch the container and enter its shell
+        - `task tools -- task <task> -f` to run a task/command inside the container
+    cmds:
+      - docker rm -f tools > /dev/null 2>&1 || true
+      - docker compose -f {{.DEVENV}}/docker-compose.yml build --build-arg CACHEBUST=$(date +%s) tools
+      - docker compose -f {{.DEVENV}}/docker-compose.yml run --name tools --rm --service-ports tools {{.CLI_ARGS}}
+    interactive: true
+
   push:
     desc: Push changes to the remote repository
     summary: |
