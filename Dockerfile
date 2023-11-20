@@ -38,6 +38,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     graphviz \
     gettext-base \
     moreutils \
+    iputils-ping \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install Java & Node
@@ -102,6 +103,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     codespell \
     scspell3k
 
+# Helm Linting
+ARG CHART_TESTING_VERSION=3.10.1
+RUN wget -qO- https://github.com/helm/chart-testing/releases/download/v${CHART_TESTING_VERSION}/chart-testing_${CHART_TESTING_VERSION}_linux_amd64.tar.gz | tar -xz -C /usr/local/bin
+
 # Install Task
 ARG TASK_VERSION=v3.31.0
 RUN wget -qO- https://github.com/go-task/task/releases/download/${TASK_VERSION}/task_linux_amd64.tar.gz | tar -xz -C /usr/local/bin
@@ -151,7 +156,7 @@ RUN pip install --no-cache-dir \
     fastapi
 
 # Install Go
-ARG GO_VERSION=go1.21.3.linux-amd64
+ARG GO_VERSION=go1.21.4.linux-amd64
 RUN wget -qO- https://go.dev/dl/${GO_VERSION}.tar.gz | tar -xz -C /usr/local
 ENV PATH="/usr/local/go/bin:$PATH"
 
@@ -181,12 +186,12 @@ RUN echo \
     honnef.co/go/implements@latest \
     mvdan.cc/gofumpt@latest \
     mvdan.cc/sh/v3/cmd/shfmt@latest \
-    rsc.io/tmp/uncover@latest \
+    rsc.io/uncover@latest \
     # Feed to 'go install'
     | xargs -n 1 go install
 
 # Install golangci-lint
-ARG GOLANGCI_LINT_VERSION=v1.55.0
+ARG GOLANGCI_LINT_VERSION=v1.55.2
 RUN wget -qO- https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b "$(go env GOPATH)/bin" ${GOLANGCI_LINT_VERSION}
 # Pre-download some useful packages and dependencies
 RUN go mod download \
@@ -224,7 +229,7 @@ RUN sed -i 's#^DEVENV=.*#DEVENV='"${DEVENV}"'#' ${DEVENV}/.env
 
 # Install wslint
 ARG CACHEBUST
-# TODO(Idelchi): Implement versioning in wslint instead.
+# TODO: Implement versioning in wslint instead.
 RUN go install -ldflags='-s -w -X "main.version=unofficial & built from dev branch"' github.com/idelchi/wslint@dev
 
 # TODO: Install "Mega-Linter"?

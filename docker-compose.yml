@@ -41,7 +41,7 @@ services:
       - '9090:6419' # grip
     environment:
       - DEVENV
-      - KUBECONFIG=/kube/config
+      - KUBECONFIG=/home/user/.kube/config
     network_mode: bridge
     user: user
     volumes:
