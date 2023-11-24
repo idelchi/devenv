@@ -57,10 +57,11 @@ tasks:
     summary: |
       This task lints YAML files using prettier and yamllint.
     cmds:
-      - prettier --config={{.CONFIG_PRETTIER}} --ignore-path={{.IGNORE}} --check "**/*.yaml" "**/*.yml"
+      - prettier --config={{.CONFIG_PRETTIER}} --ignore-path={{.IGNORE}} --ignore-path={{.CONFIG_PRETTIER_IGNORE}} --check "**/*.yaml" "**/*.yml"
       - yamllint --config-file={{.CONFIG_YAML}} --strict .
     vars:
       CONFIG_PRETTIER: '{{.CONFIG_DIR}}/.prettierrc.yml'
+      CONFIG_PRETTIER_IGNORE: '{{.CONFIG_DIR}}/.prettierignore'
       CONFIG_YAML: '{{.CONFIG_DIR}}/.yamllint.yml'
       IGNORE: '{{.CONFIG_DIR}}/.ignore'
     sources:

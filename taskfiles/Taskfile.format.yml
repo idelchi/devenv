@@ -46,9 +46,10 @@ tasks:
     desc: Format YAML files
     summary: |
       This task formats YAML files using prettier.
-    cmd: prettier --config={{.CONFIG_PRETTIER}} --log-level=silent --ignore-path={{.IGNORE}} --write "**/*.yaml" "**/*.yml"
+    cmd: prettier --config={{.CONFIG_PRETTIER}} --log-level=silent --ignore-path={{.CONFIG_PRETTIER_IGNORE}} --write "**/*.yaml" "**/*.yml"
     vars:
       CONFIG_PRETTIER: '{{.CONFIG_DIR}}/.prettierrc.yml'
+      CONFIG_PRETTIER_IGNORE: '{{.CONFIG_DIR}}/.prettierignore'
       IGNORE: '{{.CONFIG_DIR}}/.ignore'
     sources:
       - ./**/*.yaml

@@ -121,6 +121,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     duf \
     hyperfine \
     tree \
+    direnv \
     # Editors
     ne \
     nano \
@@ -207,16 +208,25 @@ USER root
 # ($PREFIX should not be expanded)
 # hadolint ignore=SC2016
 RUN mkdir -p /etc/fish && \
+    # brew
     echo 'eval "$($(brew --prefix)/bin/brew shellenv)"' >> tee -a /etc/bash.bashrc && \
     echo 'set PREFIX (brew --prefix)' >> /etc/fish/config.fish && \
     echo 'eval ($PREFIX/bin/brew shellenv)' >> /etc/fish/config.fish && \
+    # direnv
+    echo 'eval "$(direnv hook bash)"' >> /etc/bash.bashrc && \
+    echo 'direnv hook fish | source' >> /etc/fish/config.fish && \
+    # howdoi
     echo 'alias howdoi="howdoi -e bing"' | tee -a /etc/bash.bashrc /etc/fish/config.fish && \
+    # thefuck
     echo 'eval $(thefuck --alias fuk)' >> /etc/bash.bashrc && \
     echo 'thefuck --alias fuk | source' >> /etc/fish/config.fish && \
+    # jump
     echo 'eval "$(jump shell)"' >> /etc/bash.bashrc && \
     echo 'jump shell fish | source' >> /etc/fish/config.fish && \
+    # zoxide
     echo 'eval "$(zoxide init bash)"' >> /etc/bash.bashrc && \
     echo 'zoxide init fish | source' >> /etc/fish/config.fish && \
+    # completions
     fish -c fish_update_completions
 
 # Keep PATH when using sudo - as a workaround, use alias
