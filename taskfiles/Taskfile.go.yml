@@ -115,7 +115,7 @@ tasks:
   test:
     desc: test go project
     deps: [init]
-    cmd: go test {{.CLI_ARGS}} {{.TEST_FLAGS}} {{.PACKAGES}}
+    cmd: go test {{.TEST_FLAGS}} {{.PACKAGES}} {{.CLI_ARGS}}
     env:
       RUN_MONKEY_PATCH_TESTS: '{{.RUN_MONKEY_PATCH_TESTS}}'
 
