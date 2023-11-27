@@ -57,18 +57,22 @@ tasks:
     summary: |
       This task lints YAML files using prettier and yamllint.
     cmds:
+      - yamlfmt -lint -conf {{.CONFIG_YAMLFMT}} .
       - prettier --config={{.CONFIG_PRETTIER}} --ignore-path={{.IGNORE}} --ignore-path={{.CONFIG_PRETTIER_IGNORE}} --check "**/*.yaml" "**/*.yml"
-      - yamllint --config-file={{.CONFIG_YAML}} --strict .
+      - yamllint --config-file={{.CONFIG_YAMLLINT}} --strict .
     vars:
       CONFIG_PRETTIER: '{{.CONFIG_DIR}}/.prettierrc.yml'
       CONFIG_PRETTIER_IGNORE: '{{.CONFIG_DIR}}/.prettierignore'
-      CONFIG_YAML: '{{.CONFIG_DIR}}/.yamllint.yml'
+      CONFIG_YAMLLINT: '{{.CONFIG_DIR}}/.yamllint.yml'
+      CONFIG_YAMLFMT: '{{.CONFIG_DIR}}/.yamlfmt.yml'
       IGNORE: '{{.CONFIG_DIR}}/.ignore'
     sources:
       - ./**/*.yaml
       - ./**/*.yml
       - '{{.CONFIG_PRETTIER}}'
-      - '{{.CONFIG_YAML}}'
+      - '{{.CONFIG_PRETTIER_IGNORE}}'
+      - '{{.CONFIG_YAMLLINT}}'
+      - '{{.CONFIG_YAMLFMT}}'
       - '{{.IGNORE}}'
 
   md:

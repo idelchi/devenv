@@ -187,6 +187,7 @@ RUN echo \
     mvdan.cc/gofumpt@latest \
     mvdan.cc/sh/v3/cmd/shfmt@latest \
     rsc.io/uncover@latest \
+    github.com/google/yamlfmt/cmd/yamlfmt@latest \
     # Feed to 'go install'
     | xargs -n 1 go install
 
