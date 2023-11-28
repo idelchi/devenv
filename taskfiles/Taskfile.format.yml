@@ -47,7 +47,7 @@ tasks:
     summary: |
       This task formats YAML files using prettier.
     cmds:
-      - yamlfmt -conf {{.CONFIG_YAMLFMT}} .
+      - yamlfmt -conf {{.CONFIG_YAMLFMT}} "**/*.{yaml,yml}"
       - prettier --config={{.CONFIG_PRETTIER}} --log-level=silent --ignore-path={{.IGNORE}}  --ignore-path={{.CONFIG_PRETTIER_IGNORE}} --write "**/*.yaml" "**/*.yml"
     vars:
       CONFIG_PRETTIER: '{{.CONFIG_DIR}}/.prettierrc.yml'

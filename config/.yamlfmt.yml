@@ -1,3 +1,9 @@
+doublestar: true
+
+exclude:
+  # YAML files in templates directory are assumed to be Helm templates
+  - '**/templates/**/*.yaml'
+
 formatter:
   retain_line_breaks: true
   scan_folded_as_literal: true
