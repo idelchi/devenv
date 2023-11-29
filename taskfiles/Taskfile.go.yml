@@ -11,12 +11,8 @@ vars:
   COVER_REPORT: '{{.COVER_REPORT | default "coverage-report"}}'
   TEST_REPORT: '{{.TEST_REPORT | default "test-report"}}'
 
+  # Settings
   COVERAGE: '{{.COVERAGE | default "100%"}}'
-  COVER: '{{.COVER | default "."}}'
-  PROJECT:
-    sh: echo $(go list -m) 2> /dev/null
-  PACKAGES:
-    sh: echo $(go list ./...) 2> /dev/null
 
 tasks:
   # Utilities
@@ -43,6 +39,8 @@ tasks:
     cmd: go build {{.FLAGS}} {{.CLI_ARGS}} -o {{.BUILD_DIR}}/ {{.PACKAGES}}
     env:
       GOOS: '{{.GOOS}}'
+    vars:
+      PACKAGES: './...'
 
   release:
     desc: build go project for Linux and Windows with debug information stripped
@@ -101,6 +99,7 @@ tasks:
     vars:
       GOLANGCI_LINT_CFG: '{{.CONFIG_DIR}}/.golangci.yml'
       LINT_REPORT: '{{.BUILD_DIR}}/{{.LINT_REPORT}}'
+      PACKAGES: './...'
     sources:
       - ./**/*.go
       - '{{.CONFIG_DIR}}/.golangci.yml'
@@ -118,6 +117,8 @@ tasks:
     cmd: go test {{.TEST_FLAGS}} {{.PACKAGES}} {{.CLI_ARGS}}
     env:
       RUN_MONKEY_PATCH_TESTS: '{{.RUN_MONKEY_PATCH_TESTS}}'
+    vars:
+      PACKAGES: './...'
 
   race:
     - task: test
@@ -158,6 +159,9 @@ tasks:
     cmd: '{{.SCRIPTS_DIR}}/profilegen.sh {{.BENCH}} -d {{.BUILD_DIR}} -p {{.PROJECT}} {{.PACKAGES}}'
     vars:
       BENCH: '{{if eq .BENCH "true"}}-b{{else}}{{end}}'
+      PROJECT:
+        sh: go list -m
+      PACKAGES: './...'
 
   profile:
     desc: view profiles for go project
@@ -166,6 +170,9 @@ tasks:
     vars:
       FRACTION: '{{.FRACTION | default "0.0"}}'
       IP: '{{if eq OS "windows"}}localhost{{else}}0.0.0.0{{end}}'
+      PROJECT:
+        sh: go list -m
+      PACKAGES: './...'
 
   coverlines:
     deps: [cover]
@@ -194,28 +201,34 @@ tasks:
     vars:
       COVER_REPORT: '{{.BUILD_DIR}}/{{.COVER_REPORT}}'
 
-  cover-prereq: |
-    for package in {{.PACKAGES}}; do
-      prefix={{.PROJECT}}
-      pkg=${package#$prefix}
+  cover-prereq:
+    cmd: |
+      for package in {{.PACKAGES}}; do
+        prefix={{.PROJECT}}
+        pkg=${package#$prefix}
 
-      #skipping root package
-      if [ -z "$pkg" ]; then
-        continue
-      fi
-
-      file="./$pkg/*_test.go"
-      if ! ls $file 1> /dev/null 2>&1; then
-        echo "$package is missing a _test.go file, creating it!"
+        #skipping root package
         if [ -z "$pkg" ]; then
-          basename=$(basename $prefix)
-        else
-          basename=$(basename $pkg)
+          continue
         fi
-        test_file=./$pkg/${basename}_test.go
-        echo "package ${basename}_test" >> $test_file
-      fi
-    done
+
+        file="./$pkg/*_test.go"
+        if ! ls $file 1> /dev/null 2>&1; then
+          echo "$package is missing a _test.go file, creating it!"
+          if [ -z "$pkg" ]; then
+            basename=$(basename $prefix)
+          else
+            basename=$(basename $pkg)
+          fi
+          test_file=./$pkg/${basename}_test.go
+          echo "package ${basename}_test" >> $test_file
+        fi
+      done
+    vars:
+      PROJECT:
+        sh: go list -m
+      PACKAGES: './...'
+
 
   coverage:
     desc: calculate coverage value
@@ -239,7 +252,6 @@ tasks:
     desc: run all quality relevant tasks
     platforms: [linux]
     deps:
-      - task: test
       - task: race
       - task: cover
     cmds:
@@ -251,6 +263,9 @@ tasks:
     vars:
       TEST_REPORT: '{{.BUILD_DIR}}/{{.TEST_REPORT}}'
       COVER_REPORT: '{{.BUILD_DIR}}/{{.COVER_REPORT}}'
+      PROJECT:
+        sh: go list -m
+      PACKAGES: './...'
     preconditions:
       - sh: test $(which gotestsum)
         msg: 'gotestsum is missing'
