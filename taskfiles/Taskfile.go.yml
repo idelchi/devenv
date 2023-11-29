@@ -161,7 +161,9 @@ tasks:
       BENCH: '{{if eq .BENCH "true"}}-b{{else}}{{end}}'
       PROJECT:
         sh: go list -m
-      PACKAGES: './...'
+      PACKAGES:
+        sh: echo $(go list ./...)
+
 
   profile:
     desc: view profiles for go project
@@ -172,7 +174,8 @@ tasks:
       IP: '{{if eq OS "windows"}}localhost{{else}}0.0.0.0{{end}}'
       PROJECT:
         sh: go list -m
-      PACKAGES: './...'
+      PACKAGES:
+        sh: echo $(go list ./...)
 
   coverlines:
     deps: [cover]
@@ -227,8 +230,8 @@ tasks:
     vars:
       PROJECT:
         sh: go list -m
-      PACKAGES: './...'
-
+      PACKAGES:
+        sh: echo $(go list ./...)
 
   coverage:
     desc: calculate coverage value
