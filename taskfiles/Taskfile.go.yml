@@ -221,7 +221,6 @@ tasks:
         #due to task expanding the variable otherwise.
         name=$(go list -f {{printf "{{.Name}}"}} "$package")
         if [ "$name" == "main" ]; then
-          echo "skipping main package"
           continue
         fi
 
@@ -261,14 +260,23 @@ tasks:
     vars:
       COVER_REPORT: '{{.BUILD_DIR}}/{{.COVER_REPORT}}'
 
+  testsum:
+    cmd: gotestsum --junitfile {{.TEST_REPORT}}.xml --format testname --packages {{.PACKAGES}}
+    vars:
+      TEST_REPORT: '{{.BUILD_DIR}}/{{.TEST_REPORT}}'
+      PACKAGES: './...'
+    preconditions:
+      - sh: test $(which gotestsum)
+        msg: 'gotestsum is missing'
+
   quality:
     desc: run all quality relevant tasks
     platforms: [linux]
     deps:
       - task: race
       - task: cover
+      - task: testsum
     cmds:
-      - gotestsum --junitfile {{.TEST_REPORT}}.xml --format testname --packages {{.PACKAGES}}
       - |
         gocover-cobertura < {{.COVER_REPORT}}.cov > {{.COVER_REPORT}}.xml
         sed -i 's;filename="{{.PROJECT}}/;filename=";g' {{.COVER_REPORT}}.xml || exit 0
@@ -280,8 +288,6 @@ tasks:
         sh: go list -m
       PACKAGES: './...'
     preconditions:
-      - sh: test $(which gotestsum)
-        msg: 'gotestsum is missing'
       - sh: test $(which gocover-cobertura)
         msg: 'gocover-cobertura is missing'
 

@@ -109,7 +109,7 @@ ARG CHART_TESTING_VERSION=3.10.1
 RUN wget -qO- https://github.com/helm/chart-testing/releases/download/v${CHART_TESTING_VERSION}/chart-testing_${CHART_TESTING_VERSION}_linux_amd64.tar.gz | tar -xz -C /usr/local/bin
 
 # Install Task
-ARG TASK_VERSION=v3.32.0
+ARG TASK_VERSION=v3.33.1
 RUN wget -qO- https://github.com/go-task/task/releases/download/${TASK_VERSION}/task_linux_amd64.tar.gz | tar -xz -C /usr/local/bin
 
 # Install Rust
@@ -157,7 +157,7 @@ RUN pip install --no-cache-dir \
     fastapi
 
 # Install Go
-ARG GO_VERSION=go1.21.5.linux-amd64
+ARG GO_VERSION=go1.21.6.linux-amd64
 RUN wget -qO- https://go.dev/dl/${GO_VERSION}.tar.gz | tar -xz -C /usr/local
 ENV PATH="/usr/local/go/bin:$PATH"
 

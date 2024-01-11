@@ -255,6 +255,9 @@ ENV TZ=Europe/Zurich
 # Install Azure CLI
 RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash
 
+# Install tflint
+RUN curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
+
 USER ${USER}
 WORKDIR /home/${USER}
 
