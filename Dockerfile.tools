@@ -122,6 +122,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     hyperfine \
     tree \
     direnv \
+    exa \
     # Editors
     ne \
     nano \
@@ -154,10 +155,17 @@ RUN brew install \
     kubectl \
     helm \
     minikube
+# cm-push
+# (split up for readability)
+# hadolint ignore=DL3059
+RUN helm plugin install https://github.com/chartmuseum/helm-push
+
 ENV DOCKER_CONFIG=/opt/.docker
 USER root
 RUN mkdir -p ${DOCKER_CONFIG}/cli-plugins && \
     ln -sfn "$(brew --prefix)/opt/docker-compose/bin/docker-compose" ${DOCKER_CONFIG}/cli-plugins/docker-compose
+# Install ChartMuseum
+RUN curl https://raw.githubusercontent.com/helm/chartmuseum/main/scripts/get-chartmuseum | bash
 
 # Tools
 USER ${USER}
@@ -171,13 +179,11 @@ RUN brew install  \
     kdash-rs/kdash/kdash \
     jesseduffield/lazydocker/lazydocker \
     dive \
-    ctop\
+    ctop \
     # Terminal augmentations
     navi \
     dua-cli \
     fx \
-    exa \
-    # (eza is newer than exa)
     eza \
     zoxide \
     jump \
@@ -186,6 +192,12 @@ RUN brew install  \
     ansible \
     dotnet \
     go \
+    # linters & formatters
+    tflint \
+    kube-linter \
+    checkov \
+    chart-testing \
+    kube-score \
     # other
     git-standup \
     scc \

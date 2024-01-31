@@ -1,0 +1,24 @@
+version: '3'
+
+# requires
+# - RESOURCES_DIR
+
+shopt: [globstar]
+
+tasks:
+  lint:
+    desc: 'Lint Terraform files'
+    summary: |
+      Lints Terraform files with `terraform fmt` & `tflint`.
+    cmds:
+      - terraform fmt -check -recursive .
+      - tflint --config="$(pwd)/{{.CONFIG_TFLINT}}" --recursive
+    vars:
+      CONFIG_TFLINT: '{{.CONFIG_DIR}}/.tflint.hcl'
+
+  format:
+    desc: 'Lint and format Terraform files'
+    summary: |
+      Format Terraform files with `terraform fmt`.
+    cmds:
+      - terraform fmt -list=false -recursive .

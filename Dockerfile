@@ -104,12 +104,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     codespell \
     scspell3k
 
-# Helm Linting
-ARG CHART_TESTING_VERSION=3.10.1
-RUN wget -qO- https://github.com/helm/chart-testing/releases/download/v${CHART_TESTING_VERSION}/chart-testing_${CHART_TESTING_VERSION}_linux_amd64.tar.gz | tar -xz -C /usr/local/bin
-
 # Install Task
-ARG TASK_VERSION=v3.33.1
+ARG TASK_VERSION=v3.34.1
 RUN wget -qO- https://github.com/go-task/task/releases/download/${TASK_VERSION}/task_linux_amd64.tar.gz | tar -xz -C /usr/local/bin
 
 # Install Rust
@@ -171,12 +167,11 @@ WORKDIR /home/${USER}
 # Run npm-groovy-lint once to download its preferred version of Java
 RUN npm-groovy-lint --version
 
-# Go tooling
-# TODO: Move to logical groups instead (e.g. "linters", "formatters", etc.)
+# Go based tooling
 RUN echo \
     # Commands to install
+    # Go tools
     github.com/amit-davidson/Chronos/cmd/chronos@latest \
-    github.com/client9/misspell/cmd/misspell@latest \
     github.com/loov/goda@latest \
     github.com/rillig/gobco@latest \
     github.com/segmentio/golines@latest \
@@ -186,10 +181,14 @@ RUN echo \
     gotest.tools/gotestsum@latest \
     honnef.co/go/implements@latest \
     mvdan.cc/gofumpt@latest \
-    mvdan.cc/sh/v3/cmd/shfmt@latest \
     rsc.io/uncover@latest \
+    # Spelling
+    github.com/client9/misspell/cmd/misspell@latest \
+    # Shell
+    mvdan.cc/sh/v3/cmd/shfmt@latest \
+    # YAML
     github.com/google/yamlfmt/cmd/yamlfmt@latest \
-    # Feed to 'go install'
+    # Pipe to 'go install'
     | xargs -n 1 go install
 
 # Install golangci-lint

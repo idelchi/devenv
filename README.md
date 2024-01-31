@@ -70,6 +70,12 @@ To display the available commands along with their descriptions, run:
   - [jflint](https://github.com/miyajan/jflint)
 - Git
   - [gitlint](https://jorisroovers.com/gitlint)
+- Kubernetes
+  - [](TODO)
+- Helm
+  - [](TODO)
+- Terraform
+  - [](TODO)
 
 Tools that are not linters or formatters, but are useful for development:
 

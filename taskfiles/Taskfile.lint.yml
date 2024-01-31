@@ -105,6 +105,8 @@ tasks:
       shfmt -i 2 -ci -d -l -s {{.FILES}}
       shellcheck --shell=bash --enable=all --severity=style --source-path=SCRIPTDIR {{.FILES}}
     vars:
+      # TODO: Consider using `for: sources` syntax and/or keep an eye out for when "https://github.com/go-task/task/issues/948" is implemented.
+      # Since we want to lint all at once, maybe `for: sources` is not so suitable.
       FILES:
         sh: find . -type f -name "*.sh" | tr '\n' ' '
     sources:
@@ -125,6 +127,7 @@ tasks:
       - defer: mv {{.CONFIG}}.bak {{.CONFIG}} >/dev/null 2>&1
         ignore_errors: true
       - |
+        # What did this do?
         if [ -f "{{.CSPELL_CONFIG}}" ]; then
           sed -i.bak "s|import: \[\]|import: ['{{.CSPELL_CONFIG}}']|" "{{.CONFIG}}"
         fi

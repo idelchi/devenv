@@ -88,11 +88,13 @@
     /* ****** CONSOLE ****** */
     "terminal.integrated.env.windows": {
         "PWD": "${workspaceFolder}",
-        "DEVENV": "."
+        "DEVENV": ".",
+        "PYTHONPATH": "${workspaceFolder}"
     },
     "terminal.integrated.env.linux": {
         "PWD": "${workspaceFolder}",
-        "DEVENV": "."
+        "DEVENV": ".",
+        "PYTHONPATH": "${workspaceFolder}"
     },
     "terminal.integrated.enableMultiLinePasteWarning": false,
     /* ****** ****** ****** */

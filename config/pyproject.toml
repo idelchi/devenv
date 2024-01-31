@@ -11,26 +11,42 @@ profile = "black"
 line-length = 120
 select = ["ALL"]
 ignore = [
-  "ANN101", # Missing type annotation for self in method
-  "EXE002", # The file is executable but no shebang is present
-  "G004",   # Logging statement uses string formatting
-  "INP001", # File is part of an implicit namespace package. Add an `__init__.py`.
-  "ANN401", # Dynamically typed expressions (typing.Any) are disallowed in ...
-  "I",      # isort runs before ruff
-  "FBT001", # Boolean positional arg in function definition
-  "FBT002", # Boolean default value in function definition
-  "TRY301", # Abstract `raise` to an inner function
-  "TRY300", # Consider moving this statement to an `else` block
-  "FIX002", # Line contains TODO
-  "ANN102", # Missing type annotation for `cls` in classmethod
-  "TD003",  # Missing issue link on the line following this TODO
-  "FA102",  # Missing `from __future__ import annotations`, but uses PEP 585 collection
+  "ANN101",  # Missing type annotation for self in method
+  "ANN204",  # Missing return type annotation for special method
+  "EXE002",  # The file is executable but no shebang is present
+  "G004",    # Logging statement uses string formatting
+  "INP001",  # File is part of an implicit namespace package. Add an `__init__.py`.
+  "ANN401",  # Dynamically typed expressions (typing.Any) are disallowed in ...
+  "I",       # isort runs before ruff
+  "FBT001",  # Boolean positional arg in function definition
+  "FBT002",  # Boolean default value in function definition
+  "TRY301",  # Abstract `raise` to an inner function
+  "TRY300",  # Consider moving this statement to an `else` blocks
+  "FIX002",  # Line contains TODO
+  "ANN102",  # Missing type annotation for `cls` in classmethod
+  "TD003",   # Missing issue link on the line following this TODO
+  "PERF203", #`try`-`except` within a loop incurs performance overhead
+  "FA102",   # Missing `from __future__ import annotations`, but uses PEP 585 collection
 ]
 
 unfixable = ["I"]
 
 [tool.ruff.pydocstyle]
 convention = "google"
+
+[tool.ruff.lint.pylint]
+max-args = 5
+
+[tool.ruff.per-file-ignores]
+"tests/*" = [
+  "S101",
+  "ANN001",
+  "ANN201",
+  "PT004",
+  "SLF001",
+  "FBT003",
+  "PLR0913",
+] # ignore `asserts`, `missing type annotations`, etc, in tests
 
 # PYRIGHT
 [tool.pyright]
@@ -64,7 +80,15 @@ disable = [
   "too-few-public-methods",
   "relative-beyond-top-level",
   "import-error",
+  "wrong-import-order",
+  "too-many-arguments",
 ]
 
 [tool.pylint.basic]
 good-names = ["f"]
+
+[tool.pylint.design]
+max-args = 5
+
+[tool.pylint.main]
+load-plugins = "pylint_pytest"
