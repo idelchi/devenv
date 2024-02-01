@@ -69,7 +69,7 @@ tasks:
     cmds:
       - for: sources
         cmd: |
-          markdownlint --quiet --fix --config={{.CONFIG_MARKDOWNLINT}} --ignore-path={{.IGNORE}} "**/*.md"
+          markdownlint --quiet --fix --config={{.CONFIG_MARKDOWNLINT}} --ignore-path={{.IGNORE}} "**/*.md"  || true
           prettier --config={{.CONFIG_PRETTIER}} --log-level=silent --ignore-path={{.IGNORE}} --write "**/*.md"
     vars:
       CONFIG_MARKDOWNLINT: '{{.CONFIG_DIR}}/.markdownlint.yaml'
@@ -101,8 +101,8 @@ tasks:
     summary: |
       This task formats Jenkinsfiles using npm-groovy-lint.
     cmds:
-      - npm-groovy-lint --config={{.CONFIG_DIR}}/ --fix --nolintafter --no-insight --files "**/Jenkinsfile" > /dev/null
-      - npm-groovy-lint --config={{.CONFIG_DIR}}/ --format --nolintafter --no-insight --files "**/Jenkinsfile"  > /dev/null
+      - npm-groovy-lint --failon none --config={{.CONFIG_DIR}}/ --fix --nolintafter --no-insight --files "**/Jenkinsfile" > /dev/null
+      - npm-groovy-lint --failon none --config={{.CONFIG_DIR}}/ --format --nolintafter --no-insight --files "**/Jenkinsfile"  > /dev/null
     sources:
       - ./**/Jenkinsfile
 
