@@ -1,3 +1,4 @@
+# TODO(Idelchi): Deprecate `black` and `isort` in favor of `ruff`?
 # BLACK
 [tool.black]
 line-length = 120
@@ -9,6 +10,8 @@ profile = "black"
 # RUFF
 [tool.ruff]
 line-length = 120
+
+[tool.ruff.lint]
 select = ["ALL"]
 ignore = [
   "ANN101",  # Missing type annotation for self in method
@@ -28,16 +31,15 @@ ignore = [
   "PERF203", #`try`-`except` within a loop incurs performance overhead
   "FA102",   # Missing `from __future__ import annotations`, but uses PEP 585 collection
 ]
-
 unfixable = ["I"]
 
-[tool.ruff.pydocstyle]
+[tool.ruff.lint.pydocstyle]
 convention = "google"
 
 [tool.ruff.lint.pylint]
 max-args = 5
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "tests/*" = [
   "S101",
   "ANN001",

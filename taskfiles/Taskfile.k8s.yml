@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 # requires
 # - RESOURCES_DIR
@@ -12,7 +12,7 @@ shopt: [globstar]
 
 tasks:
   lint:
-    desc: 'Lint Kubernetes manifests and Helm charts'
+    desc: "Lint Kubernetes manifests and Helm charts"
     summary: |
       Perform linting on Kubernetes manifests & Helm Charts using `kube-score`, `kube-linter` & `helm lint`.
     cmds:
@@ -21,8 +21,8 @@ tasks:
       - kube-score score {{.SCORE_FILES}}
       - helm lint {{dir .CHARTS }}
     vars:
-      CONFIG_PRETTIER: '{{.CONFIG_DIR}}/.prettierrc.yml'
-      CONFIG_PRETTIER_IGNORE: '{{.CONFIG_DIR}}/.prettierignore'
+      CONFIG_PRETTIER: "{{.CONFIG_DIR}}/.prettierrc.yml"
+      CONFIG_PRETTIER_IGNORE: "{{.CONFIG_DIR}}/.prettierignore"
       FILES:
         sh: find {{.RESOURCES_DIR}} -type f -name '*.yaml' | tr '\n' ' '
       CHARTS:
@@ -34,7 +34,7 @@ tasks:
           | tr '\n' ' '
 
   format:
-    desc: 'Format Kubernetes manifests and Helm charts'
+    desc: "Format Kubernetes manifests and Helm charts"
     summary: |
       Format Kubernetes & Helm manifests using `prettier`. Forces exit 0 so that it can skip syntax errors.
     cmds:
@@ -42,13 +42,13 @@ tasks:
         # Prettier can format some stuff, but has problems with Helm template syntax. Forced to exit 0.
         cmd: prettier --config={{.CONFIG_PRETTIER}} --log-level=silent --write {{.ITEM}} || true
     vars:
-      CONFIG_PRETTIER: '{{.CONFIG_DIR}}/.prettierrc.yml'
+      CONFIG_PRETTIER: "{{.CONFIG_DIR}}/.prettierrc.yml"
     sources:
-      - '{{.RESOURCES_DIR}}/**/*.yaml'
-      - '{{.RESOURCES_DIR}}/**/*.yml'
+      - "{{.RESOURCES_DIR}}/**/*.yaml"
+      - "{{.RESOURCES_DIR}}/**/*.yml"
 
   package:
-    desc: 'Package Helm chart'
+    desc: "Package Helm chart"
     summary: |
       Package Helm chart for distribution.
     cmds:
@@ -56,10 +56,10 @@ tasks:
         cmd: |
           helm package -d {{.HELM_PACKAGE_DIR}} {{dir .ITEM}}
     sources:
-      - '{{.RESOURCES_DIR}}/**/Chart.yaml'
+      - "{{.RESOURCES_DIR}}/**/Chart.yaml"
 
   release:
-    desc: 'Release Helm chart'
+    desc: "Release Helm chart"
     summary: |
       Release Helm chart by pushing to a Helm repository.
     deps: [package]
@@ -69,10 +69,10 @@ tasks:
         cmd: |
           helm push {{.ITEM}} {{.HELM_REPO_NAME}}
     sources:
-      - '{{.HELM_PACKAGE_DIR}}/*.tgz'
+      - "{{.HELM_PACKAGE_DIR}}/*.tgz"
 
   test-release:
-    desc: 'Set up a local helm repository to test if the release works'
+    desc: "Set up a local helm repository to test if the release works"
     summary: |
       Sets up a local helm chartmuseum repository for testing a push.
     deps: [package]
@@ -85,4 +85,4 @@ tasks:
         cmd: |
           helm cm-push --force {{.ITEM}} {{.HELM_REPO_NAME}}
     sources:
-      - '{{.HELM_PACKAGE_DIR}}/*.tgz'
+      - "{{.HELM_PACKAGE_DIR}}/*.tgz"

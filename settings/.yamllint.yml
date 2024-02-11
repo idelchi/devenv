@@ -8,9 +8,9 @@ rules:
     ignore: |
       **/.github/workflows
 yaml-files:
-  - '*.yml'
-  - '*.yaml'
+  - "*.yml"
+  - "*.yaml"
 
 ignore:
   # YAML files in templates directory are assumed to be Helm templates
-  - '**/templates/**/*.yaml'
+  - "**/templates/**/*.yaml"

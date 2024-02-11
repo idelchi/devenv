@@ -28,12 +28,12 @@ issues:
   max-same-issues: 0
 
   exclude-rules:
-    - path: '_test.go'
+    - path: "_test.go"
       linters:
         - funlen
         - wrapcheck
 
-    - path: 'main.go$'
+    - path: "main.go$"
       linters:
         - forbidigo
 

@@ -8,7 +8,7 @@
 #   - and many, many, more...
 #]=======================================================================]
 
-FROM debian:bookworm
+FROM python:3.12
 
 LABEL maintainer=arash.idelchi
 
@@ -63,7 +63,6 @@ RUN npm install -g \
     # copy-paste
     jscpd \
     # docker
-    dockerfilelint \
     dockerfile-utils \
     # json
     @prantlf/jsonlint \
@@ -153,7 +152,7 @@ RUN pip install --no-cache-dir \
     fastapi
 
 # Install Go
-ARG GO_VERSION=go1.21.6.linux-amd64
+ARG GO_VERSION=go1.22.0.linux-amd64
 RUN wget -qO- https://go.dev/dl/${GO_VERSION}.tar.gz | tar -xz -C /usr/local
 ENV PATH="/usr/local/go/bin:$PATH"
 
@@ -192,7 +191,7 @@ RUN echo \
     | xargs -n 1 go install
 
 # Install golangci-lint
-ARG GOLANGCI_LINT_VERSION=v1.55.2
+ARG GOLANGCI_LINT_VERSION=v1.56.1
 RUN wget -qO- https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b "$(go env GOPATH)/bin" ${GOLANGCI_LINT_VERSION}
 # Pre-download some useful packages and dependencies
 RUN go mod download \

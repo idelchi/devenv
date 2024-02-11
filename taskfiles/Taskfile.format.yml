@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 # TODO: Formatters should (probably) not have non-zero exit codes unless they completely fail.
 
@@ -24,8 +24,8 @@ tasks:
       - for: sources
         cmd: dockerfile-utils format --spaces 4 {{.ITEM}} | sponge {{.ITEM}}
     preconditions:
-      - sh: 'command -v dockerfile-utils'
-        msg: 'dockerfile-utils errors out, check if nodejs is having problems'
+      - sh: "command -v dockerfile-utils"
+        msg: "dockerfile-utils errors out, check if nodejs is having problems"
     sources:
       - ./**/Dockerfile*
 
@@ -37,8 +37,8 @@ tasks:
       - jsonlint --mode=cjson --pretty-print --quiet --in-place --indent "    " .
       - prettier --config={{.CONFIG}} --log-level=silent --ignore-path={{.IGNORE}} --write "**/*.json"
     vars:
-      CONFIG: '{{.CONFIG_DIR}}/.prettierrc.yml'
-      IGNORE: '{{.CONFIG_DIR}}/.ignore'
+      CONFIG: "{{.CONFIG_DIR}}/.prettierrc.yml"
+      IGNORE: "{{.CONFIG_DIR}}/.ignore"
     sources:
       - ./**/*.json
 
@@ -50,17 +50,17 @@ tasks:
       - yamlfmt -conf {{.CONFIG_YAMLFMT}} "**/*.{yaml,yml}"
       - prettier --config={{.CONFIG_PRETTIER}} --log-level=silent --ignore-path={{.IGNORE}}  --ignore-path={{.CONFIG_PRETTIER_IGNORE}} --write "**/*.yaml" "**/*.yml"
     vars:
-      CONFIG_PRETTIER: '{{.CONFIG_DIR}}/.prettierrc.yml'
-      CONFIG_PRETTIER_IGNORE: '{{.CONFIG_DIR}}/.prettierignore'
-      CONFIG_YAMLFMT: '{{.CONFIG_DIR}}/.yamlfmt.yml'
-      IGNORE: '{{.CONFIG_DIR}}/.ignore'
+      CONFIG_PRETTIER: "{{.CONFIG_DIR}}/.prettierrc.yml"
+      CONFIG_PRETTIER_IGNORE: "{{.CONFIG_DIR}}/.prettierignore"
+      CONFIG_YAMLFMT: "{{.CONFIG_DIR}}/.yamlfmt.yml"
+      IGNORE: "{{.CONFIG_DIR}}/.ignore"
     sources:
       - ./**/*.yaml
       - ./**/*.yml
-      - '{{.CONFIG_PRETTIER}}'
-      - '{{.CONFIG_PRETTIER_IGNORE}}'
-      - '{{.CONFIG_YAMLFMT}}'
-      - '{{.IGNORE}}'
+      - "{{.CONFIG_PRETTIER}}"
+      - "{{.CONFIG_PRETTIER_IGNORE}}"
+      - "{{.CONFIG_YAMLFMT}}"
+      - "{{.IGNORE}}"
 
   md:
     desc: Format Markdown files
@@ -72,9 +72,9 @@ tasks:
           markdownlint --quiet --fix --config={{.CONFIG_MARKDOWNLINT}} --ignore-path={{.IGNORE}} "**/*.md"  || true
           prettier --config={{.CONFIG_PRETTIER}} --log-level=silent --ignore-path={{.IGNORE}} --write "**/*.md"
     vars:
-      CONFIG_MARKDOWNLINT: '{{.CONFIG_DIR}}/.markdownlint.yaml'
-      CONFIG_PRETTIER: '{{.CONFIG_DIR}}/.prettierrc.yml'
-      IGNORE: '{{.CONFIG_DIR}}/.ignore'
+      CONFIG_MARKDOWNLINT: "{{.CONFIG_DIR}}/.markdownlint.yaml"
+      CONFIG_PRETTIER: "{{.CONFIG_DIR}}/.prettierrc.yml"
+      IGNORE: "{{.CONFIG_DIR}}/.ignore"
     sources:
       - ./**/*.md
 

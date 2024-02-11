@@ -3,8 +3,8 @@ on:
   workflow_call:
     inputs:
       image:
-        description: 'Docker Image to use'
-        default: 'idelchi/devenv:latest'
+        description: "Docker Image to use"
+        default: "idelchi/devenv:latest"
         required: false
         type: string
 

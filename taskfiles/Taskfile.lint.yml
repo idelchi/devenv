@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 # requires
 # - CONFIG_DIR
@@ -21,21 +21,20 @@ tasks:
     cmd: |
       test -z "{{.FILES}}" && echo "no Dockerfiles found" && exit 0
       hadolint --config={{.CONFIG_HADOLINT}} {{.FILES}}
-      dockerfilelint --config={{.CONFIG_DIR}} {{.FILES}}
       dockerfile-utils lint {{.FILES}}
     vars:
-      CONFIG_HADOLINT: '{{.CONFIG_DIR}}/.hadolint.yaml'
+      CONFIG_HADOLINT: "{{.CONFIG_DIR}}/.hadolint.yaml"
       FILES:
         sh: find . -type f -name "Dockerfile*" | tr '\n' ' '
     sources:
       - ./**/Dockerfile*
-      - '{{.CONFIG}}'
+      - "{{.CONFIG}}"
     preconditions:
       - sh: |
           for dockerfile in {{.FILES}}; do
             diff <(dockerfile-utils format --spaces 4 $dockerfile) <(cat $dockerfile) || exit 1
           done
-        msg: 'Dockerfiles have not been formatted with dockerfile-utils'
+        msg: "Dockerfiles have not been formatted with dockerfile-utils"
 
   json:
     desc: Lint JSON files
@@ -45,12 +44,12 @@ tasks:
       - prettier --config={{.CONFIG}} --ignore-path={{.IGNORE}} --check "**/*.json"
       - jsonlint --mode=cjson --quiet .
     vars:
-      CONFIG: '{{.CONFIG_DIR}}/.prettierrc.yml'
-      IGNORE: '{{.CONFIG_DIR}}/.ignore'
+      CONFIG: "{{.CONFIG_DIR}}/.prettierrc.yml"
+      IGNORE: "{{.CONFIG_DIR}}/.ignore"
     sources:
       - ./**/*.json
-      - '{{.CONFIG}}'
-      - '{{.IGNORE}}'
+      - "{{.CONFIG}}"
+      - "{{.IGNORE}}"
 
   yaml:
     desc: Lint YAML files
@@ -61,19 +60,19 @@ tasks:
       - prettier --config={{.CONFIG_PRETTIER}} --ignore-path={{.IGNORE}} --ignore-path={{.CONFIG_PRETTIER_IGNORE}} --check "**/*.yaml" "**/*.yml"
       - yamllint --config-file={{.CONFIG_YAMLLINT}} --strict .
     vars:
-      CONFIG_PRETTIER: '{{.CONFIG_DIR}}/.prettierrc.yml'
-      CONFIG_PRETTIER_IGNORE: '{{.CONFIG_DIR}}/.prettierignore'
-      CONFIG_YAMLLINT: '{{.CONFIG_DIR}}/.yamllint.yml'
-      CONFIG_YAMLFMT: '{{.CONFIG_DIR}}/.yamlfmt.yml'
-      IGNORE: '{{.CONFIG_DIR}}/.ignore'
+      CONFIG_PRETTIER: "{{.CONFIG_DIR}}/.prettierrc.yml"
+      CONFIG_PRETTIER_IGNORE: "{{.CONFIG_DIR}}/.prettierignore"
+      CONFIG_YAMLLINT: "{{.CONFIG_DIR}}/.yamllint.yml"
+      CONFIG_YAMLFMT: "{{.CONFIG_DIR}}/.yamlfmt.yml"
+      IGNORE: "{{.CONFIG_DIR}}/.ignore"
     sources:
       - ./**/*.yaml
       - ./**/*.yml
-      - '{{.CONFIG_PRETTIER}}'
-      - '{{.CONFIG_PRETTIER_IGNORE}}'
-      - '{{.CONFIG_YAMLLINT}}'
-      - '{{.CONFIG_YAMLFMT}}'
-      - '{{.IGNORE}}'
+      - "{{.CONFIG_PRETTIER}}"
+      - "{{.CONFIG_PRETTIER_IGNORE}}"
+      - "{{.CONFIG_YAMLLINT}}"
+      - "{{.CONFIG_YAMLFMT}}"
+      - "{{.IGNORE}}"
 
   md:
     desc: Lint Markdown files
@@ -86,14 +85,14 @@ tasks:
       prettier --config={{.CONFIG_PRETTIER}} --ignore-path={{.IGNORE}} --check "**/*.md"
     shopt: [globstar]
     vars:
-      CONFIG_MARKDOWNLINT: '{{.CONFIG_DIR}}/.markdownlint.yaml'
-      CONFIG_PRETTIER: '{{.CONFIG_DIR}}/.prettierrc.yml'
-      IGNORE: '{{.CONFIG_DIR}}/.ignore'
+      CONFIG_MARKDOWNLINT: "{{.CONFIG_DIR}}/.markdownlint.yaml"
+      CONFIG_PRETTIER: "{{.CONFIG_DIR}}/.prettierrc.yml"
+      IGNORE: "{{.CONFIG_DIR}}/.ignore"
       FILES:
         sh: find . -type f -name "*.md" | tr '\n' ' '
     sources:
       - ./**/*.md
-      - '{{.IGNORE}}'
+      - "{{.IGNORE}}"
 
   shell:
     desc: Lint shell scripts
@@ -113,7 +112,7 @@ tasks:
       - ./**/*.sh
     preconditions:
       - sh: shfmt -i 2 -ci -d -l -s {{.FILES}}
-        msg: 'shell/bash files have not been formatted with shfmt'
+        msg: "shell/bash files have not been formatted with shfmt"
 
   spell:
     desc: Perform spell checking in the project files
@@ -133,8 +132,8 @@ tasks:
         fi
         cspell lint --show-suggestions --config={{.CONFIG}} --no-progress "**/*.go" "**/*.py" "**/*.sh"
     vars:
-      CONFIG: '{{.CONFIG_DIR}}/cspell.yaml'
-      WORDLIST: '{{.CONFIG_DIR}}/project-words'
+      CONFIG: "{{.CONFIG_DIR}}/cspell.yaml"
+      WORDLIST: "{{.CONFIG_DIR}}/project-words"
       FILES:
         sh: >-
           find . -type f -name '*'
@@ -151,7 +150,7 @@ tasks:
       This task detects copy-paste issues in Go and Shell files using jscpd.
     cmd: jscpd --config={{.CONFIG}} .
     vars:
-      CONFIG: '{{.CONFIG_DIR}}/.jscpd.json'
+      CONFIG: "{{.CONFIG_DIR}}/.jscpd.json"
     generates:
       - ./build/cpd/**/*
 
@@ -164,7 +163,7 @@ tasks:
       - cmd: jflint --config={{.CONFIG}} {{.JENKINSFILE}} >> /dev/null
         ignore_error: true
     vars:
-      CONFIG: '{{.CONFIG_DIR}}/.jflintrc'
+      CONFIG: "{{.CONFIG_DIR}}/.jflintrc"
       JENKINSFILE: '{{.CLI_ARGS | default "Jenkinsfile"}}'
     sources:
       - ./**/Jenkinsfile
