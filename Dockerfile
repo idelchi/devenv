@@ -233,3 +233,7 @@ ARG CACHEBUST
 RUN go install -ldflags='-s -w -X "main.version=unofficial & built from dev branch"' github.com/idelchi/wslint@dev
 
 # TODO: Install "Mega-Linter"?
+
+# Clear the base image entrypoint
+ENTRYPOINT []
+CMD ["/bin/bash"]
