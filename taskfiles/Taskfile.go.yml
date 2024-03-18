@@ -86,17 +86,14 @@ tasks:
   lint:
     desc: lint go project
     deps: [init]
-    cmds:
-      # TODO: golangci-lint already includes 'govet', consider removing.
-      - go vet {{.PACKAGES}}
-      - >
-        golangci-lint run
-        --config={{.CONFIG_GOLANGCI_LINT}}
-        --disable=godox
-        --sort-results
-        --out-format
-        code-climate:{{.LINT_REPORT}},junit-xml:{{.LINT_REPORT}}.xml,checkstyle:{{.LINT_REPORT}}.checkstyle,colored-line-number
-        {{.CLI_ARGS}}
+    cmd: >
+      golangci-lint run
+      --config={{.CONFIG_GOLANGCI_LINT}}
+      --disable=godox
+      --sort-results
+      --out-format
+      code-climate:{{.LINT_REPORT}},junit-xml:{{.LINT_REPORT}}.xml,checkstyle:{{.LINT_REPORT}}.checkstyle,colored-line-number
+      {{.CLI_ARGS}}
     vars:
       CONFIG_GOLANGCI_LINT: "{{.CONFIG_DIR}}/.golangci.yml"
       LINT_REPORT: "{{.BUILD_DIR}}/{{.LINT_REPORT}}"
@@ -212,13 +209,12 @@ tasks:
 
         #skipping root package
         if [ -z "$pkg" ]; then
-          echo "skipping root package"
           continue
         fi
 
         #skip main packages
         #TODO: The printf syntax is not so portable - it's necessary
-        #due to task expanding the variable otherwise.
+        # due to task expanding the variable otherwise.
         name=$(go list -f {{printf "{{.Name}}"}} "$package")
         if [ "$name" == "main" ]; then
           continue

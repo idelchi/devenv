@@ -69,11 +69,19 @@ tasks:
     shopt: [globstar]
 
   publish-check:
+    # requires:
+    # PYPI_REPOSITORY_URL
+    # PYPI_USERNAME
+    # PYPI_PASSWORD
+    # PYPI_VERSION
     # TODO(Idelchi): `pip index` is experimental and might be removed
-    # TODO(Idelchi): check for `ERROR: No matching distribution found for {{.CLI_ARGS}}`
+    # TODO(Idelchi): check for `ERROR: No matching distribution found for {{.NAME}}`
+    # TODO(Idelchi): replace for a better method
     desc: Check if the repository allows publishing
     cmd: |
-      output=$(pip index versions -i $PYPI_REPOSITORY_URL/simple {{.CLI_ARGS}} 2> /dev/null)
+      echo "checking if $PYPI_VERSION is already in the list of available versions of {{.NAME}}..."
+      index=$(echo "$PYPI_REPOSITORY_URL" | sed "s|://|://${PYPI_USERNAME}:${PYPI_PASSWORD}@|")
+      output=$(pip index versions -i $index/simple {{.NAME}} 2> /dev/null)
       # Extract the line of the output, which contains the available versions
       versions=$(echo "$output" | grep -oP '(?<=Available versions: ).*')
       echo "Found versions: $versions"
@@ -84,7 +92,7 @@ tasks:
       done
 
       # Check if PYPI_VERSION is in the list of special cases
-      if [[ "$PYPI_VERSION" =~ \.dev$ ]] || [[ "$PYPI_VERSION" =~ \+[a-zA-Z0-9_-]+$ ]]; then
+      if [[ "$PYPI_VERSION" =~ \.rc$ ]] || [[ "$PYPI_VERSION" =~ \.dev$ ]] || [[ "$PYPI_VERSION" =~ .+\+.+ ]]; then
           echo "PYPI_VERSION '$PYPI_VERSION' allows development overwrite."
           exit 0
       elif [[ " ${version_array[@]} " =~ " ${PYPI_VERSION} " ]]; then
@@ -93,57 +101,54 @@ tasks:
       else
           echo "PYPI_VERSION '$PYPI_VERSION' doesn't exist, uploading."
       fi
-    env:
-      PYPI_REPOSITORY_URL: ""
-      PYPI_VERSION: ""
+    vars:
+      NAME:
+        sh: "[[ -z '{{.CLI_ARGS}}' ]] && echo $(poetry version | awk {'print $1'}) || echo {{.CLI_ARGS}}"
 
   publish:
+    # requires:
+    # PYPI_REPOSITORY_URL
+    # PYPI_USERNAME
+    # PYPI_PASSWORD
     desc: Publish Python code
-    # deps: [publish-check]
     cmds:
       # Workaround for volume mounts having issues when copying from /tmp to /
       - defer: |
           pwd=$(pwd)
-          rm -rf /tmp/imio && cd $pwd
-      - |
-        rm -rf /tmp/imio && cp -r . /tmp/imio && cd /tmp/imio
-        poetry version $PYPI_VERSION
-        poetry config repositories.remote $PYPI_REPOSITORY_URL
-        poetry config http-basic.remote $PYPI_USERNAME $PYPI_PASSWORD
-        poetry build
-        poetry publish -r remote
-    env:
-      PYPI_REPOSITORY_URL: ""
-      PYPI_USERNAME: ""
-      PYPI_PASSWORD: ""
-      PYPI_VERSION: ""
-
-  update:
-    desc: Update poetry lock file
-    cmds:
-      - rm -rf $HOME/.cache/pypoetry
-      - rm -f poetry.lock
-      - poetry lock
+          rm -rf {{.PACKAGE_DIR}} && cd $pwd
+      - cp -r . {{.PACKAGE_DIR}} && cd {{.PACKAGE_DIR}}
+      - poetry config repositories.remote $PYPI_REPOSITORY_URL
+      - poetry config http-basic.remote $PYPI_USERNAME $PYPI_PASSWORD
+      - poetry build
+      - poetry publish -r remote
+    vars:
+      PACKAGE_DIR:
+        sh: mktemp -d
 
   metadata:
     desc: Generate metadata file
     cmds:
-      - 'echo "author: $AUTHOR" > {{.ARGS}}'
-      - 'echo "branch: $BRANCH_NAME" >> {{.ARGS}}'
-      - 'echo "build: $BUILD_NUMBER" >> {{.ARGS}}'
-      - 'echo "commit: $GIT_COMMIT" >> {{.ARGS}}'
-      - 'echo "date: $(date)" >> {{.ARGS}}'
-      - 'echo "version: $PYPI_VERSION" >> {{.ARGS}}'
+      - echo "storing metadata in {{.FILE}}..."
+      - 'echo "author: $AUTHOR" > {{.FILE}}'
+      - 'echo "branch: $BRANCH_NAME" >> {{.FILE}}'
+      - 'echo "build: $BUILD_NUMBER" >> {{.FILE}}'
+      - 'echo "commit: $GIT_COMMIT" >> {{.FILE}}'
     vars:
-      ARGS: '{{.CLI_ARGS | default "metadata"}}'
+      FILE:
+        sh: "[[ -z '{{.CLI_ARGS}}' ]] && echo src/$(poetry version | awk {'print $1'})/metadata || echo {{.CLI_ARGS}}"
     env:
       AUTHOR:
         sh: whoami
       BRANCH_NAME:
         sh: git rev-parse --abbrev-ref HEAD
       BUILD_NUMBER: "unknown"
-      PYPI_VERSION: "unknown"
       GIT_COMMIT:
         sh: git rev-parse HEAD
 
   share: 'find {{.DIRECTORY}} -name "*.py" -exec echo "" \; -exec echo "***** FILE: {} *****" \; -exec cat {} \; > share.py'
+  update:
+    desc: Update poetry lock file
+    cmds:
+      - rm -f poetry.lock
+      - poetry cache clear --all .
+      - poetry lock

@@ -48,6 +48,8 @@ tasks:
       - "{{.RESOURCES_DIR}}/**/*.yml"
 
   package:
+    # requires:
+    # HELM_PACKAGE_DIR
     desc: "Package Helm chart"
     summary: |
       Package Helm chart for distribution.
@@ -68,6 +70,23 @@ tasks:
       - for: sources
         cmd: |
           helm push {{.ITEM}} {{.HELM_REPO_NAME}}
+    sources:
+      - "{{.HELM_PACKAGE_DIR}}/*.tgz"
+
+  publish:
+    # requires:
+    # HELM_REPOSITORY
+    # HELM_USERNAME
+    # HELM_PASSWORD
+    # HELM_PACKAGE_DIR
+    desc: "Publish Helm charts"
+    summary: |
+      Release Helm charts by pushing to a Helm repository.
+      Only supports OCI repositories.
+    cmds:
+      - echo {{.HELM_PASSWORD}} | helm registry login {{.HELM_REPOSITORY}} --username={{.HELM_USERNAME}} --password-stdin
+      - for: sources
+        cmd: helm push {{.ITEM}} oci://{{.HELM_REPOSITORY}}
     sources:
       - "{{.HELM_PACKAGE_DIR}}/*.tgz"
 
