@@ -128,7 +128,7 @@ tasks:
       - |
         # What did this do?
         if [ -f "{{.CSPELL_CONFIG}}" ]; then
-          sed -i.bak "s|import: \[\]|import: ['{{.CSPELL_CONFIG}}']|" "{{.CONFIG}}"
+          sed -i.bak 's|import: \[\]|import: ["{{.CSPELL_CONFIG}}"]|' "{{.CONFIG}}"
         fi
         cspell lint --show-suggestions --config={{.CONFIG}} --no-progress "**/*.go" "**/*.py" "**/*.sh"
     vars:
