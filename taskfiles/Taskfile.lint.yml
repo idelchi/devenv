@@ -12,7 +12,7 @@ tasks:
     desc: Check for trailing whitespaces in the project files
     summary: |
       This task finds any trailing whitespaces in the project files and reports them.
-    cmd: wslint -q -a -e "**/.build/**" "**"
+    cmd: wslint -q -a "**/.build/**" "**"
 
   docker:
     desc: Lint Dockerfiles
