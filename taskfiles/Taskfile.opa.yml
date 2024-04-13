@@ -15,8 +15,6 @@ tasks:
     summary: |
       Perform linting on OPA policy files using `opa fmt`, `opa check`, and`regal lint`.
       Additional CLI arguments can be passed to all commands.
-      TODO(Idelchi): Set up a configuration file (https://docs.styra.com/regal#configuration)
-                     Exit true for now.
     cmds:
       - opa fmt --list --fail {{.POLICY_DIR}} {{.CLI_ARGS}}
       - opa check --strict {{.POLICY_DIR}} {{.CLI_ARGS}}
