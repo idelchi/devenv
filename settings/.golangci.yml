@@ -73,3 +73,11 @@ linters-settings:
   gomnd:
     ignored-functions:
       - time.Duration
+
+  ireturn:
+    allow:
+      - anon
+      - error
+      - empty
+      - stdlib
+      - generic

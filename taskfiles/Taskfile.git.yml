@@ -8,7 +8,7 @@ vars:
   _:
     sh: |
       _=$(git config --global --unset-all safe.directory || true)
-      _=$(git config --global --add safe.directory "*")
+      _=$(git config --global --add safe.directory "*" || true)
   GIT_BRANCH:
     sh: git rev-parse --abbrev-ref HEAD || echo unknown
   GIT_COMMIT:

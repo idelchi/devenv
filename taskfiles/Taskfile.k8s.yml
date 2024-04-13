@@ -5,6 +5,7 @@ version: "3"
 # - HELM_PACKAGE_DIR
 # - HELM_REPO_NAME
 # - HELM_REPO_URL
+
 vars:
   RESOURCES_DIR: '{{.RESOURCES_DIR | default "."}}'
 

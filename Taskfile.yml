@@ -33,6 +33,7 @@ tasks:
     summary: |
       This task cleans, formats, and lints the codebase.
     cmds:
+      - task: aux:clean
       - task: aux
       - task: git
       - task: format
