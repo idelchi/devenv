@@ -25,7 +25,7 @@ tasks:
     vars:
       CONFIG_HADOLINT: "{{.CONFIG_DIR}}/.hadolint.yaml"
       FILES:
-        sh: find . -type f -name "Dockerfile*" | tr '\n' ' '
+        sh: find . -type f -name "Dockerfile*" ! -name "*.dockerignore" | tr '\n' ' '
     sources:
       - ./**/Dockerfile*
       - "{{.CONFIG}}"
@@ -41,8 +41,9 @@ tasks:
     summary: |
       This task lints JSON files using prettier and jsonlint.
     cmds:
-      - prettier --config={{.CONFIG}} --ignore-path={{.IGNORE}} --check "**/*.json"
       - jsonlint --mode=cjson --quiet .
+      - for: sources
+        cmd: prettier --config={{.CONFIG}} --ignore-path={{.IGNORE}} --check "{{.ITEM}}"
     vars:
       CONFIG: "{{.CONFIG_DIR}}/.prettierrc.yml"
       IGNORE: "{{.CONFIG_DIR}}/.ignore"

@@ -145,7 +145,6 @@ tasks:
       GIT_COMMIT:
         sh: git rev-parse HEAD
 
-  share: 'find {{.DIRECTORY}} -name "*.py" -exec echo "" \; -exec echo "***** FILE: {} *****" \; -exec cat {} \; > share.py'
   update:
     desc: Update poetry lock file
     cmds:

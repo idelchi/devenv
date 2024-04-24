@@ -168,7 +168,7 @@ RUN mkdir -p ${DOCKER_CONFIG}/cli-plugins && \
 RUN curl https://raw.githubusercontent.com/helm/chartmuseum/main/scripts/get-chartmuseum | bash
 
 # Install Go
-ARG GO_VERSION=go1.22.1.linux-amd64
+ARG GO_VERSION=go1.22.2.linux-amd64
 RUN wget -qO- https://go.dev/dl/${GO_VERSION}.tar.gz | tar -xz -C /usr/local
 ENV PATH="/usr/local/go/bin:$PATH"
 
@@ -221,8 +221,11 @@ RUN echo \
     github.com/lucasepe/yml2dot@latest \
     github.com/bronze1man/yaml2json@latest \
     github.com/gulyasm/jsonui@latest \
+    github.com/norwoodj/helm-docs/cmd/helm-docs@v1.13.1 \
+    github.com/terraform-docs/terraform-docs@v0.17.0 \
     # Feed to 'go install'
-    | xargs -n 1 go install
+    | xargs -n 1 go install && \
+    rm -rf $(go env GOCACHE)
 
 # Tool configuration
 USER root
@@ -285,3 +288,22 @@ WORKDIR /home/${USER}
 # TODO: https://jvns.ca/blog/2022/04/12/a-list-of-new-ish--command-line-tools/
 ENTRYPOINT ["/bin/sh", "-c", "sudo chmod 777 /var/run/docker.sock && exec bash"]
 CMD ["/bin/bash"]
+
+USER root
+
+ARG OPA_VERSION=v0.63.0
+RUN wget -q https://github.com/open-policy-agent/opa/releases/download/${OPA_VERSION}/opa_linux_amd64 -O /usr/local/bin/opa && \
+    chmod +x /usr/local/bin/opa
+
+ARG REGAL_VERSION=v0.20.1
+RUN wget -q https://github.com/StyraInc/regal/releases/download/${REGAL_VERSION}/regal_Linux_x86_64 -O /usr/local/bin/regal && \
+    chmod +x /usr/local/bin/regal
+
+# Install task
+ARG TASK_VERSION=v3.36.0
+RUN wget -qO- https://github.com/go-task/task/releases/download/${TASK_VERSION}/task_linux_amd64.tar.gz | tar -xz -C /usr/local/bin
+
+# Install yq
+ARG YQ_VERSION=v4.43.1
+RUN wget -qO- https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64.tar.gz | tar -xz -C /tmp && \
+    mv /tmp/yq_linux_amd64 /usr/bin/yq

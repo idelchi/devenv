@@ -78,3 +78,9 @@ tasks:
       - task: git
       - task: git:push
     dir: "{{.USER_WORKING_DIR}}"
+
+  share: |
+    find {{.CLI_ARGS}} -type f -name "*" -exec echo "" \; -exec echo "***** FILE: {} *****" \; -exec cat {} \; > share.txt
+
+  unshare: |
+    cat share.txt | ./unshare.sh

@@ -22,7 +22,7 @@ tasks:
       This task formats Dockerfiles using dockerfile-utils.
     cmds:
       - for: sources
-        cmd: dockerfile-utils format --spaces 4 {{.ITEM}} | sponge {{.ITEM}}
+        cmd: dockerfile-utils format --spaces 4 {{.ITEM}} | sponge "{{.ITEM}}"
     preconditions:
       - sh: "command -v dockerfile-utils"
         msg: "dockerfile-utils errors out, check if nodejs is having problems"
@@ -34,8 +34,10 @@ tasks:
     summary: |
       This task formats JSON files using jsonlint and prettier.
     cmds:
-      - jsonlint --mode=cjson --pretty-print --quiet --in-place --indent "    " .
-      - prettier --config={{.CONFIG}} --log-level=silent --ignore-path={{.IGNORE}} --write "**/*.json"
+      - cmd: jsonlint --mode=cjson --pretty-print --quiet --in-place --indent "    " .
+      - for: sources
+        cmd: |
+          prettier --config={{.CONFIG}} --log-level=silent --ignore-path={{.IGNORE}} --write {{.ITEM}}
     vars:
       CONFIG: "{{.CONFIG_DIR}}/.prettierrc.yml"
       IGNORE: "{{.CONFIG_DIR}}/.ignore"

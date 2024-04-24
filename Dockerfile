@@ -152,7 +152,7 @@ RUN pip install --no-cache-dir \
     fastapi
 
 # Install Go
-ARG GO_VERSION=go1.22.1.linux-amd64
+ARG GO_VERSION=go1.22.2.linux-amd64
 RUN wget -qO- https://go.dev/dl/${GO_VERSION}.tar.gz | tar -xz -C /usr/local
 ENV PATH="/usr/local/go/bin:$PATH"
 
@@ -188,7 +188,8 @@ RUN echo \
     # YAML
     github.com/google/yamlfmt/cmd/yamlfmt@latest \
     # Pipe to 'go install'
-    | xargs -n 1 go install
+    | xargs -n 1 go install && \
+    rm -rf $(go env GOCACHE)
 
 # Install golangci-lint
 ARG GOLANGCI_LINT_VERSION=v1.57.2
