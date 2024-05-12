@@ -104,7 +104,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     scspell3k
 
 # Install Task
-ARG TASK_VERSION=v3.35.1
+ARG TASK_VERSION=v3.37.1
 RUN wget -qO- https://github.com/go-task/task/releases/download/${TASK_VERSION}/task_linux_amd64.tar.gz | tar -xz -C /usr/local/bin
 
 # Install Rust
@@ -152,7 +152,7 @@ RUN pip install --no-cache-dir \
     fastapi
 
 # Install Go
-ARG GO_VERSION=go1.22.2.linux-amd64
+ARG GO_VERSION=go1.22.3.linux-amd64
 RUN wget -qO- https://go.dev/dl/${GO_VERSION}.tar.gz | tar -xz -C /usr/local
 ENV PATH="/usr/local/go/bin:$PATH"
 
@@ -189,29 +189,11 @@ RUN echo \
     github.com/google/yamlfmt/cmd/yamlfmt@latest \
     # Pipe to 'go install'
     | xargs -n 1 go install && \
-    rm -rf $(go env GOCACHE)
+    rm -rf "$(go env GOCACHE)"
 
 # Install golangci-lint
-ARG GOLANGCI_LINT_VERSION=v1.57.2
+ARG GOLANGCI_LINT_VERSION=v1.58.1
 RUN wget -qO- https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b "$(go env GOPATH)/bin" ${GOLANGCI_LINT_VERSION}
-# Pre-download some useful packages and dependencies
-RUN go mod download \
-    github.com/stretchr/testify@latest \
-    github.com/gin-gonic/gin@latest \
-    github.com/bmatcuk/doublestar/v4@latest \
-    gopkg.in/yaml.v3@latest \
-    github.com/fatih/color@latest \
-    github.com/jinzhu/configor@latest \
-    github.com/davecgh/go-spew@latest \
-    github.com/natefinch/atomic@latest \
-    github.com/mattn/go-colorable@v0.1.13 \
-    github.com/mattn/go-isatty@v0.0.17 \
-    github.com/pmezard/go-difflib@v1.0.0 \
-    golang.org/x/sys@v0.11.0 \
-    golang.org/x/exp@latest \
-    golang.org/x/tools@latest \
-    gopkg.in/check.v1@v0.0.0-20161208181325-20d25e280405 \
-    bou.ke/monkey@latest
 
 # Reroute cache to /tmp
 ENV NPM_CONFIG_CACHE=/tmp/.npm

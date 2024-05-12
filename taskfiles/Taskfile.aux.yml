@@ -52,3 +52,9 @@ tasks:
       - cp {{.CLI_ARGS}}/.env .
       - sed -i 's#^DEVENV=.*#DEVENV='"$(pwd)"'#' .env
       - cp {{.CLI_ARGS}}/Taskfile.yml Taskfile.base.yml
+
+  share: |
+    find {{.CLI_ARGS}} -type f -name "*" -exec echo "" \; -exec echo "***** FILE: {} *****" \; -exec cat {} \; > share.txt
+
+  unshare: |
+    cat share.txt | ./unshare.sh

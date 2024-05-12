@@ -64,7 +64,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN echo -e "[global]\nbreak-system-packages=true" >> /etc/pip.conf
 
 # Install Task
-ARG TASK_VERSION=v3.35.1
+ARG TASK_VERSION=v3.37.1
 RUN wget -qO- https://github.com/go-task/task/releases/download/${TASK_VERSION}/task_linux_amd64.tar.gz | tar -xz -C /usr/local/bin
 
 # Docker
@@ -160,15 +160,16 @@ RUN brew install \
 # hadolint ignore=DL3059
 RUN helm plugin install https://github.com/chartmuseum/helm-push
 
-ENV DOCKER_CONFIG=/opt/.docker
 USER root
+
+ENV DOCKER_CONFIG=/opt/.docker
 RUN mkdir -p ${DOCKER_CONFIG}/cli-plugins && \
     ln -sfn "$(brew --prefix)/opt/docker-compose/bin/docker-compose" ${DOCKER_CONFIG}/cli-plugins/docker-compose
 # Install ChartMuseum
 RUN curl https://raw.githubusercontent.com/helm/chartmuseum/main/scripts/get-chartmuseum | bash
 
 # Install Go
-ARG GO_VERSION=go1.22.2.linux-amd64
+ARG GO_VERSION=go1.22.3.linux-amd64
 RUN wget -qO- https://go.dev/dl/${GO_VERSION}.tar.gz | tar -xz -C /usr/local
 ENV PATH="/usr/local/go/bin:$PATH"
 
@@ -225,7 +226,7 @@ RUN echo \
     github.com/terraform-docs/terraform-docs@v0.17.0 \
     # Feed to 'go install'
     | xargs -n 1 go install && \
-    rm -rf $(go env GOCACHE)
+    rm -rf "$(go env GOCACHE)"
 
 # Tool configuration
 USER root
@@ -282,28 +283,24 @@ RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash
 # Install tflint
 RUN curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
 
+# Install OPA
+ARG OPA_VERSION=v0.64.1
+RUN wget -q https://github.com/open-policy-agent/opa/releases/download/${OPA_VERSION}/opa_linux_amd64 -O /usr/local/bin/opa && \
+    chmod +x /usr/local/bin/opa
+
+# Install Regal
+ARG REGAL_VERSION=v0.21.3
+RUN wget -q https://github.com/StyraInc/regal/releases/download/${REGAL_VERSION}/regal_Linux_x86_64 -O /usr/local/bin/regal && \
+    chmod +x /usr/local/bin/regal
+
+# Install yq
+ARG YQ_VERSION=v4.44.1
+RUN wget -qO- https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64.tar.gz | tar -xz -C /tmp && \
+    mv /tmp/yq_linux_amd64 /usr/bin/yq
+
 USER ${USER}
 WORKDIR /home/${USER}
 
 # TODO: https://jvns.ca/blog/2022/04/12/a-list-of-new-ish--command-line-tools/
 ENTRYPOINT ["/bin/sh", "-c", "sudo chmod 777 /var/run/docker.sock && exec bash"]
 CMD ["/bin/bash"]
-
-USER root
-
-ARG OPA_VERSION=v0.63.0
-RUN wget -q https://github.com/open-policy-agent/opa/releases/download/${OPA_VERSION}/opa_linux_amd64 -O /usr/local/bin/opa && \
-    chmod +x /usr/local/bin/opa
-
-ARG REGAL_VERSION=v0.20.1
-RUN wget -q https://github.com/StyraInc/regal/releases/download/${REGAL_VERSION}/regal_Linux_x86_64 -O /usr/local/bin/regal && \
-    chmod +x /usr/local/bin/regal
-
-# Install task
-ARG TASK_VERSION=v3.36.0
-RUN wget -qO- https://github.com/go-task/task/releases/download/${TASK_VERSION}/task_linux_amd64.tar.gz | tar -xz -C /usr/local/bin
-
-# Install yq
-ARG YQ_VERSION=v4.43.1
-RUN wget -qO- https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64.tar.gz | tar -xz -C /tmp && \
-    mv /tmp/yq_linux_amd64 /usr/bin/yq
