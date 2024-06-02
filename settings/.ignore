@@ -2,3 +2,4 @@
 .cache
 .task
 .vscode-server
+.mypy_cache

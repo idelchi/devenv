@@ -34,6 +34,8 @@ To display the available commands along with their descriptions, run:
 
 ## Main Tools
 
+TODO: Update list of tools.
+
 - Go
   - [gofmt](https://pkg.go.dev/cmd/gofmt)
   - [vet](https://pkg.go.dev/cmd/vet)
@@ -53,7 +55,6 @@ To display the available commands along with their descriptions, run:
   - [shellcheck](https://github.com/koalaman/shellcheck)
 - Dockerfile
   - [hadolint](https://github.com/hadolint/hadolint)
-  - [dockerfilelint](https://github.com/replicatedhq/dockerfilelint)
   - [dockerfile-utils](https://github.com/rcjsuen/dockerfile-utils)
 - Markdown
   - [prettier](https://github.com/prettier/prettier)
@@ -70,6 +71,12 @@ To display the available commands along with their descriptions, run:
   - [jflint](https://github.com/miyajan/jflint)
 - Git
   - [gitlint](https://jorisroovers.com/gitlint)
+- Kubernetes
+  - [](TODO)
+- Helm
+  - [](TODO)
+- Terraform
+  - [](TODO)
 
 Tools that are not linters or formatters, but are useful for development:
 

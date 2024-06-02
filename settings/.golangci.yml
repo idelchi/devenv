@@ -28,13 +28,18 @@ issues:
   max-same-issues: 0
 
   exclude-rules:
-    - path: '_test.go'
+    - path: "_test.go"
       linters:
         - funlen
+        - wrapcheck
 
-    - path: 'main.go$'
+    - path: "main.go$"
       linters:
         - forbidigo
+
+  exclude:
+    # EXC0001 errcheck: Almost all programs ignore errors on these functions and in most cases it's ok
+    - "Error return value of .((os\\.)?std(out|err)\\..*|.*Close|.*Flush|os\\.Remove(All)?|.*printf?|os\\.(Un)?Setenv). is not checked"
 
 linters-settings:
   forbidigo:
@@ -68,3 +73,11 @@ linters-settings:
   gomnd:
     ignored-functions:
       - time.Duration
+
+  ireturn:
+    allow:
+      - anon
+      - error
+      - empty
+      - stdlib
+      - generic

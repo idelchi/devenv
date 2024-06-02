@@ -1,0 +1,33 @@
+version: "3"
+
+# requires
+# - CONFIG_DIR
+# - POLICY_DIR
+
+vars:
+  POLICY_DIR: '{{.POLICY_DIR | default "."}}'
+
+shopt: [globstar]
+
+tasks:
+  lint:
+    desc: "Lint OPA policy files"
+    summary: |
+      Perform linting on OPA policy files using `opa fmt`, `opa check`, and`regal lint`.
+      Additional CLI arguments can be passed to all commands.
+    cmds:
+      - opa fmt --list --fail {{.POLICY_DIR}} {{.CLI_ARGS}}
+      - opa check --strict {{.POLICY_DIR}} {{.CLI_ARGS}}
+      - regal lint {{.POLICY_DIR}} --config-file {{.CONFIG_DIR}}/regal.yaml {{.CLI_ARGS}}
+
+  format:
+    desc: "Format OPA policy files"
+    summary: |
+      Format OPA policy files using `opa fmt`.
+    cmd: opa fmt -w {{.POLICY_DIR}}
+
+  test:
+    desc: "Test OPA policy files"
+    summary: |
+      Test OPA policy files using `opa test`.
+    cmd: opa test {{.POLICY_DIR}}

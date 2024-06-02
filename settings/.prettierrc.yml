@@ -1,0 +1,12 @@
+overrides:
+  - files: "*.json"
+    options:
+      trailingComma: "none"
+      tabWidth: 4
+  - files:
+      - "*.yaml"
+      - "*.yml"
+    options:
+      tabWidth: 2
+      singleQuote: false
+      bracketSpacing: false

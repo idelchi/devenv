@@ -1,27 +1,19 @@
-version: '3'
+version: "3"
 
 # .env file variables are available here, with the exception of `includes`,
 # where externally defined environment variables and regular variables are available.
 # It's therefore recommended to also source the .env file before running.
-dotenv: ['.env']
+dotenv: [".env"]
 
 vars:
   # This environment variable must exist (i.e it's not enough that it's set in the .env file)
   DEVENV: $DEVENV
 
 includes:
-  aux:
-    taskfile: '{{.DEVENV}}/taskfiles/Taskfile.aux.yml'
-    dir: '$PWD'
-  git:
-    taskfile: '{{.DEVENV}}/taskfiles/Taskfile.git.yml'
-    dir: '$PWD'
-  lint:
-    taskfile: '{{.DEVENV}}/taskfiles/Taskfile.lint.yml'
-    dir: '$PWD'
-  format:
-    taskfile: '{{.DEVENV}}/taskfiles/Taskfile.format.yml'
-    dir: '$PWD'
+  aux: "{{.DEVENV}}/taskfiles/Taskfile.aux.yml"
+  git: "{{.DEVENV}}/taskfiles/Taskfile.git.yml"
+  lint: "{{.DEVENV}}/taskfiles/Taskfile.lint.yml"
+  format: "{{.DEVENV}}/taskfiles/Taskfile.format.yml"
 
 silent: true
 
@@ -33,11 +25,12 @@ tasks:
     summary: |
       This task cleans, formats, and lints the codebase.
     cmds:
+      - task: aux:clean
       - task: aux
       - task: git
       - task: format
       - task: lint
-    dir: '{{.USER_WORKING_DIR}}'
+    dir: "{{.USER_WORKING_DIR}}"
 
   docker:
     desc: Run commands inside the Docker container
@@ -51,7 +44,7 @@ tasks:
       - docker compose -f {{.DEVENV}}/docker-compose.yml build --build-arg CACHEBUST=$(date +%s) devenv
       - docker compose -f {{.DEVENV}}/docker-compose.yml run --name devenv --rm --service-ports devenv {{.CLI_ARGS}}
     interactive: true
-    dir: '{{.USER_WORKING_DIR}}'
+    dir: "{{.USER_WORKING_DIR}}"
 
   tools:
     desc: Run commands inside the Docker container
@@ -76,4 +69,4 @@ tasks:
     cmds:
       - task: git
       - task: git:push
-    dir: '{{.USER_WORKING_DIR}}'
+    dir: "{{.USER_WORKING_DIR}}"

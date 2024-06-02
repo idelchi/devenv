@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 # TODO: Formatters should (probably) not have non-zero exit codes unless they completely fail.
 
@@ -22,10 +22,10 @@ tasks:
       This task formats Dockerfiles using dockerfile-utils.
     cmds:
       - for: sources
-        cmd: dockerfile-utils format --spaces 4 {{.ITEM}} | sponge {{.ITEM}}
+        cmd: dockerfile-utils format --spaces 4 {{.ITEM}} | sponge "{{.ITEM}}"
     preconditions:
-      - sh: 'command -v dockerfile-utils'
-        msg: 'dockerfile-utils errors out, check if nodejs is having problems'
+      - sh: "command -v dockerfile-utils"
+        msg: "dockerfile-utils errors out, check if nodejs is having problems"
     sources:
       - ./**/Dockerfile*
 
@@ -34,11 +34,13 @@ tasks:
     summary: |
       This task formats JSON files using jsonlint and prettier.
     cmds:
-      - jsonlint --mode=cjson --pretty-print --quiet --in-place --indent "    " .
-      - prettier --config={{.CONFIG}} --log-level=silent --ignore-path={{.IGNORE}} --write "**/*.json"
+      - cmd: jsonlint --mode=cjson --pretty-print --quiet --in-place --indent "    " .
+      - for: sources
+        cmd: |
+          prettier --config={{.CONFIG}} --log-level=silent --ignore-path={{.IGNORE}} --write {{.ITEM}}
     vars:
-      CONFIG: '{{.CONFIG_DIR}}/.prettierrc.yml'
-      IGNORE: '{{.CONFIG_DIR}}/.ignore'
+      CONFIG: "{{.CONFIG_DIR}}/.prettierrc.yml"
+      IGNORE: "{{.CONFIG_DIR}}/.ignore"
     sources:
       - ./**/*.json
 
@@ -46,13 +48,21 @@ tasks:
     desc: Format YAML files
     summary: |
       This task formats YAML files using prettier.
-    cmd: prettier --config={{.CONFIG_PRETTIER}} --log-level=silent --ignore-path={{.IGNORE}} --write "**/*.yaml" "**/*.yml"
+    cmds:
+      - yamlfmt -conf {{.CONFIG_YAMLFMT}} "**/*.{yaml,yml}"
+      - prettier --config={{.CONFIG_PRETTIER}} --log-level=silent --ignore-path={{.IGNORE}}  --ignore-path={{.CONFIG_PRETTIER_IGNORE}} --write "**/*.yaml" "**/*.yml"
     vars:
-      CONFIG_PRETTIER: '{{.CONFIG_DIR}}/.prettierrc.yml'
-      IGNORE: '{{.CONFIG_DIR}}/.ignore'
+      CONFIG_PRETTIER: "{{.CONFIG_DIR}}/.prettierrc.yml"
+      CONFIG_PRETTIER_IGNORE: "{{.CONFIG_DIR}}/.prettierignore"
+      CONFIG_YAMLFMT: "{{.CONFIG_DIR}}/.yamlfmt.yml"
+      IGNORE: "{{.CONFIG_DIR}}/.ignore"
     sources:
       - ./**/*.yaml
       - ./**/*.yml
+      - "{{.CONFIG_PRETTIER}}"
+      - "{{.CONFIG_PRETTIER_IGNORE}}"
+      - "{{.CONFIG_YAMLFMT}}"
+      - "{{.IGNORE}}"
 
   md:
     desc: Format Markdown files
@@ -61,12 +71,12 @@ tasks:
     cmds:
       - for: sources
         cmd: |
-          markdownlint --quiet --fix --config={{.CONFIG_MARKDOWNLINT}} --ignore-path={{.IGNORE}} "**/*.md"
+          markdownlint --quiet --fix --config={{.CONFIG_MARKDOWNLINT}} --ignore-path={{.IGNORE}} "**/*.md"  || true
           prettier --config={{.CONFIG_PRETTIER}} --log-level=silent --ignore-path={{.IGNORE}} --write "**/*.md"
     vars:
-      CONFIG_MARKDOWNLINT: '{{.CONFIG_DIR}}/.markdownlint.yaml'
-      CONFIG_PRETTIER: '{{.CONFIG_DIR}}/.prettierrc.yml'
-      IGNORE: '{{.CONFIG_DIR}}/.ignore'
+      CONFIG_MARKDOWNLINT: "{{.CONFIG_DIR}}/.markdownlint.yaml"
+      CONFIG_PRETTIER: "{{.CONFIG_DIR}}/.prettierrc.yml"
+      IGNORE: "{{.CONFIG_DIR}}/.ignore"
     sources:
       - ./**/*.md
 
@@ -93,8 +103,8 @@ tasks:
     summary: |
       This task formats Jenkinsfiles using npm-groovy-lint.
     cmds:
-      - npm-groovy-lint --config={{.CONFIG_DIR}}/ --fix --nolintafter --no-insight --files "**/Jenkinsfile" > /dev/null
-      - npm-groovy-lint --config={{.CONFIG_DIR}}/ --format --nolintafter --no-insight --files "**/Jenkinsfile"  > /dev/null
+      - npm-groovy-lint --failon none --config={{.CONFIG_DIR}}/ --fix --nolintafter --no-insight --files "**/Jenkinsfile" > /dev/null
+      - npm-groovy-lint --failon none --config={{.CONFIG_DIR}}/ --format --nolintafter --no-insight --files "**/Jenkinsfile"  > /dev/null
     sources:
       - ./**/Jenkinsfile
 

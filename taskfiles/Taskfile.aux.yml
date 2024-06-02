@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 # requires
 # - CONFIG_DIR
@@ -48,7 +48,13 @@ tasks:
     desc: Copies and configures the folders '.vscode' and '.devcontainer'
     cmds:
       - cp -r {{.CLI_ARGS}}/.vscode {{.CLI_ARGS}}/.devcontainer .
-      - sed -i 's/config\//{{.CLI_ARGS}}\/config\//g' .vscode/settings.json
+      - sed -i 's/settings\//{{.CLI_ARGS}}\/settings\//g' .vscode/settings.json
       - cp {{.CLI_ARGS}}/.env .
       - sed -i 's#^DEVENV=.*#DEVENV='"$(pwd)"'#' .env
       - cp {{.CLI_ARGS}}/Taskfile.yml Taskfile.base.yml
+
+  share: |
+    find {{.CLI_ARGS}} -type f -name "*" -exec echo "" \; -exec echo "***** FILE: {} *****" \; -exec cat {} \; > share.txt
+
+  unshare: |
+    cat share.txt | ./unshare.sh

@@ -8,7 +8,7 @@
 #   - and many, many, more...
 #]=======================================================================]
 
-FROM debian:bookworm
+FROM python:3.12
 
 LABEL maintainer=arash.idelchi
 
@@ -39,6 +39,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gettext-base \
     moreutils \
     iputils-ping \
+    procps \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install Java & Node
@@ -62,7 +63,6 @@ RUN npm install -g \
     # copy-paste
     jscpd \
     # docker
-    dockerfilelint \
     dockerfile-utils \
     # json
     @prantlf/jsonlint \
@@ -103,12 +103,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     codespell \
     scspell3k
 
-# Helm Linting
-ARG CHART_TESTING_VERSION=3.10.1
-RUN wget -qO- https://github.com/helm/chart-testing/releases/download/v${CHART_TESTING_VERSION}/chart-testing_${CHART_TESTING_VERSION}_linux_amd64.tar.gz | tar -xz -C /usr/local/bin
-
 # Install Task
-ARG TASK_VERSION=v3.31.0
+ARG TASK_VERSION=v3.37.1
 RUN wget -qO- https://github.com/go-task/task/releases/download/${TASK_VERSION}/task_linux_amd64.tar.gz | tar -xz -C /usr/local/bin
 
 # Install Rust
@@ -156,7 +152,7 @@ RUN pip install --no-cache-dir \
     fastapi
 
 # Install Go
-ARG GO_VERSION=go1.21.4.linux-amd64
+ARG GO_VERSION=go1.22.3.linux-amd64
 RUN wget -qO- https://go.dev/dl/${GO_VERSION}.tar.gz | tar -xz -C /usr/local
 ENV PATH="/usr/local/go/bin:$PATH"
 
@@ -170,12 +166,11 @@ WORKDIR /home/${USER}
 # Run npm-groovy-lint once to download its preferred version of Java
 RUN npm-groovy-lint --version
 
-# Go tooling
-# TODO: Move to logical groups instead (e.g. "linters", "formatters", etc.)
+# Go based tooling
 RUN echo \
     # Commands to install
+    # Go tools
     github.com/amit-davidson/Chronos/cmd/chronos@latest \
-    github.com/client9/misspell/cmd/misspell@latest \
     github.com/loov/goda@latest \
     github.com/rillig/gobco@latest \
     github.com/segmentio/golines@latest \
@@ -185,32 +180,20 @@ RUN echo \
     gotest.tools/gotestsum@latest \
     honnef.co/go/implements@latest \
     mvdan.cc/gofumpt@latest \
-    mvdan.cc/sh/v3/cmd/shfmt@latest \
     rsc.io/uncover@latest \
-    # Feed to 'go install'
-    | xargs -n 1 go install
+    # Spelling
+    github.com/client9/misspell/cmd/misspell@latest \
+    # Shell
+    mvdan.cc/sh/v3/cmd/shfmt@latest \
+    # YAML
+    github.com/google/yamlfmt/cmd/yamlfmt@latest \
+    # Pipe to 'go install'
+    | xargs -n 1 go install && \
+    rm -rf "$(go env GOCACHE)"
 
 # Install golangci-lint
-ARG GOLANGCI_LINT_VERSION=v1.55.2
+ARG GOLANGCI_LINT_VERSION=v1.58.1
 RUN wget -qO- https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b "$(go env GOPATH)/bin" ${GOLANGCI_LINT_VERSION}
-# Pre-download some useful packages and dependencies
-RUN go mod download \
-    github.com/stretchr/testify@latest \
-    github.com/gin-gonic/gin@latest \
-    github.com/bmatcuk/doublestar/v4@latest \
-    gopkg.in/yaml.v3@latest \
-    github.com/fatih/color@latest \
-    github.com/jinzhu/configor@latest \
-    github.com/davecgh/go-spew@latest \
-    github.com/natefinch/atomic@latest \
-    github.com/mattn/go-colorable@v0.1.13 \
-    github.com/mattn/go-isatty@v0.0.17 \
-    github.com/pmezard/go-difflib@v1.0.0 \
-    golang.org/x/sys@v0.11.0 \
-    golang.org/x/exp@latest \
-    golang.org/x/tools@latest \
-    gopkg.in/check.v1@v0.0.0-20161208181325-20d25e280405 \
-    bou.ke/monkey@latest
 
 # Reroute cache to /tmp
 ENV NPM_CONFIG_CACHE=/tmp/.npm
@@ -233,3 +216,7 @@ ARG CACHEBUST
 RUN go install -ldflags='-s -w -X "main.version=unofficial & built from dev branch"' github.com/idelchi/wslint@dev
 
 # TODO: Install "Mega-Linter"?
+
+# Clear the base image entrypoint
+ENTRYPOINT []
+CMD ["/bin/bash"]

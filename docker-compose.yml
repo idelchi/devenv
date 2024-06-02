@@ -1,5 +1,4 @@
----
-version: '3.7'
+version: "3.7"
 
 # .env file variables are available here.
 
@@ -12,9 +11,9 @@ services:
     hostname: devenv
     ports:
       # <host:container>
-      - '8888:8888' # GoDoc
-      - '10000-10200:10000-10200' # Go Profilers
-      - '9090:6419' # grip
+      - "8888:8888" # GoDoc
+      - "10000-10200:10000-10200" # Go Profilers
+      - "9090:6419" # grip
     environment:
       - DEVENV
     network_mode: bridge
@@ -24,7 +23,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       # - ${DEVENV}:${DEVENV} # Possible to mount it inside
     extra_hosts:
-      - host:host-gateway
+      - host.docker.internal:host-gateway
     working_dir: /home/user/ws
 
   tools:
@@ -36,9 +35,9 @@ services:
     hostname: tools
     ports:
       # <host:container>
-      - '8888:8888' # GoDoc
-      - '10000-10200:10000-10200' # Go Profilers
-      - '9090:6419' # grip
+      - "8888:8888" # GoDoc
+      - "10000-10200:10000-10200" # Go Profilers
+      - "9090:6419" # grip
     environment:
       - DEVENV
       - KUBECONFIG=/home/user/.kube/config
@@ -50,5 +49,5 @@ services:
       - ${HOME}/.kube/config:/home/user/.kube/config
       # - ${DEVENV}:${DEVENV} # Possible to mount it inside
     extra_hosts:
-      - host:host-gateway
+      - host.docker.internal:host-gateway
     working_dir: /home/user/ws
