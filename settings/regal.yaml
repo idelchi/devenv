@@ -1,0 +1,7 @@
+rules:
+  testing:
+    print-or-trace-call:
+      level: ignore
+  style:
+    todo-comment:
+      level: ignore

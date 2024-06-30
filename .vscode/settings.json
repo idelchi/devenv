@@ -53,13 +53,17 @@
         "editor.defaultFormatter": "ms-python.black-formatter",
         "editor.formatOnSave": true,
         "editor.codeActionsOnSave": {
-            "source.organizeImports": "explicit"
+            "source.organizeImports": "explicit",
+            "source.fixAll": "explicit"
         }
     },
     "pylint.args": ["--rcfile=settings/pyproject.toml"],
     "mypy-type-checker.args": ["--config=settings/pyproject.toml"],
+    "ruff.configuration": "settings/pyproject.toml",
     "ruff.lint.args": ["--config=settings/pyproject.toml"],
     "ruff.lint.run": "onSave",
+    "ruff.nativeServer": true,
+    "ruff.organizeImports": false,
     /* ****** ****** ****** */
     /* ****** GO ****** */
     "go.lintOnSave": "workspace",
@@ -96,7 +100,7 @@
         "DEVENV": ".",
         "PYTHONPATH": "${workspaceFolder}"
     },
-    "terminal.integrated.enableMultiLinePasteWarning": false,
+    "terminal.integrated.enableMultiLinePasteWarning": "always",
     /* ****** ****** ****** */
     /* ****** SYSTEM ****** */
     "files.eol": "\n",

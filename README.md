@@ -139,3 +139,7 @@ For this, the `.env` file should be appropriately configured and sourced.
 `.devcontainer` contains configurations to use the Docker image as a development container.
 
 `.vscode` contains configurations for usage in VS Code.
+
+## TODOs
+
+- deprecate Python linters in favor of `ruff`

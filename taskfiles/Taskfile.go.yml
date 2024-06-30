@@ -65,8 +65,20 @@ tasks:
   format:
     desc: format go project
     cmds:
-      - gofmt -l -s -e -w .
-      - golines -w -m 120 --shorten-comments .
+      # TODO(Idelchi): This should be integrated in `golangci-lint`
+      # - gofmt -l -s -e -w .
+      - >
+        golines -w
+        -m 120
+        --shorten-comments
+        --reformat-tags
+        --ignored-dirs=.git
+        --ignored-dirs=vendor
+        --ignored-dirs=.cache
+        --ignored-dirs=.go-path
+        --ignored-dirs=.go-cache
+        --ignored-dirs=.golangci-lint-cache
+        .
       - >
         golangci-lint run
         --config={{.CONFIG_GOLANGCI_LINT}}
@@ -86,14 +98,33 @@ tasks:
   lint:
     desc: lint go project
     deps: [init]
-    cmd: >
-      golangci-lint run
-      --config={{.CONFIG_GOLANGCI_LINT}}
-      --disable=godox
-      --sort-results
-      --out-format
-      code-climate:{{.LINT_REPORT}},junit-xml:{{.LINT_REPORT}}.xml,checkstyle:{{.LINT_REPORT}}.checkstyle,colored-line-number
-      {{.CLI_ARGS}}
+    cmds:
+      - >
+        lines=$(golines
+        -m 120
+        --shorten-comments
+        --reformat-tags
+        --dry-run
+        --ignored-dirs=.git
+        --ignored-dirs=vendor
+        --ignored-dirs=.cache
+        --ignored-dirs=.go-path
+        --ignored-dirs=.go-cache
+        --ignored-dirs=.golangci-lint-cache
+        .)
+
+        if [[ -n $lines ]]; then
+          echo "go files have not been formatted with golines"
+          exit 1
+        fi
+      - >
+        golangci-lint run
+        --config={{.CONFIG_GOLANGCI_LINT}}
+        --disable=godox
+        --sort-results
+        --out-format
+        code-climate:{{.LINT_REPORT}},junit-xml:{{.LINT_REPORT}}.xml,checkstyle:{{.LINT_REPORT}}.checkstyle,colored-line-number
+        {{.CLI_ARGS}}
     vars:
       CONFIG_GOLANGCI_LINT: "{{.CONFIG_DIR}}/.golangci.yml"
       LINT_REPORT: "{{.BUILD_DIR}}/{{.LINT_REPORT}}"
@@ -101,11 +132,6 @@ tasks:
     sources:
       - ./**/*.go
       - "{{.CONFIG_DIR}}/.golangci.yml"
-    preconditions:
-      - sh: "[[ -z $(gofmt -l -d -s -e .) ]]"
-        msg: "go files have not been formatted with gofmt"
-      - sh: "[[ -z $(golines -m 120 --shorten-comments --dry-run .) ]]"
-        msg: "go files have not been formatted with golines"
 
   # Quality
   # ---------
