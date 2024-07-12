@@ -104,7 +104,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     scspell3k
 
 # Install Task
-ARG TASK_VERSION=v3.37.2
+ARG TASK_VERSION=v3.38.0
 RUN wget -qO- https://github.com/go-task/task/releases/download/${TASK_VERSION}/task_linux_amd64.tar.gz | tar -xz -C /usr/local/bin
 
 # Install Rust
