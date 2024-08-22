@@ -32,7 +32,6 @@ services:
       dockerfile: Dockerfile.tools
       platforms:
         - linux/amd64
-        - linux/arm64
     pull_policy: if_not_present
     image: idelchi/devenv:tools
     container_name: tools
