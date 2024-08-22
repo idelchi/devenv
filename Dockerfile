@@ -10,6 +10,8 @@
 
 FROM python:3.12
 
+ARG TARGETARCH
+
 LABEL maintainer=arash.idelchi
 
 USER root
@@ -77,7 +79,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 ARG HADOLINT_VERSION=v2.12.0
-RUN wget -q https://github.com/hadolint/hadolint/releases/download/${HADOLINT_VERSION}/hadolint-Linux-x86_64 -O /usr/local/bin/hadolint && \
+ARG HADOLINT_ARCH=${TARGETARCH/amd64/x86_64}
+RUN wget -q https://github.com/hadolint/hadolint/releases/download/${HADOLINT_VERSION}/hadolint-Linux-${HADOLINT_ARCH} -O /usr/local/bin/hadolint && \
     chmod +x /usr/local/bin/hadolint
 
 # Python
@@ -105,7 +108,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Install Task
 ARG TASK_VERSION=v3.38.0
-RUN wget -qO- https://github.com/go-task/task/releases/download/${TASK_VERSION}/task_linux_amd64.tar.gz | tar -xz -C /usr/local/bin
+ARG TASK_ARCH=${TARGETARCH}
+RUN wget -qO- https://github.com/go-task/task/releases/download/${TASK_VERSION}/task_linux_${TASK_ARCH}.tar.gz | tar -xz -C /usr/local/bin
 
 # Install Rust
 ARG RUST_DIR=/opt/rust
@@ -152,8 +156,9 @@ RUN pip install --no-cache-dir \
     fastapi
 
 # Install Go
-ARG GO_VERSION=go1.22.3.linux-amd64
-RUN wget -qO- https://go.dev/dl/${GO_VERSION}.tar.gz | tar -xz -C /usr/local
+ARG GO_VERSION=go1.23.0
+ARG GO_ARCH=${TARGETARCH}
+RUN wget -qO- https://go.dev/dl/${GO_VERSION}.linux-${GO_ARCH}.tar.gz | tar -xz -C /usr/local
 ENV PATH="/usr/local/go/bin:$PATH"
 
 ENV GOPATH=/opt/go
@@ -166,50 +171,33 @@ WORKDIR /home/${USER}
 # Run npm-groovy-lint once to download its preferred version of Java
 RUN npm-groovy-lint --version
 
-# # Go based tooling
-# RUN echo \
-#     # Commands to install
-#     # Go tools
-#     github.com/amit-davidson/Chronos/cmd/chronos@latest \
-#     github.com/loov/goda@latest \
-#     github.com/rillig/gobco@latest \
-#     github.com/segmentio/golines@latest \
-#     github.com/t-yuki/gocover-cobertura@latest \
-#     golang.org/x/tools/cmd/godoc@latest \
-#     golang.org/x/tools/cmd/guru@latest \
-#     gotest.tools/gotestsum@latest \
-#     honnef.co/go/implements@latest \
-#     mvdan.cc/gofumpt@latest \
-#     rsc.io/uncover@latest \
-#     # Spelling
-#     github.com/client9/misspell/cmd/misspell@latest \
-#     # Shell
-#     mvdan.cc/sh/v3/cmd/shfmt@latest \
-#     # YAML
-#     github.com/google/yamlfmt/cmd/yamlfmt@latest \
-#     # Pipe to 'go install'
-#     | xargs -n 1 go install && \
-#     rm -rf "$(go env GOCACHE)"
-
 # Go based tooling
-RUN go install github.com/amit-davidson/Chronos/cmd/chronos@latest
-RUN go install github.com/loov/goda@latest
-RUN go install github.com/rillig/gobco@latest
-RUN go install github.com/segmentio/golines@latest
-RUN go install github.com/t-yuki/gocover-cobertura@latest
-RUN go install golang.org/x/tools/cmd/godoc@latest
-RUN go install golang.org/x/tools/cmd/guru@latest
-RUN go install gotest.tools/gotestsum@latest
-RUN go install honnef.co/go/implements@latest
-RUN go install mvdan.cc/gofumpt@latest
-RUN go install rsc.io/uncover@latest
-RUN go install  github.com/client9/misspell/cmd/misspell@latest
-RUN go install  mvdan.cc/sh/v3/cmd/shfmt@latest
-RUN go install  github.com/google/yamlfmt/cmd/yamlfmt@latest
-
+RUN echo \
+    # Commands to install
+    # Go tools
+    github.com/amit-davidson/Chronos/cmd/chronos@latest \
+    github.com/loov/goda@latest \
+    github.com/rillig/gobco@latest \
+    github.com/segmentio/golines@latest \
+    github.com/t-yuki/gocover-cobertura@latest \
+    golang.org/x/tools/cmd/godoc@latest \
+    golang.org/x/tools/cmd/guru@latest \
+    gotest.tools/gotestsum@latest \
+    honnef.co/go/implements@latest \
+    mvdan.cc/gofumpt@latest \
+    rsc.io/uncover@latest \
+    # Spelling
+    github.com/client9/misspell/cmd/misspell@latest \
+    # Shell
+    mvdan.cc/sh/v3/cmd/shfmt@latest \
+    # YAML
+    github.com/google/yamlfmt/cmd/yamlfmt@latest \
+    # Pipe to 'go install'
+    | xargs -n 1 go install && \
+    rm -rf "$(go env GOCACHE)"
 
 # Install golangci-lint
-ARG GOLANGCI_LINT_VERSION=v1.58.1
+ARG GOLANGCI_LINT_VERSION=v1.60.2
 RUN wget -qO- https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b "$(go env GOPATH)/bin" ${GOLANGCI_LINT_VERSION}
 
 # Reroute cache to /tmp
