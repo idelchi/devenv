@@ -166,30 +166,47 @@ WORKDIR /home/${USER}
 # Run npm-groovy-lint once to download its preferred version of Java
 RUN npm-groovy-lint --version
 
+# # Go based tooling
+# RUN echo \
+#     # Commands to install
+#     # Go tools
+#     github.com/amit-davidson/Chronos/cmd/chronos@latest \
+#     github.com/loov/goda@latest \
+#     github.com/rillig/gobco@latest \
+#     github.com/segmentio/golines@latest \
+#     github.com/t-yuki/gocover-cobertura@latest \
+#     golang.org/x/tools/cmd/godoc@latest \
+#     golang.org/x/tools/cmd/guru@latest \
+#     gotest.tools/gotestsum@latest \
+#     honnef.co/go/implements@latest \
+#     mvdan.cc/gofumpt@latest \
+#     rsc.io/uncover@latest \
+#     # Spelling
+#     github.com/client9/misspell/cmd/misspell@latest \
+#     # Shell
+#     mvdan.cc/sh/v3/cmd/shfmt@latest \
+#     # YAML
+#     github.com/google/yamlfmt/cmd/yamlfmt@latest \
+#     # Pipe to 'go install'
+#     | xargs -n 1 go install && \
+#     rm -rf "$(go env GOCACHE)"
+
 # Go based tooling
-RUN echo \
-    # Commands to install
-    # Go tools
-    github.com/amit-davidson/Chronos/cmd/chronos@latest \
-    github.com/loov/goda@latest \
-    github.com/rillig/gobco@latest \
-    github.com/segmentio/golines@latest \
-    github.com/t-yuki/gocover-cobertura@latest \
-    golang.org/x/tools/cmd/godoc@latest \
-    golang.org/x/tools/cmd/guru@latest \
-    gotest.tools/gotestsum@latest \
-    honnef.co/go/implements@latest \
-    mvdan.cc/gofumpt@latest \
-    rsc.io/uncover@latest \
-    # Spelling
-    github.com/client9/misspell/cmd/misspell@latest \
-    # Shell
-    mvdan.cc/sh/v3/cmd/shfmt@latest \
-    # YAML
-    github.com/google/yamlfmt/cmd/yamlfmt@latest \
-    # Pipe to 'go install'
-    | xargs -n 1 go install && \
-    rm -rf "$(go env GOCACHE)"
+RUN go install github.com/amit-davidson/Chronos/cmd/chronos@latest
+RUN go install github.com/loov/goda@latest
+RUN go install github.com/rillig/gobco@latest
+RUN go install github.com/segmentio/golines@latest
+RUN go install github.com/t-yuki/gocover-cobertura@latest
+RUN go install golang.org/x/tools/cmd/godoc@latest
+RUN go install golang.org/x/tools/cmd/guru@latest
+RUN go install gotest.tools/gotestsum@latest
+RUN go install honnef.co/go/implements@latest
+RUN go install mvdan.cc/gofumpt@latest
+RUN go install rsc.io/uncover@latest
+RUN go install  github.com/client9/misspell/cmd/misspell@latest
+RUN go install  mvdan.cc/sh/v3/cmd/shfmt@latest
+RUN go install  github.com/google/yamlfmt/cmd/yamlfmt@latest
+
 
 # Install golangci-lint
 ARG GOLANGCI_LINT_VERSION=v1.58.1

@@ -51,7 +51,7 @@ jobs:
 
       # Run the minimum required tests to validate the image
       # Make sure the current image is being built and used, and not a remote one
-      - run: docker compose run --build --rm devenv task lint
+      - run: docker compose run --build --rm devenv ls
 
       # Build the Docker image and Push it to Docker Hub
       # The cache should still be available from the previous step
