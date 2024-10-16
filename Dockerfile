@@ -107,7 +107,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     scspell3k
 
 # Install Task
-ARG TASK_VERSION=v3.38.0
+ARG TASK_VERSION=v3.39.2
 ARG TASK_ARCH=${TARGETARCH}
 RUN wget -qO- https://github.com/go-task/task/releases/download/${TASK_VERSION}/task_linux_${TASK_ARCH}.tar.gz | tar -xz -C /usr/local/bin
 
@@ -156,7 +156,7 @@ RUN pip install --no-cache-dir \
     fastapi
 
 # Install Go
-ARG GO_VERSION=go1.23.0
+ARG GO_VERSION=go1.23.2
 ARG GO_ARCH=${TARGETARCH}
 RUN wget -qO- https://go.dev/dl/${GO_VERSION}.linux-${GO_ARCH}.tar.gz | tar -xz -C /usr/local
 ENV PATH="/usr/local/go/bin:$PATH"
@@ -197,7 +197,7 @@ RUN echo \
     rm -rf "$(go env GOCACHE)"
 
 # Install golangci-lint
-ARG GOLANGCI_LINT_VERSION=v1.60.2
+ARG GOLANGCI_LINT_VERSION=v1.61.0
 RUN wget -qO- https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b "$(go env GOPATH)/bin" ${GOLANGCI_LINT_VERSION}
 
 # Reroute cache to /tmp

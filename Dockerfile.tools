@@ -64,7 +64,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN echo -e "[global]\nbreak-system-packages=true" >> /etc/pip.conf
 
 # Install Task
-ARG TASK_VERSION=v3.38.0
+ARG TASK_VERSION=v3.39.2
 ARG TASK_ARCH=${TARGETARCH}
 RUN wget -qO- https://github.com/go-task/task/releases/download/${TASK_VERSION}/task_linux_${TASK_ARCH}.tar.gz | tar -xz -C /usr/local/bin
 
@@ -170,7 +170,7 @@ RUN mkdir -p ${DOCKER_CONFIG}/cli-plugins && \
 RUN curl https://raw.githubusercontent.com/helm/chartmuseum/main/scripts/get-chartmuseum | bash
 
 # Install Go
-ARG GO_VERSION=go1.23.0
+ARG GO_VERSION=go1.23.2
 ARG GO_ARCH=${TARGETARCH}
 RUN wget -qO- https://go.dev/dl/${GO_VERSION}.linux-${GO_ARCH}.tar.gz | tar -xz -C /usr/local
 ENV PATH="/usr/local/go/bin:$PATH"
