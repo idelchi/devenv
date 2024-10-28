@@ -61,7 +61,6 @@ jobs:
           push: true
           tags: ${{ env.IMAGE }}:dev
           cache-to: type=inline
-          platforms: linux/amd64,linux/arm64,linux/arm64,linux/arm/v7
 
   release:
     runs-on: ubuntu-24.04
@@ -80,5 +79,5 @@ jobs:
         with:
           push: true
           tags: ${{ env.IMAGE }}:latest
-          cache-from: type=registry,ref=${{ env.IMAGE }}:dev
+          cache-from: type=registry,ref=${{ env.IMAGE }}:latest
           platforms: linux/amd64,linux/arm64,linux/arm/v7
