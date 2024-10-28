@@ -7,7 +7,7 @@ To use `devenv` in your project, include it as a submodule.
 
     git submodule add https://github.com/idelchi/devenv .devenv
 
-To track the dev branch instead of the default master branch, the following commands can be used:
+To track the dev branch instead of the default `main` branch, the following commands can be used:
 
     git submodule set-branch -b dev .devenv
     git submodule update --init --recursive --remote

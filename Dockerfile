@@ -206,6 +206,7 @@ RUN wget -qO- https://raw.githubusercontent.com/golangci/golangci-lint/master/in
 
 # Install wslint
 # TODO: Implement versioning in wslint instead.
+# ARG CACHEBUST
 RUN go install -ldflags='-s -w -X "main.version=unofficial & built from dev branch"' github.com/idelchi/wslint@dev
 
 # Reroute cache to /tmp
