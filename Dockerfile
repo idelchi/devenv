@@ -24,6 +24,7 @@ FROM --platform=$BUILDPLATFORM golang:1.23.2 AS go-builder
 # Basic good practices
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
+ARG TARGETOS
 ARG TARGETARCH
 ENV GOOS=${TARGETOS}
 ENV GOARCH=${TARGETARCH}
