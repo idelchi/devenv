@@ -45,10 +45,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install Java & Node
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y --no-install-recommends \
     default-jdk \
     nodejs \
-    npm \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Various linters & formatters
