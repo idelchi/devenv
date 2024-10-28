@@ -99,9 +99,11 @@ tasks:
       # TODO: Keep an eye out for when "https://github.com/go-task/task/issues/948" is implemented.
       # Since we want to lint all at once, maybe `for: sources` is not so suitable.
       - cmd: |
-          FILES=$(find . -type f -name "*.sh" | tr '\n' ' ')
           test -z "{{.FILES}}" && echo "no shell files found" && exit 0
           shellcheck --enable=all --severity=style --source-path=SCRIPTDIR {{.FILES}}
+    vars:
+      FILES:
+        sh: find . -type f -name "*.sh" | tr '\n' ' '
     sources:
       - ./**/*.sh
 

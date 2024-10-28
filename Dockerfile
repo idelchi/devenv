@@ -160,6 +160,8 @@ RUN pip install --no-cache-dir \
 # Install Go
 ARG GO_VERSION=go1.23.2
 ARG GO_ARCH=${TARGETARCH}
+ARG GO_ARCH=${GO_ARCH/arm/armv6l}
+ARG GO_ARCH=${GO_ARCH/armv6l64/arm64}
 RUN wget -qO- https://go.dev/dl/${GO_VERSION}.linux-${GO_ARCH}.tar.gz | tar -xz -C /usr/local
 ENV PATH="/usr/local/go/bin:$PATH"
 
