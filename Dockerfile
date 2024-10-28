@@ -124,8 +124,7 @@ ENV PATH="${CARGO_HOME}/bin:${PATH}"
 
 # Additional Rust based tools
 RUN cargo install \
-    typos-cli \
-    just
+    typos-cli
 
 # Python tooling for linting & formatting
 # (mistakes brackets for ranges, split up for readability)

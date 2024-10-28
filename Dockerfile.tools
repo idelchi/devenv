@@ -181,6 +181,19 @@ ENV GOPATH=/opt/go
 RUN mkdir ${GOPATH} && chown -R ${USER}:${USER} ${GOPATH}
 ENV PATH="${GOPATH}/bin:$PATH"
 
+# Install Rust
+ARG RUST_DIR=/opt/rust
+RUN mkdir -p ${RUST_DIR} && chown -R ${USER}:${USER} ${RUST_DIR}
+
+ENV RUSTUP_HOME=${RUST_DIR}/.rustup
+ENV CARGO_HOME=${RUST_DIR}/.cargo
+RUN wget -qO- https://sh.rustup.rs | bash -s -- -y
+ENV PATH="${CARGO_HOME}/bin:${PATH}"
+
+# Additional Rust based tools
+RUN cargo install \
+    just
+
 # Tools
 USER ${USER}
 RUN brew install  \
