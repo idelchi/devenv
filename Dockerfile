@@ -80,6 +80,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 ARG HADOLINT_VERSION=v2.12.0
 ARG HADOLINT_ARCH=${TARGETARCH/amd64/x86_64}
+ARG HADOLINT_ARCH=${HADOLINT_ARCH/arm/arm64}
+ARG HADOLINT_ARCH=${HADOLINT_ARCH/arm6464/arm64}
 RUN wget -q https://github.com/hadolint/hadolint/releases/download/${HADOLINT_VERSION}/hadolint-Linux-${HADOLINT_ARCH} -O /usr/local/bin/hadolint && \
     chmod +x /usr/local/bin/hadolint
 
