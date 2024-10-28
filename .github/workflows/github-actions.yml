@@ -12,7 +12,7 @@ env:
 jobs:
   # TODO: This job could be reusable in other workflows
   info:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - run: |
           # Print out some more information about the environment
@@ -27,7 +27,7 @@ jobs:
           echo whoami: $(whoami)
 
   verify:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs: [info]
     steps:
       - uses: actions/checkout@v4
@@ -64,7 +64,7 @@ jobs:
           platforms: linux/amd64,linux/arm64,linux/arm64,linux/arm/v7
 
   release:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs: [verify]
     if: github.ref == 'refs/heads/main'
     steps:
