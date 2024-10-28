@@ -202,6 +202,10 @@ RUN echo \
 ARG GOLANGCI_LINT_VERSION=v1.61.0
 RUN wget -qO- https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b "$(go env GOPATH)/bin" ${GOLANGCI_LINT_VERSION}
 
+# Install wslint
+# TODO: Implement versioning in wslint instead.
+RUN go install -ldflags='-s -w -X "main.version=unofficial & built from dev branch"' github.com/idelchi/wslint@dev
+
 # Reroute cache to /tmp
 ENV NPM_CONFIG_CACHE=/tmp/.npm
 ENV XDG_CACHE_HOME=/tmp/.cache
@@ -216,10 +220,6 @@ ENV TZ=Europe/Zurich
 ENV DEVENV=/home/${USER}
 COPY --chown=${USER}:${USER} . ${DEVENV}
 RUN sed -i 's#^DEVENV=.*#DEVENV='"${DEVENV}"'#' ${DEVENV}/.env
-
-# Install wslint
-# TODO: Implement versioning in wslint instead.
-RUN go install -ldflags='-s -w -X "main.version=unofficial & built from dev branch"' github.com/idelchi/wslint@dev
 
 # TODO: Install "Mega-Linter"?
 
