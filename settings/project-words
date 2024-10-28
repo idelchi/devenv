@@ -3,4 +3,8 @@
 # * - prefix/suffix that tells the spell checker that a word can be combined with another word.
 # ! - prefix forbid a word.
 
-# cspell --config=config/cspell.yaml --words-only --unique "**" | sort --ignore-case >> config/default-words.txt
+# cspell --config=settings/cspell.yaml --words-only --unique "**" | sort --ignore-case >> settings/default-words.txt
+
+armv
+gnueabihf
+rustup

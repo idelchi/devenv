@@ -32,6 +32,21 @@ services:
         - linux/arm64
         - linux/arm/v7
 
+  cross:
+    extends: devenv
+    user: root
+    build:
+      dockerfile: Dockerfile
+    platform: linux/arm/v7
+
+  arm64:
+    extends: devenv
+    platform: linux/arm64/v8
+
+  armv7:
+    extends: devenv
+    platform: linux/arm/v7
+
   tools:
     build:
       dockerfile: Dockerfile.tools

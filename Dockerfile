@@ -8,6 +8,89 @@
 #   - and many, many, more...
 #]=======================================================================]
 
+# Build stage for Rust tools
+FROM --platform=$BUILDPLATFORM rust:bookworm AS rust-builder
+
+# Basic good practices
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+WORKDIR /tmp
+COPY scripts/rustcc.sh .
+
+RUN ./rustcc.sh -a "${TARGETARCH}" typos-cli
+
+FROM --platform=$BUILDPLATFORM golang:1.23.2 AS go-builder
+
+# Basic good practices
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+ARG TARGETOS
+ARG TARGETARCH
+ENV GOOS=${TARGETOS}
+ENV GOARCH=${TARGETARCH}
+ENV CGO_ENABLED=0
+
+# Go based tooling
+RUN echo \
+    # Commands to install
+    # Go tools
+    github.com/amit-davidson/Chronos/cmd/chronos@latest \
+    github.com/loov/goda@latest \
+    github.com/rillig/gobco@latest \
+    github.com/segmentio/golines@latest \
+    github.com/t-yuki/gocover-cobertura@latest \
+    golang.org/x/tools/cmd/godoc@latest \
+    golang.org/x/tools/cmd/guru@latest \
+    gotest.tools/gotestsum@latest \
+    honnef.co/go/implements@latest \
+    mvdan.cc/gofumpt@latest \
+    rsc.io/uncover@latest \
+    # Spelling
+    github.com/client9/misspell/cmd/misspell@latest \
+    # Shell
+    mvdan.cc/sh/v3/cmd/shfmt@latest \
+    # YAML
+    github.com/google/yamlfmt/cmd/yamlfmt@latest \
+    # Pipe to 'go install'
+    | xargs -n 1 go install
+
+RUN mv /go/bin/linux_${TARGETARCH}/ /go/bin || true && \
+    rm -rf "/go/bin/linux_${TARGETARCH}"
+
+FROM python:3.12 AS cryptography-builder
+
+LABEL maintainer=arash.idelchi
+
+# (root through the build stage, it is anyway multi-stage)
+# hadolint ignore=DL3002
+USER root
+
+# Basic good practices
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+# Install Rust
+ARG RUST_DIR=/opt/rust
+RUN mkdir -p ${RUST_DIR}
+ENV RUSTUP_HOME=${RUST_DIR}/.rustup
+ENV CARGO_HOME=${RUST_DIR}/.cargo
+RUN wget -qO- https://sh.rustup.rs | bash -s -- -y --profile minimal
+ENV PATH="${CARGO_HOME}/bin:${PATH}"
+
+# Update pip & allow breaking packages
+RUN pip install --no-cache-dir --upgrade pip && \
+    echo -e "[global]\nbreak-system-packages=true" >> /etc/pip.conf
+
+RUN \
+    if [ "${TARGETARCH}${TARGETVARIANT}" = "armv7" ]; then \
+    printf "extra-index-url=https://www.piwheels.org/simple\n" >> /etc/pip.conf ; \
+    fi
+
+# Cryptography
+# (split up for readability)
+# hadolint ignore=DL3059
+RUN pip install --no-cache-dir \
+    cryptography --no-binary cryptography
+
 FROM python:3.12
 
 ARG TARGETARCH
@@ -45,10 +128,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install Java & Node
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y --no-install-recommends \
     default-jdk \
     nodejs \
-    npm \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Various linters & formatters
@@ -85,15 +168,14 @@ ARG HADOLINT_ARCH=${HADOLINT_ARCH/arm6464/arm64}
 RUN wget -q https://github.com/hadolint/hadolint/releases/download/${HADOLINT_VERSION}/hadolint-Linux-${HADOLINT_ARCH} -O /usr/local/bin/hadolint && \
     chmod +x /usr/local/bin/hadolint
 
-# Python
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3 \
-    python3-pip \
-    python3-venv \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+# Update pip & allow breaking packages
+RUN pip install --no-cache-dir --upgrade pip && \
+    echo -e "[global]\nbreak-system-packages=true" >> /etc/pip.conf
 
-# Pip override to allow breaking packages
-RUN echo -e "[global]\nbreak-system-packages=true" >> /etc/pip.conf
+RUN \
+    if [ "${TARGETARCH}${TARGETVARIANT}" = "armv7" ]; then \
+    printf "extra-index-url=https://www.piwheels.org/simple\n" >> /etc/pip.conf ; \
+    fi
 
 # Spellcheckers
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -113,19 +195,6 @@ ARG TASK_VERSION=v3.39.2
 ARG TASK_ARCH=${TARGETARCH}
 RUN wget -qO- https://github.com/go-task/task/releases/download/${TASK_VERSION}/task_linux_${TASK_ARCH}.tar.gz | tar -xz -C /usr/local/bin
 
-# Install Rust
-ARG RUST_DIR=/opt/rust
-RUN mkdir -p ${RUST_DIR} && chown -R ${USER}:${USER} ${RUST_DIR}
-
-ENV RUSTUP_HOME=${RUST_DIR}/.rustup
-ENV CARGO_HOME=${RUST_DIR}/.cargo
-RUN wget -qO- https://sh.rustup.rs | bash -s -- -y
-ENV PATH="${CARGO_HOME}/bin:${PATH}"
-
-# Additional Rust based tools
-RUN cargo install \
-    typos-cli
-
 # Python tooling for linting & formatting
 # (mistakes brackets for ranges, split up for readability)
 # hadolint ignore=SC2102,DL3059
@@ -137,6 +206,9 @@ RUN pip install --no-cache-dir \
     ruff \
     # Library stubs for typing
     types-pyyaml
+
+# Copy the cryptography package
+COPY --from=cryptography-builder /usr/local/lib/python3.12/site-packages/ /usr/local/lib/python3.12/site-packages/
 
 # Python tooling for packaging
 # (split up for readability)
@@ -174,34 +246,13 @@ WORKDIR /home/${USER}
 # Run npm-groovy-lint once to download its preferred version of Java
 RUN npm-groovy-lint --version
 
-# Go based tooling
-RUN echo \
-    # Commands to install
-    # Go tools
-    github.com/amit-davidson/Chronos/cmd/chronos@latest \
-    github.com/loov/goda@latest \
-    github.com/rillig/gobco@latest \
-    github.com/segmentio/golines@latest \
-    github.com/t-yuki/gocover-cobertura@latest \
-    golang.org/x/tools/cmd/godoc@latest \
-    golang.org/x/tools/cmd/guru@latest \
-    gotest.tools/gotestsum@latest \
-    honnef.co/go/implements@latest \
-    mvdan.cc/gofumpt@latest \
-    rsc.io/uncover@latest \
-    # Spelling
-    github.com/client9/misspell/cmd/misspell@latest \
-    # Shell
-    mvdan.cc/sh/v3/cmd/shfmt@latest \
-    # YAML
-    github.com/google/yamlfmt/cmd/yamlfmt@latest \
-    # Pipe to 'go install'
-    | xargs -n 1 go install && \
-    rm -rf "$(go env GOCACHE)"
-
 # Install golangci-lint
 ARG GOLANGCI_LINT_VERSION=v1.61.0
 RUN wget -qO- https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b "$(go env GOPATH)/bin" ${GOLANGCI_LINT_VERSION}
+
+# Copy the tools from the build stages
+COPY --from=rust-builder /usr/local/cargo/bin/typos /usr/local/bin/typos
+COPY --from=go-builder /go/bin/ /usr/local/bin/
 
 # Install wslint
 # TODO: Implement versioning in wslint instead.
