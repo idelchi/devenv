@@ -4,6 +4,8 @@
 
 FROM debian:bookworm
 
+ARG TARGETARCH
+
 LABEL maintainer=arash.idelchi
 
 USER root

@@ -6,6 +6,7 @@ services:
       platforms:
         - linux/amd64
         - linux/arm64
+        - linux/arm/v7
     pull_policy: if_not_present
     image: idelchi/devenv:dev
     container_name: devenv

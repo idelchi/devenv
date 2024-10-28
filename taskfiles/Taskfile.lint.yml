@@ -101,7 +101,7 @@ tasks:
       - cmd: |
           FILES=$(find . -type f -name "*.sh" | tr '\n' ' ')
           test -z "{{.FILES}}" && echo "no shell files found" && exit 0
-          shellcheck --shell=bash --enable=all --severity=style --source-path=SCRIPTDIR {{.FILES}}
+          shellcheck --enable=all --severity=style --source-path=SCRIPTDIR {{.FILES}}
     sources:
       - ./**/*.sh
 

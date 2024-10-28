@@ -80,9 +80,9 @@ tasks:
       test -z "{{.FILES}}" && echo "no shell files found" && exit 0
       shfmt -i 2 -ci -s -w {{.FILES}}
       for check in {{.CHECKS}}; do
-        shellcheck --shell=bash --enable=$check --severity=style --source-path=SCRIPTDIR -f diff {{.FILES}} | patch -p1 > /dev/null
+        shellcheck --enable=$check --severity=style --source-path=SCRIPTDIR -f diff {{.FILES}} | patch -p1 > /dev/null
       done
-      shellcheck --shell=bash --enable=all --severity=style --source-path=SCRIPTDIR -f diff {{.FILES}} | patch -p1 > /dev/null
+      shellcheck --enable=all --severity=style --source-path=SCRIPTDIR -f diff {{.FILES}} | patch -p1 > /dev/null
     vars:
       FILES:
         sh: find . -type f -name "*.sh" | tr '\n' ' '

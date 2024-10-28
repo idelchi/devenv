@@ -27,12 +27,7 @@
     "shellcheck.enable": true,
     "shellcheck.run": "onSave",
     "shellcheck.useWorkspaceRootAsCwd": true,
-    "shellcheck.customArgs": [
-        "-x",
-        "--shell=bash",
-        "--enable=all",
-        "--severity=style"
-    ],
+    "shellcheck.customArgs": ["-x", "--enable=all", "--severity=style"],
     "[shellscript]": {
         "editor.insertSpaces": true,
         "editor.tabSize": 2,
