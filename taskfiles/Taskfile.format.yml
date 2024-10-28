@@ -7,50 +7,20 @@ version: "3"
 # - SCRIPTS_DIR
 # - BUILD_DIR
 
+# TODO(Idelchi): for loops are slow. Use shell to check if any files are present and then run, using find `` or something similar.
+
 shopt: [globstar] # NOTE(Idelchi): Doesn't seem to work on a global level or in vars for some reason.
 
 tasks:
-  ws:
-    desc: Remove trailing whitespace from files
-    summary: |
-      This task removes trailing whitespace from all files except ignored paths.
-    cmd: wslint -w -q "**" || exit 0
-
-  docker:
-    desc: Format Dockerfiles
-    summary: |
-      This task formats Dockerfiles using dockerfile-utils.
-    cmds:
-      - for: sources
-        cmd: dockerfile-utils format --spaces 4 {{.ITEM}} | sponge "{{.ITEM}}"
-    preconditions:
-      - sh: "command -v dockerfile-utils"
-        msg: "dockerfile-utils errors out, check if nodejs is having problems"
-    sources:
-      - ./**/Dockerfile*
-
-  json:
-    desc: Format JSON files
-    summary: |
-      This task formats JSON files using jsonlint and prettier.
-    cmds:
-      - cmd: jsonlint --mode=cjson --pretty-print --quiet --in-place --indent "    " .
-      - for: sources
-        cmd: |
-          prettier --config={{.CONFIG}} --log-level=silent --ignore-path={{.IGNORE}} --write {{.ITEM}}
-    vars:
-      CONFIG: "{{.CONFIG_DIR}}/.prettierrc.yml"
-      IGNORE: "{{.CONFIG_DIR}}/.ignore"
-    sources:
-      - ./**/*.json
-
   yaml:
     desc: Format YAML files
     summary: |
       This task formats YAML files using prettier.
-    cmds:
-      - yamlfmt -conf {{.CONFIG_YAMLFMT}} "**/*.{yaml,yml}"
-      - prettier --config={{.CONFIG_PRETTIER}} --log-level=silent --ignore-path={{.IGNORE}}  --ignore-path={{.CONFIG_PRETTIER_IGNORE}} --write "**/*.yaml" "**/*.yml"
+    cmd:
+      for: sources
+      cmd: |
+        yamlfmt -conf {{.CONFIG_YAMLFMT}} "{{toSlash .ITEM}}"
+        prettier --log-level=silent --config={{.CONFIG_PRETTIER}} --ignore-path={{.IGNORE}}  --ignore-path={{.CONFIG_PRETTIER_IGNORE}} --write "{{toSlash .ITEM}}"
     vars:
       CONFIG_PRETTIER: "{{.CONFIG_DIR}}/.prettierrc.yml"
       CONFIG_PRETTIER_IGNORE: "{{.CONFIG_DIR}}/.prettierignore"
@@ -59,20 +29,42 @@ tasks:
     sources:
       - ./**/*.yaml
       - ./**/*.yml
-      - "{{.CONFIG_PRETTIER}}"
-      - "{{.CONFIG_PRETTIER_IGNORE}}"
-      - "{{.CONFIG_YAMLFMT}}"
-      - "{{.IGNORE}}"
+
+  json:
+    desc: Format JSON files
+    summary: |
+      This task formats JSON files using jsonlint and prettier.
+    cmds:
+      - cmd: jsonlint --mode=cjson --pretty-print --quiet --in-place --indent "    " .
+      - for: sources
+        cmd: prettier --log-level=silent --config={{.CONFIG}} --ignore-path={{.IGNORE}} --write {{toSlash .ITEM}}
+    vars:
+      CONFIG: "{{.CONFIG_DIR}}/.prettierrc.yml"
+      IGNORE: "{{.CONFIG_DIR}}/.ignore"
+    sources:
+      - ./**/*.json
+
+  docker:
+    desc: Format Dockerfiles
+    summary: |
+      This task formats Dockerfiles using dockerfile-utils.
+    cmds:
+      - for: sources
+        cmd: dockerfile-utils format --spaces 4 {{toSlash .ITEM}} | sponge "{{toSlash .ITEM}}"
+    preconditions:
+      - sh: "command -v dockerfile-utils"
+        msg: "dockerfile-utils errors out, check if nodejs is having problems"
+    sources:
+      - ./**/Dockerfile*
 
   md:
     desc: Format Markdown files
     summary: |
       This task formats Markdown files using markdownlint and prettier.
-    cmds:
-      - for: sources
-        cmd: |
-          markdownlint --quiet --fix --config={{.CONFIG_MARKDOWNLINT}} --ignore-path={{.IGNORE}} "**/*.md"  || true
-          prettier --config={{.CONFIG_PRETTIER}} --log-level=silent --ignore-path={{.IGNORE}} --write "**/*.md"
+    # TODO(Idelchi): "|| true" because the command fails if no markdown files are found.
+    cmd: |
+      markdownlint --quiet --fix --config={{.CONFIG_MARKDOWNLINT}} --ignore-path={{.IGNORE}} "**/*.md" || true
+      prettier --log-level=silent --config={{.CONFIG_PRETTIER}} --ignore-path={{.IGNORE}} --write "**/*.md" || true
     vars:
       CONFIG_MARKDOWNLINT: "{{.CONFIG_DIR}}/.markdownlint.yaml"
       CONFIG_PRETTIER: "{{.CONFIG_DIR}}/.prettierrc.yml"
@@ -88,9 +80,9 @@ tasks:
       test -z "{{.FILES}}" && echo "no shell files found" && exit 0
       shfmt -i 2 -ci -s -w {{.FILES}}
       for check in {{.CHECKS}}; do
-        shellcheck --shell=bash --enable=$check --severity=style --source-path=SCRIPTDIR -f diff {{.FILES}} | patch -p1 > /dev/null
+        shellcheck --enable=$check --severity=style --source-path=SCRIPTDIR -f diff {{.FILES}} | patch -p1 > /dev/null
       done
-      shellcheck --shell=bash --enable=all --severity=style --source-path=SCRIPTDIR -f diff {{.FILES}} | patch -p1 > /dev/null
+      shellcheck --enable=all --severity=style --source-path=SCRIPTDIR -f diff {{.FILES}} | patch -p1 > /dev/null
     vars:
       FILES:
         sh: find . -type f -name "*.sh" | tr '\n' ' '
@@ -108,14 +100,20 @@ tasks:
     sources:
       - ./**/Jenkinsfile
 
+  ws:
+    desc: Remove trailing whitespace from files
+    summary: |
+      This task removes trailing whitespace from all files except ignored paths.
+    cmd: wslint -w -q "**" || exit 0
+
   # ---------
   default:
     desc: Run all formatting tasks in sequence
     cmds:
-      - task: ws
-      - task: docker
-      - task: json
       - task: yaml
+      - task: json
+      - task: docker
       - task: md
       - task: shell
       - task: jenkins
+      - task: ws

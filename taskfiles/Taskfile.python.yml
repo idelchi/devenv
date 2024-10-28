@@ -119,8 +119,7 @@ tasks:
       - cp -r . {{.PACKAGE_DIR}} && cd {{.PACKAGE_DIR}}
       - poetry config repositories.remote $PYPI_REPOSITORY_URL
       - poetry config http-basic.remote $PYPI_USERNAME $PYPI_PASSWORD
-      - poetry build
-      - poetry publish -r remote
+      - poetry publish --build -r remote
     vars:
       PACKAGE_DIR:
         sh: mktemp -d

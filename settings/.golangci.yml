@@ -5,22 +5,17 @@ linters:
   enable-all: true
   disable:
     # deprecated
-    - deadcode
-    - exhaustivestruct
-    - golint
-    - ifshort
-    - interfacer
-    - maligned
-    - nosnakecase
-    - scopelint
-    - structcheck
-    - varcheck
     # overly strict
     - exhaustruct
+    - execinquery
     # Use named returns when it makes sense
     - nonamedreturns
     # No restrictions on packages
     - depguard
+    # Renamed
+    - gomnd
+    # Not valid for Go version > 1.22
+    - exportloopref
 
 issues:
   exclude-use-default: false
@@ -33,6 +28,10 @@ issues:
         - funlen
         - wrapcheck
 
+    # Exceptions for `main.go` and `config.go`
+    - path: "^cmd/.+/(main|config)\\.go$"
+      linters:
+        - forbidigo
     - path: "main.go$"
       linters:
         - forbidigo
@@ -53,6 +52,7 @@ linters-settings:
   varnamelen:
     ignore-names:
       - tc
+      - ok
 
   gci:
     sections:
@@ -70,7 +70,7 @@ linters-settings:
   gofumpt:
     extra-rules: true
 
-  gomnd:
+  mnd:
     ignored-functions:
       - time.Duration
 

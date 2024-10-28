@@ -8,50 +8,6 @@ version: "3"
 shopt: [globstar]
 
 tasks:
-  ws:
-    desc: Check for trailing whitespaces in the project files
-    summary: |
-      This task finds any trailing whitespaces in the project files and reports them.
-    cmd: wslint -q -a -e "**/.build/**" "**"
-
-  docker:
-    desc: Lint Dockerfiles
-    summary: |
-      This task lints Dockerfiles using hadolint, dockerfilelint, and dockerfile-utils.
-    cmd: |
-      test -z "{{.FILES}}" && echo "no Dockerfiles found" && exit 0
-      hadolint --config={{.CONFIG_HADOLINT}} {{.FILES}}
-      dockerfile-utils lint {{.FILES}}
-    vars:
-      CONFIG_HADOLINT: "{{.CONFIG_DIR}}/.hadolint.yaml"
-      FILES:
-        sh: find . -type f -name "Dockerfile*" ! -name "*.dockerignore" | tr '\n' ' '
-    sources:
-      - ./**/Dockerfile*
-      - "{{.CONFIG}}"
-    preconditions:
-      - sh: |
-          for dockerfile in {{.FILES}}; do
-            diff <(dockerfile-utils format --spaces 4 $dockerfile) <(cat $dockerfile) || exit 1
-          done
-        msg: "Dockerfiles have not been formatted with dockerfile-utils"
-
-  json:
-    desc: Lint JSON files
-    summary: |
-      This task lints JSON files using prettier and jsonlint.
-    cmds:
-      - jsonlint --mode=cjson --quiet .
-      - for: sources
-        cmd: prettier --config={{.CONFIG}} --ignore-path={{.IGNORE}} --check "{{.ITEM}}"
-    vars:
-      CONFIG: "{{.CONFIG_DIR}}/.prettierrc.yml"
-      IGNORE: "{{.CONFIG_DIR}}/.ignore"
-    sources:
-      - ./**/*.json
-      - "{{.CONFIG}}"
-      - "{{.IGNORE}}"
-
   yaml:
     desc: Lint YAML files
     summary: |
@@ -74,6 +30,44 @@ tasks:
       - "{{.CONFIG_YAMLLINT}}"
       - "{{.CONFIG_YAMLFMT}}"
       - "{{.IGNORE}}"
+
+  json:
+    desc: Lint JSON files
+    summary: |
+      This task lints JSON files using prettier and jsonlint.
+    cmds:
+      - jsonlint --mode=cjson --quiet .
+      - for: sources
+        cmd: prettier --config={{.CONFIG}} --ignore-path={{.IGNORE}} --check "{{.ITEM}}"
+    vars:
+      CONFIG: "{{.CONFIG_DIR}}/.prettierrc.yml"
+      IGNORE: "{{.CONFIG_DIR}}/.ignore"
+    sources:
+      - ./**/*.json
+      - "{{.CONFIG}}"
+      - "{{.IGNORE}}"
+
+  docker:
+    desc: Lint Dockerfiles
+    summary: |
+      This task lints Dockerfiles using hadolint, dockerfilelint, and dockerfile-utils.
+    cmd: |
+      test -z "{{.FILES}}" && echo "no Dockerfiles found" && exit 0
+      hadolint --config={{.CONFIG_HADOLINT}} {{.FILES}}
+      dockerfile-utils lint {{.FILES}}
+    vars:
+      CONFIG_HADOLINT: "{{.CONFIG_DIR}}/.hadolint.yaml"
+      FILES:
+        sh: find . -type f -name "Dockerfile*" ! -name "*.dockerignore" | tr '\n' ' '
+    sources:
+      - ./**/Dockerfile*
+      - "{{.CONFIG}}"
+    preconditions:
+      - sh: |
+          for dockerfile in {{.FILES}}; do
+            diff <(dockerfile-utils format --spaces 4 $dockerfile) <(cat $dockerfile) || exit 1
+          done
+        msg: "Dockerfiles have not been formatted with dockerfile-utils"
 
   md:
     desc: Lint Markdown files
@@ -99,21 +93,19 @@ tasks:
     desc: Lint shell scripts
     summary: |
       This task lints shell scripts using shfmt and shellcheck.
-    cmd: |
-      test -z "{{.FILES}}" && echo "no shell files found" && exit 0
-
-      shfmt -i 2 -ci -d -l -s {{.FILES}}
-      shellcheck --shell=bash --enable=all --severity=style --source-path=SCRIPTDIR {{.FILES}}
-    vars:
-      # TODO: Consider using `for: sources` syntax and/or keep an eye out for when "https://github.com/go-task/task/issues/948" is implemented.
+    cmds:
+      - for: sources
+        cmd: shfmt -i 2 -ci -d -l -s {{.ITEM}}
+      # TODO: Keep an eye out for when "https://github.com/go-task/task/issues/948" is implemented.
       # Since we want to lint all at once, maybe `for: sources` is not so suitable.
+      - cmd: |
+          test -z "{{.FILES}}" && echo "no shell files found" && exit 0
+          shellcheck --enable=all --severity=style --source-path=SCRIPTDIR {{.FILES}}
+    vars:
       FILES:
         sh: find . -type f -name "*.sh" | tr '\n' ' '
     sources:
       - ./**/*.sh
-    preconditions:
-      - sh: shfmt -i 2 -ci -d -l -s {{.FILES}}
-        msg: "shell/bash files have not been formatted with shfmt"
 
   spell:
     desc: Perform spell checking in the project files
@@ -145,16 +137,6 @@ tasks:
           | grep -v mypy_cache/
           | tr '\n' ' '
 
-  cp:
-    desc: Detect copy-paste issues in the project files
-    summary: |
-      This task detects copy-paste issues in Go and Shell files using jscpd.
-    cmd: jscpd --config={{.CONFIG}} .
-    vars:
-      CONFIG: "{{.CONFIG_DIR}}/.jscpd.json"
-    generates:
-      - ./build/cpd/**/*
-
   jenkins:
     desc: Lint Jenkinsfiles
     summary: |
@@ -168,6 +150,22 @@ tasks:
       JENKINSFILE: '{{.CLI_ARGS | default "Jenkinsfile"}}'
     sources:
       - ./**/Jenkinsfile
+
+  cp:
+    desc: Detect copy-paste issues in the project files
+    summary: |
+      This task detects copy-paste issues in Go and Shell files using jscpd.
+    cmd: jscpd --config={{.CONFIG}} .
+    vars:
+      CONFIG: "{{.CONFIG_DIR}}/.jscpd.json"
+    generates:
+      - ./build/cpd/**/*
+
+  ws:
+    desc: Check for trailing whitespaces in the project files
+    summary: |
+      This task finds any trailing whitespaces in the project files and reports them.
+    cmd: wslint -q -a -e "**/.build/**" "**"
 
   # ---------
   default:

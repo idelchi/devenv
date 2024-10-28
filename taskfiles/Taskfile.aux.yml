@@ -1,6 +1,7 @@
 version: "3"
 
 # requires
+# - DEVENV
 # - CONFIG_DIR
 # - SCRIPTS_DIR
 # - BUILD_DIR
@@ -11,18 +12,26 @@ tasks:
     summary: |
       This task removes the build directory, task cache, and bash history to clean up the project workspace.
     cmd: rm -rf .task {{.BUILD_DIR}} .bash_history
+    requires:
+      vars:
+        - BUILD_DIR
 
   todo:
     desc: Find TODOs within the project
     summary: |
       This task searches for TODOs within the project files, excluding certain directories.
-    cmd: grep --exclude-dir={.cache,.git,.task,.build} -rwo -n . --regexp 'TODO[:(].*'
+    cmd: grep --exclude-dir={.cache,.git,.task,{{.BUILD_DIR}}} -rwo -n . --regexp 'TODO[:(].*'
+    requires:
+      vars:
+        - BUILD_DIR
 
   graph:
     desc: Create a graph from a YAML file
     summary: |
       This task generates a graph representation of a YAML file and saves it as a PNG image.
-    cmd: yml2dot {{.CLI_ARGS}} | dot -Tpng > {{.CLI_ARGS}}.png
+    cmd: |
+      [ -z "{{.CLI_ARGS}}" ] && echo "missing file argument (pass as 'task graph -- <file>')" && exit 1
+      yml2dot {{.CLI_ARGS}} | dot -Tpng > {{.CLI_ARGS}}.png
 
   default:
     desc: Show the current project setup
@@ -33,28 +42,39 @@ tasks:
         echo Running in: $(pwd) as $(whoami)
         echo OS: {{OS}}:{{ARCH}}
         echo Time: {{now | date "2006-01-02 15:04:05"}}
-        echo Devenv directory: {{.DEVENV}}
+        echo DevEnv directory: {{.DEVENV}}
         echo Config directory: {{.CONFIG_DIR}}
         echo Scripts directory: {{.SCRIPTS_DIR}}
         echo Build directory: {{.BUILD_DIR}}
+    requires:
+      vars:
+        - DEVENV
+        - CONFIG_DIR
+        - SCRIPTS_DIR
+        - BUILD_DIR
 
   bp:
     desc: Best practices
     cmds:
-      - test -f README.md || echo "README.md missing"
-      - test -f LICENSE || echo "LICENSE missing"
+      - '[ -f README.md ] || echo "README.md missing"'
+      - '[ -f LICENSE ] || echo "LICENSE missing"'
 
   init:
     desc: Copies and configures the folders '.vscode' and '.devcontainer'
-    cmds:
-      - cp -r {{.CLI_ARGS}}/.vscode {{.CLI_ARGS}}/.devcontainer .
-      - sed -i 's/settings\//{{.CLI_ARGS}}\/settings\//g' .vscode/settings.json
-      - cp {{.CLI_ARGS}}/.env .
-      - sed -i 's#^DEVENV=.*#DEVENV='"$(pwd)"'#' .env
-      - cp {{.CLI_ARGS}}/Taskfile.yml Taskfile.base.yml
+    cmd: |
+      [ -z "{{.CLI_ARGS}}" ] && echo "missing folder argument (pass as 'task init -- <folder>')" && exit 1
+      cp -r {{.CLI_ARGS}}/.vscode {{.CLI_ARGS}}/.devcontainer .
+      sed -i 's/settings\//{{.CLI_ARGS}}\/settings\//g' .vscode/settings.json
+      cp {{.CLI_ARGS}}/.env .
+      sed -i 's#^DEVENV=.*#DEVENV='"$(pwd)"'#' .env
+      cp {{.CLI_ARGS}}/Taskfile.yml Taskfile.base.yml
 
-  share: |
-    find {{.CLI_ARGS}} -type f -name "*" -exec echo "" \; -exec echo "***** FILE: {} *****" \; -exec cat {} \; > share.txt
+  share:
+    cmd: |
+      [ -z "{{.CLI_ARGS}}" ] && echo "missing folder argument (pass as 'task share -- <folder>')" && exit 1
+      find {{.CLI_ARGS}} -type f -name "*" -exec echo "" \; -exec echo "***** FILE: {} *****" \; -exec cat {} \; > share.txt
 
-  unshare: |
-    cat share.txt | ./unshare.sh
+  unshare:
+    cmd: |
+      [ -z "{{.CLI_ARGS}}" ] && echo "missing file argument (pass as 'task unshare -- <file>')" && exit 1
+      cat {{.CLI_ARGS}} | {{.SCRIPTS_DIR}}/unshare.sh

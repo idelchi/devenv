@@ -57,7 +57,7 @@ tasks:
     cmds:
       - for: sources
         cmd: |
-          helm package -d {{.HELM_PACKAGE_DIR}} {{dir .ITEM}}
+          helm package -d {{.HELM_PACKAGE_DIR}} {{toSlash .ITEM | dir}}
     sources:
       - "{{.RESOURCES_DIR}}/**/Chart.yaml"
 
@@ -87,9 +87,12 @@ tasks:
     cmds:
       - echo {{.HELM_PASSWORD}} | helm registry login {{.HELM_REPOSITORY}} --username={{.HELM_USERNAME}} --password-stdin
       - for: sources
-        cmd: helm push {{.ITEM}} oci://{{.HELM_REPOSITORY}}
+        cmd: helm push {{toSlash .ITEM}} oci://{{.HELM_REPOSITORY}}
     sources:
       - "{{.HELM_PACKAGE_DIR}}/*.tgz"
+    requires:
+      vars:
+        - HELM_REGISTRY_CONFIG
 
   test-release:
     desc: "Set up a local helm repository to test if the release works"

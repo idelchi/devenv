@@ -7,16 +7,17 @@ vars:
 
   _:
     sh: |
-      _=$(git config --global --unset-all safe.directory || true)
-      _=$(git config --global --add safe.directory "*" || true)
+      _=$(git config --global --unset-all safe.directory 2>/dev/null || true)
+      _=$(git config --global --add safe.directory "*" 2>/dev/null || true)
+  # TODO(Idelchi): Consider moving these down to default task.
   GIT_BRANCH:
-    sh: git rev-parse --abbrev-ref HEAD || echo unknown
+    sh: git rev-parse --abbrev-ref HEAD 2>/dev/null || echo unknown
   GIT_COMMIT:
-    sh: git log -n 1 --format=%h || echo unknown
+    sh: git log -n 1 --format=%h 2>/dev/null || echo unknown
   GIT_AUTHOR:
-    sh: git config user.name || whoami
+    sh: git config user.name 2>/dev/null || whoami 2>/dev/null || echo unknown
   GIT_DESCRIPTION:
-    sh: git describe --always --long --dirty
+    sh: git describe --always --long --dirty 2>/dev/null || echo unknown
 
 tasks:
   push:

@@ -7,7 +7,7 @@ To use `devenv` in your project, include it as a submodule.
 
     git submodule add https://github.com/idelchi/devenv .devenv
 
-To track the dev branch instead of the default master branch, the following commands can be used:
+To trackx the dev branch instead of the default `main` branch, the following commands can be used:
 
     git submodule set-branch -b dev .devenv
     git submodule update --init --recursive --remote
@@ -139,3 +139,7 @@ For this, the `.env` file should be appropriately configured and sourced.
 `.devcontainer` contains configurations to use the Docker image as a development container.
 
 `.vscode` contains configurations for usage in VS Code.
+
+## TODOs
+
+- deprecate Python linters in favor of `ruff`

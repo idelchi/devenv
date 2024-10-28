@@ -4,6 +4,8 @@
 
 FROM debian:bookworm
 
+ARG TARGETARCH
+
 LABEL maintainer=arash.idelchi
 
 USER root
@@ -64,8 +66,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN echo -e "[global]\nbreak-system-packages=true" >> /etc/pip.conf
 
 # Install Task
-ARG TASK_VERSION=v3.37.1
-RUN wget -qO- https://github.com/go-task/task/releases/download/${TASK_VERSION}/task_linux_amd64.tar.gz | tar -xz -C /usr/local/bin
+ARG TASK_VERSION=v3.39.2
+ARG TASK_ARCH=${TARGETARCH}
+RUN wget -qO- https://github.com/go-task/task/releases/download/${TASK_VERSION}/task_linux_${TASK_ARCH}.tar.gz | tar -xz -C /usr/local/bin
 
 # Docker
 RUN groupadd docker && \
@@ -169,13 +172,27 @@ RUN mkdir -p ${DOCKER_CONFIG}/cli-plugins && \
 RUN curl https://raw.githubusercontent.com/helm/chartmuseum/main/scripts/get-chartmuseum | bash
 
 # Install Go
-ARG GO_VERSION=go1.22.3.linux-amd64
-RUN wget -qO- https://go.dev/dl/${GO_VERSION}.tar.gz | tar -xz -C /usr/local
+ARG GO_VERSION=go1.23.2
+ARG GO_ARCH=${TARGETARCH}
+RUN wget -qO- https://go.dev/dl/${GO_VERSION}.linux-${GO_ARCH}.tar.gz | tar -xz -C /usr/local
 ENV PATH="/usr/local/go/bin:$PATH"
 
 ENV GOPATH=/opt/go
 RUN mkdir ${GOPATH} && chown -R ${USER}:${USER} ${GOPATH}
 ENV PATH="${GOPATH}/bin:$PATH"
+
+# Install Rust
+ARG RUST_DIR=/opt/rust
+RUN mkdir -p ${RUST_DIR} && chown -R ${USER}:${USER} ${RUST_DIR}
+
+ENV RUSTUP_HOME=${RUST_DIR}/.rustup
+ENV CARGO_HOME=${RUST_DIR}/.cargo
+RUN wget -qO- https://sh.rustup.rs | bash -s -- -y
+ENV PATH="${CARGO_HOME}/bin:${PATH}"
+
+# Additional Rust based tools
+RUN cargo install \
+    just
 
 # Tools
 USER ${USER}
