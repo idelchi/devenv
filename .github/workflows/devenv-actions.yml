@@ -7,6 +7,14 @@ on:
         default: "idelchi/devenv:latest"
         required: false
         type: string
+      devenv:
+        description: "Docker Image to use"
+        default: ".devenv"
+        required: false
+        type: string
+
+env:
+  DEVENV: ${{ inputs.devenv }}
 
 jobs:
   info:
