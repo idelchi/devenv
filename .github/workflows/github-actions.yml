@@ -80,6 +80,7 @@ jobs:
           push: true
           tags: ${{ env.IMAGE }}:latest
           cache-from: type=registry,ref=${{ env.IMAGE }}:latest
+          platforms: linux/amd64,linux/arm64
 
   cleanup:
     needs: verify
