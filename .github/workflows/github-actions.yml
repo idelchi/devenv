@@ -84,6 +84,10 @@ jobs:
           # Get second part of the platform
           echo "ARCH=${platform##*/}" >> $GITHUB_ENV
 
+          echo "platform: ${platform}"
+          echo "PLATFORM_PAIR: ${PLATFORM_PAIR}"
+          echo "ARCH: ${ARCH}"
+
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v5
