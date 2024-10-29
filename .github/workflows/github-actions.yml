@@ -90,12 +90,12 @@ jobs:
           platforms: linux/arm/v7
 
   cleanup:
-    needs: verify
+    # needs: verify
     permissions:
       contents: write
       actions: write
     runs-on: ubuntu-24.04
-    if: github.ref == 'refs/heads/dev'
+    if: github.ref == 'refs/heads/devx'
     continue-on-error: true
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
