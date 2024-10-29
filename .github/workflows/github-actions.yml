@@ -11,20 +11,20 @@ env:
 
 jobs:
   # TODO: This job could be reusable in other workflows
-  # info:
-  #   runs-on: ubuntu-24.04
-  #   steps:
-  #     - run: |
-  #         # Print out some more information about the environment
-  #         echo github.repository_owner ${{ github.repository_owner }}
-  #         echo github.repository: ${{ github.repository }}
-  #         echo github.actor ${{ github.actor }}
-  #         echo github.event_name: ${{ github.event_name }}
-  #         echo runner.os: ${{ runner.os }}
-  #         echo github.ref: ${{ github.ref }}
-  #         echo github.head_ref: ${{ github.head_ref }}
-  #         echo github.ref_name: ${{ github.ref_name }}
-  #         echo whoami: $(whoami)
+  info:
+    runs-on: ubuntu-24.04
+    steps:
+      - run: |
+          # Print out some more information about the environment
+          echo github.repository_owner ${{ github.repository_owner }}
+          echo github.repository: ${{ github.repository }}
+          echo github.actor ${{ github.actor }}
+          echo github.event_name: ${{ github.event_name }}
+          echo runner.os: ${{ runner.os }}
+          echo github.ref: ${{ github.ref }}
+          echo github.head_ref: ${{ github.head_ref }}
+          echo github.ref_name: ${{ github.ref_name }}
+          echo whoami: $(whoami)
 
   # verify:
   #   runs-on: ubuntu-24.04
@@ -108,8 +108,8 @@ jobs:
           platforms: ${{ matrix.platform }}
           labels: ${{ steps.meta.outputs.labels }}
           outputs: type=image,name=${{ env.IMAGE }},push-by-digest=true,name-canonical=true,push=true
-          cache-from: type=registry,ref=${{ env.IMAGE }}/cache:${{ env.ARCH }}
-          cache-to: type=registry,ref=${{ env.IMAGE }}/cache:${{ env.ARCH }},mode=max
+          cache-from: type=registry,ref=${{ github.repository_owner }}/cache:devenv:${{ env.ARCH }}
+          cache-to: type=registry,ref=${{ github.repository_owner }}/cache:${{ env.ARCH }},mode=max
 
       - name: Export digest
         run: |
