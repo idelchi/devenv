@@ -47,7 +47,7 @@ jobs:
         with:
           load: true
           tags: ${{ env.IMAGE }}:dev
-          cache-from: type=registry,ref=${{ env.IMAGE }}:dev
+          cache-from: type=registry,ref=${{ env.IMAGE }}:buildcache
 
       # Run the minimum required tests to validate the image
       # Make sure the current image is being built and used, and not a remote one
@@ -79,14 +79,14 @@ jobs:
         with:
           push: true
           tags: ${{ env.IMAGE }}:latest
-          cache-from: type=registry,ref=${{ env.IMAGE }}:latest
+          cache-from: type=registry,ref=${{ env.IMAGE }}:buildcache
           platforms: linux/amd64,linux/arm64
 
       - uses: docker/build-push-action@v6
         with:
           push: true
           tags: ${{ env.IMAGE }}:latest
-          cache-from: type=registry,ref=${{ env.IMAGE }}:latest
+          cache-from: type=registry,ref=${{ env.IMAGE }}:buildcache
           platforms: linux/arm/v7
 
   cleanup:
