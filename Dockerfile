@@ -255,9 +255,9 @@ COPY --from=rust-builder /usr/local/cargo/bin/typos /usr/local/bin/typos
 COPY --from=go-builder /go/bin/ /usr/local/bin/
 
 # Install wslint
-# TODO: Implement versioning in wslint instead.
-# ARG CACHEBUST
-RUN go install -ldflags='-s -w -X "main.version=unofficial & built from dev branch"' github.com/idelchi/wslint/cmd/wslint@dev
+RUN mkdir -p ~/.local/bin
+ENV PATH="/home/${USER}/.local/bin:$PATH"
+RUN curl -sSL https://raw.githubusercontent.com/idelchi/wslint/refs/heads/dev/install.sh | sh -s -- -d ~/.local/bin
 
 # Reroute cache to /tmp
 ENV NPM_CONFIG_CACHE=/tmp/.npm
