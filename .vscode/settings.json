@@ -36,6 +36,9 @@
     /* ****** ****** ****** */
     /* ****** OTHER ****** */
     "prettier.configPath": "settings/.prettierrc.yml",
+    "[github-actions-workflow]": {
+        "editor.autoIndent": "advanced"
+    },
     /* ****** ****** ****** */
     /* ****** PYTHON ****** */
     "python.defaultInterpreterPath": "python",
