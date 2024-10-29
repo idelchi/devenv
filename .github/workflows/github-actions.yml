@@ -81,6 +81,8 @@ jobs:
         run: |
           platform=${{ matrix.platform }}
           echo "PLATFORM_PAIR=${platform//\//-}" >> $GITHUB_ENV
+          # Get second part of the platform
+          echo "ARCH=${platform##*/}" >> $GITHUB_ENV
 
       - name: Docker meta
         id: meta
@@ -106,8 +108,8 @@ jobs:
           platforms: ${{ matrix.platform }}
           labels: ${{ steps.meta.outputs.labels }}
           outputs: type=image,name=${{ env.IMAGE }},push-by-digest=true,name-canonical=true,push=true
-          cache-from: type=registry,ref=${{ env.IMAGE }}/cache:${{ matrix.platform }}
-          cache-to: type=registry,ref=${{ env.IMAGE }}/cache:${{ matrix.platform }},mode=max
+          cache-from: type=registry,ref=${{ env.IMAGE }}/cache:${{ env.ARCH }}
+          cache-to: type=registry,ref=${{ env.IMAGE }}/cache:${{ env.ARCH }},mode=max
 
       - name: Export digest
         run: |
@@ -123,14 +125,14 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
-      - name: build `:latest` image
-        uses: docker/build-push-action@v6
-        with:
-          push: true
-          tags: ${{ env.IMAGE }}:latest
-          cache-from: type=registry,ref=${{ env.IMAGE }}:buildcache
-          cache-to: type=registry,ref=${{ env.IMAGE }}/cache:buildcache,mode=max
-          platforms: linux/amd64,linux/arm64,linux/arm/v7
+      # - name: build `:latest` image
+      #   uses: docker/build-push-action@v6
+      #   with:
+      #     push: true
+      #     tags: ${{ env.IMAGE }}:latest
+      #     cache-from: type=registry,ref=${{ env.IMAGE }}:buildcache
+      #     cache-to: type=registry,ref=${{ env.IMAGE }}/cache:buildcache,mode=max
+      #     platforms: linux/amd64,linux/arm64,linux/arm/v7
 
   merge:
     runs-on: ubuntu-latest
