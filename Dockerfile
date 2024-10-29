@@ -257,7 +257,7 @@ COPY --from=go-builder /go/bin/ /usr/local/bin/
 # Install wslint
 # TODO: Implement versioning in wslint instead.
 # ARG CACHEBUST
-RUN go install -ldflags='-s -w -X "main.version=unofficial & built from dev branch"' github.com/idelchi/wslint@dev
+RUN go install -ldflags='-s -w -X "main.version=unofficial & built from dev branch"' github.com/idelchi/wslint/cmd/wslint@dev
 
 # Reroute cache to /tmp
 ENV NPM_CONFIG_CACHE=/tmp/.npm
