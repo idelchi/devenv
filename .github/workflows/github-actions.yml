@@ -41,14 +41,14 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # # Build the Docker image
-      # # Use inline cache to speed up the build
-      # # Load it into the local Docker daemon
-      # - uses: docker/build-push-action@v6
-      #   with:
-      #     load: true
-      #     tags: ${{ env.IMAGE }}:dev
-      #     cache-from: type=registry,ref=${{ env.IMAGE }}:dev-buildcache
+      # Build the Docker image
+      # Use inline cache to speed up the build
+      # Load it into the local Docker daemon
+      - uses: docker/build-push-action@v6
+        with:
+          load: true
+          tags: ${{ env.IMAGE }}:dev
+          cache-from: type=registry,ref=${{ env.IMAGE }}:dev-buildcache
 
       # # Run the minimum required tests to validate the image
       # # Make sure the current image is being built and used, and not a remote one
