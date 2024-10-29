@@ -17,45 +17,45 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 WORKDIR /tmp
 COPY scripts/rustcc.sh .
 
-# RUN ./rustcc.sh -a "${TARGETARCH}" typos-cli
+RUN ./rustcc.sh -a "${TARGETARCH}" typos-cli
 
-# FROM --platform=$BUILDPLATFORM golang:1.23.2 AS go-builder
+FROM --platform=$BUILDPLATFORM golang:1.23.2 AS go-builder
 
-# # Basic good practices
-# SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+# Basic good practices
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-# ARG TARGETOS
-# ARG TARGETARCH
-# ENV GOOS=${TARGETOS}
-# ENV GOARCH=${TARGETARCH}
-# ENV CGO_ENABLED=0
+ARG TARGETOS
+ARG TARGETARCH
+ENV GOOS=${TARGETOS}
+ENV GOARCH=${TARGETARCH}
+ENV CGO_ENABLED=0
 
-# # Go based tooling
-# RUN echo \
-#     # Commands to install
-#     # Go tools
-#     github.com/amit-davidson/Chronos/cmd/chronos@latest \
-#     github.com/loov/goda@latest \
-#     github.com/rillig/gobco@latest \
-#     github.com/segmentio/golines@latest \
-#     github.com/t-yuki/gocover-cobertura@latest \
-#     golang.org/x/tools/cmd/godoc@latest \
-#     golang.org/x/tools/cmd/guru@latest \
-#     gotest.tools/gotestsum@latest \
-#     honnef.co/go/implements@latest \
-#     mvdan.cc/gofumpt@latest \
-#     rsc.io/uncover@latest \
-#     # Spelling
-#     github.com/client9/misspell/cmd/misspell@latest \
-#     # Shell
-#     mvdan.cc/sh/v3/cmd/shfmt@latest \
-#     # YAML
-#     github.com/google/yamlfmt/cmd/yamlfmt@latest \
-#     # Pipe to 'go install'
-#     | xargs -n 1 go install
+# Go based tooling
+RUN echo \
+    # Commands to install
+    # Go tools
+    github.com/amit-davidson/Chronos/cmd/chronos@latest \
+    github.com/loov/goda@latest \
+    github.com/rillig/gobco@latest \
+    github.com/segmentio/golines@latest \
+    github.com/t-yuki/gocover-cobertura@latest \
+    golang.org/x/tools/cmd/godoc@latest \
+    golang.org/x/tools/cmd/guru@latest \
+    gotest.tools/gotestsum@latest \
+    honnef.co/go/implements@latest \
+    mvdan.cc/gofumpt@latest \
+    rsc.io/uncover@latest \
+    # Spelling
+    github.com/client9/misspell/cmd/misspell@latest \
+    # Shell
+    mvdan.cc/sh/v3/cmd/shfmt@latest \
+    # YAML
+    github.com/google/yamlfmt/cmd/yamlfmt@latest \
+    # Pipe to 'go install'
+    | xargs -n 1 go install
 
-# RUN mv /go/bin/linux_${TARGETARCH}/ /go/bin || true && \
-#     rm -rf "/go/bin/linux_${TARGETARCH}"
+RUN mv /go/bin/linux_${TARGETARCH}/ /go/bin || true && \
+    rm -rf "/go/bin/linux_${TARGETARCH}"
 
 # FROM python:3.12 AS cryptography-builder
 
