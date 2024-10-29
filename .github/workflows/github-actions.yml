@@ -6,7 +6,7 @@ on: [push, pull_request, workflow_dispatch]
 env:
   BRANCH: ${{ github.head_ref || github.ref_name }}
   IMAGE: ${{ github.repository }}
-
+  PROJECT: devenv
   DEVENV: "."
 
 jobs:
@@ -108,8 +108,8 @@ jobs:
           platforms: ${{ matrix.platform }}
           labels: ${{ steps.meta.outputs.labels }}
           outputs: type=image,name=${{ env.IMAGE }},push-by-digest=true,name-canonical=true,push=true
-          cache-from: type=registry,ref=${{ github.repository_owner }}/cache:devenv:${{ env.ARCH }}
-          cache-to: type=registry,ref=${{ github.repository_owner }}/cache:${{ env.ARCH }},mode=max
+          cache-from: type=registry,ref=${{ github.repository_owner }}/cache:${{ env.PROJECT }}-${{ env.ARCH }}
+          cache-to: type=registry,ref=${{ github.repository_owner }}/cache:${{ env.PROJECT }}-${{ env.ARCH }},mode=max
 
       - name: Export digest
         run: |
