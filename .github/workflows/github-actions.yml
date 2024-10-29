@@ -88,27 +88,9 @@ jobs:
         with:
           push: true
           tags: ${{ env.IMAGE }}:latest
-          cache-from: type=registry,ref=${{ env.IMAGE }}:amd64-buildcache
-          cache-to: type=registry,ref=${{ env.IMAGE }}:amd64-buildcache,mode=max
-          platforms: linux/amd64
-
-      - name: build `arm64` image
-        uses: docker/build-push-action@v6
-        with:
-          push: true
-          tags: ${{ env.IMAGE }}:latest
-          cache-from: type=registry,ref=${{ env.IMAGE }}:arm64-buildcache
-          cache-to: type=registry,ref=${{ env.IMAGE }}:arm64-buildcache,mode=max
-          platforms: linux/arm64
-
-      - name: build `arm/v7` image
-        uses: docker/build-push-action@v6
-        with:
-          push: true
-          tags: ${{ env.IMAGE }}:latest
-          cache-from: type=registry,ref=${{ env.IMAGE }}:armv7-buildcache
-          cache-to: type=registry,ref=${{ env.IMAGE }}:armv7-buildcache,mode=max
-          platforms: linux/arm/v7
+          cache-from: type=registry,ref=${{ env.IMAGE }}:buildcache
+          cache-to: type=registry,ref=${{ env.IMAGE }}:buildcache,mode=max
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
 
   cleanup:
     needs: verify
