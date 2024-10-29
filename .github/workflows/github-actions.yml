@@ -47,7 +47,7 @@ jobs:
         with:
           load: true
           tags: ${{ env.IMAGE }}:dev
-          cache-from: type=registry,ref=${{ env.IMAGE }}:buildcache
+          cache-from: type=registry,ref=${{ env.IMAGE }}:dev-buildcache
 
       # Run the minimum required tests to validate the image
       # Make sure the current image is being built and used, and not a remote one
