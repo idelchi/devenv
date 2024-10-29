@@ -79,14 +79,21 @@ jobs:
         with:
           push: true
           tags: ${{ env.IMAGE }}:latest
-          cache-from: type=registry,ref=${{ env.IMAGE }}:buildcache
-          platforms: linux/amd64,linux/arm64
+          cache-from: type=registry,ref=${{ env.IMAGE }}:amd64-buildcache
+          platforms: linux/amd64
 
       - uses: docker/build-push-action@v6
         with:
           push: true
           tags: ${{ env.IMAGE }}:latest
-          cache-from: type=registry,ref=${{ env.IMAGE }}:buildcache
+          cache-from: type=registry,ref=${{ env.IMAGE }}:arm64-buildcache
+          platforms: linux/arm64
+
+      - uses: docker/build-push-action@v6
+        with:
+          push: true
+          tags: ${{ env.IMAGE }}:latest
+          cache-from: type=registry,ref=${{ env.IMAGE }}:armv7-buildcache
           platforms: linux/arm/v7
 
   cleanup:
