@@ -60,7 +60,7 @@ jobs:
         with:
           push: true
           tags: ${{ env.IMAGE }}:dev
-          cache-to: type=inline
+          cache-to: type=registry,ref=${{ env.IMAGE }}:dev-buildcache:buildcache,mode=max
 
   release:
     runs-on: ubuntu-24.04
@@ -80,6 +80,7 @@ jobs:
           push: true
           tags: ${{ env.IMAGE }}:latest
           cache-from: type=registry,ref=${{ env.IMAGE }}:amd64-buildcache
+          cache-to: type=registry,ref=${{ env.IMAGE }}:amd64-buildcache:buildcache,mode=max
           platforms: linux/amd64
 
       - uses: docker/build-push-action@v6
@@ -87,6 +88,7 @@ jobs:
           push: true
           tags: ${{ env.IMAGE }}:latest
           cache-from: type=registry,ref=${{ env.IMAGE }}:arm64-buildcache
+          cache-to: type=registry,ref=${{ env.IMAGE }}:arm64-buildcache:buildcache,mode=max
           platforms: linux/arm64
 
       - uses: docker/build-push-action@v6
@@ -94,6 +96,7 @@ jobs:
           push: true
           tags: ${{ env.IMAGE }}:latest
           cache-from: type=registry,ref=${{ env.IMAGE }}:armv7-buildcache
+          cache-to: type=registry,ref=${{ env.IMAGE }}:armv7-buildcache:buildcache,mode=max
           platforms: linux/arm/v7
 
   cleanup:
