@@ -85,8 +85,8 @@ jobs:
           echo "ARCH=${platform##*/}" >> $GITHUB_ENV
 
           echo "platform: ${platform}"
-          echo "PLATFORM_PAIR: ${PLATFORM_PAIR}"
-          echo "ARCH: ${ARCH}"
+          echo "PLATFORM_PAIR: ${platform//\//-}"
+          echo "ARCH: ${platform##*/}"
 
       # - name: Docker meta
       #   id: meta
