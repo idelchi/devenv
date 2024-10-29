@@ -84,25 +84,17 @@ jobs:
           platform_pair=${platform//\//-}
           echo "PLATFORM_PAIR=${platform_pair}" >> $GITHUB_ENV
 
-          arch=${platform#linux/}      # remove linux/ prefix
-          arch=${arch//\//-}          # replace / with -
+          arch=${platform#linux/}
+          arch=${arch//\//-}
           echo "ARCH=$arch" >> $GITHUB_ENV
 
           echo "platform: ${platform}"
           echo "PLATFORM_PAIR: ${platform_pair}"
           echo "ARCH: ${arch}"
 
-      # - name: Docker meta
-      #   id: meta
-      #   uses: docker/metadata-action@v5
-      #   with:
-      #     images: ${{ env.IMAGE }}
-      #     tags: |
-      #       type=raw,value=latest
-
       - uses: docker/setup-qemu-action@v3
         with:
-          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          platforms: ${{ matrix.platform }}
 
       - uses: docker/setup-buildx-action@v3
 
