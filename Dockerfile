@@ -57,6 +57,40 @@ RUN echo \
 RUN mv /go/bin/linux_${TARGETARCH}/ /go/bin || true && \
     rm -rf "/go/bin/linux_${TARGETARCH}"
 
+FROM python:3.12 AS cryptography-builder
+
+LABEL maintainer=arash.idelchi
+
+# (root through the build stage, it is anyway multi-stage)
+# hadolint ignore=DL3002
+USER root
+
+# Basic good practices
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+# Install Rust
+ARG RUST_DIR=/opt/rust
+RUN mkdir -p ${RUST_DIR}
+ENV RUSTUP_HOME=${RUST_DIR}/.rustup
+ENV CARGO_HOME=${RUST_DIR}/.cargo
+RUN wget -qO- https://sh.rustup.rs | bash -s -- -y --profile minimal
+ENV PATH="${CARGO_HOME}/bin:${PATH}"
+
+# Update pip & allow breaking packages
+RUN pip install --no-cache-dir --upgrade pip && \
+    echo -e "[global]\nbreak-system-packages=true" >> /etc/pip.conf
+
+RUN \
+    if [ "${TARGETARCH}${TARGETVARIANT}" = "armv7" ]; then \
+    printf "extra-index-url=https://www.piwheels.org/simple\n" >> /etc/pip.conf ; \
+    fi
+
+# Cryptography
+# (split up for readability)
+# hadolint ignore=DL3059
+RUN pip install --no-cache-dir \
+    cryptography --no-binary cryptography
+
 FROM python:3.12
 
 ARG TARGETARCH
@@ -134,16 +168,14 @@ ARG HADOLINT_ARCH=${HADOLINT_ARCH/arm6464/arm64}
 RUN wget -q https://github.com/hadolint/hadolint/releases/download/${HADOLINT_VERSION}/hadolint-Linux-${HADOLINT_ARCH} -O /usr/local/bin/hadolint && \
     chmod +x /usr/local/bin/hadolint
 
-# Python
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3 \
-    python3-pip \
-    python3-venv \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
-
 # Update pip & allow breaking packages
 RUN pip install --no-cache-dir --upgrade pip && \
     echo -e "[global]\nbreak-system-packages=true" >> /etc/pip.conf
+
+RUN \
+    if [ "${TARGETARCH}${TARGETVARIANT}" = "armv7" ]; then \
+    printf "extra-index-url=https://www.piwheels.org/simple\n" >> /etc/pip.conf ; \
+    fi
 
 # Spellcheckers
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -174,6 +206,9 @@ RUN pip install --no-cache-dir \
     ruff \
     # Library stubs for typing
     types-pyyaml
+
+# Copy the cryptography package
+COPY --from=cryptography-builder /usr/local/lib/python3.12/site-packages/ /usr/local/lib/python3.12/site-packages/
 
 # Python tooling for packaging
 # (split up for readability)
