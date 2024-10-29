@@ -266,6 +266,8 @@ RUN wget -q https://github.com/jqlang/jq/releases/download/jq-${JQ_VERSION}/jq-l
 COPY --from=rust-builder /usr/local/cargo/bin/typos /usr/local/bin/typos
 COPY --from=go-builder /go/bin/ /usr/local/bin/
 
+RUN echo "great!"
+
 # Install wslint
 RUN curl -sSL https://raw.githubusercontent.com/idelchi/wslint/refs/heads/dev/install.sh | sh -s -- -d ~/.local/bin
 
