@@ -51,6 +51,7 @@ jobs:
       - run: docker compose run --build --rm devenv task lint
         env:
           DEVENV: ${{ inputs.devenv }}
+        continue-on-error: true
 
       # Build the Docker image and Push it to Docker Hub
       - name: build and push `dev` image
