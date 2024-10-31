@@ -2,7 +2,17 @@ name: gorelease
 
 on:
   workflow_call:
-
+    inputs:
+      version:
+        description: "The version of Go to use"
+        default: ""
+        required: false
+        type: string
+      latest:
+        description: "Use the latest version of Go"
+        default: false
+        required: false
+        type: boolean
 jobs:
   release:
     runs-on: ubuntu-24.04
@@ -15,6 +25,9 @@ jobs:
 
       - name: Set up Go
         uses: actions/setup-go@v5
+        with:
+          go-version: ${{ inputs.version }}
+          check-latest: ${{ inputs.latest }}
 
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v6
