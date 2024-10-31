@@ -6,27 +6,27 @@ on:
   workflow_dispatch:
 
 jobs:
-  info:
-    uses: ./.github/workflows/info.yml
+  # info:
+  #   uses: ./.github/workflows/info.yml
 
-  verify:
-    needs: info
-    uses: ./.github/workflows/devenv.yml
-    secrets:
-      dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
+  # verify:
+  #   needs: info
+  #   uses: ./.github/workflows/devenv.yml
+  #   secrets:
+  #     dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
 
-  release:
-    # if: github.ref == 'refs/heads/main'
-    needs: verify
-    permissions:
-      contents: write
-    uses: ./.github/workflows/docker.yml
-    secrets:
-      dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
+  # release:
+  #   # if: github.ref == 'refs/heads/main'
+  #   needs: verify
+  #   permissions:
+  #     contents: write
+  #   uses: ./.github/workflows/docker.yml
+  #   secrets:
+  #     dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
 
   cleanup:
     if: always()
-    needs: release
+    # needs: release
     permissions:
       actions: write
     uses: ./.github/workflows/cleanup.yml

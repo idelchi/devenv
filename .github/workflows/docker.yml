@@ -45,6 +45,8 @@ jobs:
           PLATFORMS=$(echo '${{ inputs.platforms }}' | jq -R -s -c 'split(",")')
           echo "platforms=${PLATFORMS}" >> ${GITHUB_OUTPUT}
 
+          echo "platforms: ${PLATFORMS}"
+
   build:
     runs-on: ubuntu-24.04
     needs: prepare

@@ -31,7 +31,7 @@ jobs:
           BRANCHES=$(echo '${{ inputs.branches }}' | jq -R -s -c 'split(",")')
           echo "branches=${BRANCHES}" >> ${GITHUB_OUTPUT}
           ENDSWITH=$(echo '${{ inputs.endswith }}' | jq -R -s -c 'split(",")')
-          echo "endswith=${ENDSWITH}" >> ${GITHUB_ENV}
+          echo "endswith=${ENDSWITH}" >> ${GITHUB_OUTPUT}
 
   cleanup:
     runs-on: ubuntu-24.04
