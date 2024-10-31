@@ -80,8 +80,8 @@ jobs:
         with:
           platforms: ${{ matrix.platform }}
           outputs: type=image,name=${{ inputs.image }},push-by-digest=true,name-canonical=true,push=true
-          cache-from: type=registry,ref=${{ github.repository_owner }}/cache:${{  inputs.project }}-${{ env.ARCH }}
-          cache-to: type=registry,ref=${{ github.repository_owner }}/cache:${{ inputs.project }}-${{ env.ARCH }},mode=max
+          cache-from: type=registry,ref=${{ inputs.username }}/cache:${{  inputs.project }}-${{ env.ARCH }}
+          cache-to: type=registry,ref=${{ inputs.username }}/cache:${{ inputs.project }}-${{ env.ARCH }},mode=max
 
       - name: Export digest
         run: |
