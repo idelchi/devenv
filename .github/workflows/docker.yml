@@ -18,9 +18,15 @@ on:
         default: ${{ github.event.repository.name }}
         required: false
         type: string
-
-env:
-  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      username:
+        description: "Docker Hub Username"
+        default: ${{ github.repository_owner }}
+        required: false
+        type: string
+    secrets:
+      dockerhub-token:
+        description: "Docker Hub Token"
+        required: true
 
 jobs:
   prepare:
@@ -65,8 +71,8 @@ jobs:
 
       - uses: docker/login-action@v3
         with:
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          username: ${{ inputs.username }}
+          password: ${{ secrets.dockerhub-token }}
 
       - name: Build and push by digest
         id: build
@@ -107,8 +113,8 @@ jobs:
 
       - uses: docker/login-action@v3
         with:
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          username: ${{ inputs.username }}
+          password: ${{ secrets.dockerhub-token }}
 
       - name: Create manifest list and push
         working-directory: /tmp/digests

@@ -1,4 +1,5 @@
 name: task
+
 on:
   workflow_call:
     inputs:
