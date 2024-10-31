@@ -13,10 +13,6 @@ on:
         default: -beta
         required: false
         type: string
-    # secrets:
-    #   GITHUB_TOKEN:
-    #     description: "GitHub Token"
-    #     required: true
 
 jobs:
   prepare:
