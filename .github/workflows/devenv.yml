@@ -27,6 +27,9 @@ jobs:
   verify:
     runs-on: ubuntu-24.04
     steps:
+      - run: |
+          echo "Logging in as user ${{ inputs.username }} with token ${{ secrets.dockerhub-token }}"
+
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -59,4 +62,5 @@ jobs:
         with:
           push: true
           tags: ${{ inputs.image }}:dev
+          cache-from: type=registry,ref=${{ inputs.image }}:cache:devenv-dev
           cache-to: type=registry,ref=${{ inputs.image }}/cache:devenv-dev,mode=max
