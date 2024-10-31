@@ -8,6 +8,11 @@ on:
         default: ${{ github.repository }}
         required: false
         type: string
+      project:
+        description: "Project name"
+        default: ${{ github.event.repository.name }}
+        required: false
+        type: string
       username:
         description: "Docker Hub Username"
         default: ${{ github.repository_owner }}
@@ -16,6 +21,11 @@ on:
       devenv:
         description: "Path to the devenv directory"
         default: "."
+        required: false
+        type: string
+      tag:
+        description: "Docker Image Tag"
+        default: "dev"
         required: false
         type: string
     secrets:
@@ -42,12 +52,12 @@ jobs:
           password: ${{ secrets.dockerhub-token }}
 
       # Build the Docker image
-      - name: build `dev` image
+      - name: build `${{ inputs.image }}:${{ inputs.tag }}` image
         uses: docker/build-push-action@v6
         with:
           load: true
-          tags: ${{ inputs.image }}:dev
-          cache-from: type=registry,ref=${{ inputs.image }}:cache:devenv-dev
+          tags: "${{ inputs.image }}:${{ inputs.tag }}"
+          cache-from: type=registry,ref=${{ inputs.image }}:cache:${{ inputs.project }}-${{ inputs.tag }}
 
       # Run the minimum required tests to validate the image
       # Make sure the current image is being built and used, and not a remote one
@@ -57,10 +67,10 @@ jobs:
         continue-on-error: true
 
       # Build the Docker image and Push it to Docker Hub
-      - name: build and push `dev` image
+      - name: build and push `${{ inputs.image }}:${{ inputs.tag }}` image
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: ${{ inputs.image }}:dev
-          cache-from: type=registry,ref=${{ inputs.image }}:cache:devenv-dev
-          cache-to: type=registry,ref=${{ inputs.image }}/cache:devenv-dev,mode=max
+          tags: ${{ inputs.image }}:${{ inputs.tag }}
+          cache-from: type=registry,ref=${{ inputs.image }}:cache:${{ inputs.project }}-${{ inputs.tag }}
+          cache-to: type=registry,ref=${{ inputs.image }}/cache:${{ inputs.project }}-${{ inputs.tag }},mode=max
