@@ -10,21 +10,22 @@ jobs:
     uses: ./.github/workflows/info.yml
 
   verify:
-    needs: info
     uses: ./.github/workflows/devenv.yml
+    needs: info
     secrets: inherit
 
   release:
+    uses: ./.github/workflows/docker.yml
     # if: github.ref == 'refs/heads/main'
     needs: verify
     permissions:
       contents: write
-    uses: ./.github/workflows/docker.yml
     secrets: inherit
 
   cleanup:
+    uses: ./.github/workflows/cleanup.yml
     if: always()
     needs: release
     permissions:
       actions: write
-    uses: ./.github/workflows/cleanup.yml
+    secrets: inherit
