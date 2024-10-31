@@ -8,15 +8,15 @@ on:
         default: dev
         required: false
         type: string
-
       endswith:
         description: "Endswiths to cleanup (comma separated)"
         default: -beta
         required: false
         type: string
-
-env:
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    secrets:
+      GITHUB_TOKEN:
+        description: "GitHub Token"
+        required: true
 
 jobs:
   prepare:
@@ -44,6 +44,8 @@ jobs:
       matrix:
         branch: ${{fromJson(needs.prepare.outputs.branches)}}
         endswith: ${{fromJson(needs.prepare.outputs.endswith)}}
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
 

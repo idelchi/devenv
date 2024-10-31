@@ -7,9 +7,10 @@ on:
         description: "The tag to create"
         required: true
         type: string
-
-env:
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    secrets:
+      GITHUB_TOKEN:
+        description: "GitHub Token"
+        required: true
 
 jobs:
   tag-prerelease:
@@ -17,6 +18,8 @@ jobs:
       contents: write
       actions: write
     runs-on: ubuntu-24.04
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
 
