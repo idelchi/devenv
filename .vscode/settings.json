@@ -98,7 +98,7 @@
         "DEVENV": ".",
         "PYTHONPATH": "${workspaceFolder}"
     },
-    "terminal.integrated.enableMultiLinePasteWarning": "always",
+    "terminal.integrated.enableMultiLinePasteWarning": false,
     /* ****** ****** ****** */
     /* ****** SYSTEM ****** */
     "files.eol": "\n",
