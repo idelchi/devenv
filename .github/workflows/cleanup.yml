@@ -47,21 +47,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Cleanup old builds for '{{ matrix.branch }}'
+      - name: Cleanup old builds for '${{ matrix.branch }}'
         run: |
           gh run list --limit 500 \
             --workflow github-actions.yml \
             --status completed \
-            --branch {{ matrix.branch }} \
+            --branch ${{ matrix.branch }} \
             --json databaseId \
             -q ".[].databaseId" \
             | xargs -n 1 gh run delete
 
-      - name: Cleanup old builds ending with '{{ matrix.endswith }}'
+      - name: Cleanup old builds ending with '${{ matrix.endswith }}'
         run: |
           gh run list --limit 500 \
             --workflow github-actions.yml \
             --status completed \
             --json databaseId,headBranch \
-            -q '.[] | select(.headBranch | endswith("{{ matrix.endswith }}")) | .databaseId' \
+            -q '.[] | select(.headBranch | endswith("${{ matrix.endswith }}")) | .databaseId' \
             | xargs -n 1 gh run delete
