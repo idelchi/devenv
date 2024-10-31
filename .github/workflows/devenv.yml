@@ -44,7 +44,7 @@ jobs:
         with:
           load: true
           tags: ${{ inputs.image }}:dev
-          cache-from: type=registry,ref=${{ inputs.image }}:dev-buildcache
+          cache-from: type=registry,ref=${{ inputs.image }}:cache:devenv-dev
 
       # Run the minimum required tests to validate the image
       # Make sure the current image is being built and used, and not a remote one
@@ -58,4 +58,4 @@ jobs:
         with:
           push: true
           tags: ${{ inputs.image }}:dev
-          cache-to: type=registry,ref=${{ inputs.image }}/cache/dev,mode=max
+          cache-to: type=registry,ref=${{ inputs.image }}/cache:devenv-dev,mode=max
