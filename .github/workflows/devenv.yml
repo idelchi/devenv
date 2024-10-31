@@ -22,7 +22,7 @@ on:
         description: "Cache location for the Docker image"
         default: ${{ github.repository_owner }}/cache
         required: false
-        type: boolean
+        type: string
       devenv:
         description: "Path to the devenv directory"
         default: "."
@@ -42,9 +42,6 @@ jobs:
   verify:
     runs-on: ubuntu-24.04
     steps:
-      - run: |
-          echo "Logging in as user ${{ inputs.username }} with token ${{ secrets.dockerhub-token }}"
-
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
