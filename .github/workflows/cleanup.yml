@@ -28,9 +28,9 @@ jobs:
       - id: targets
         run: |
           # Convert comma-separated string to JSON array
-          BRANCHES=$(echo '${{ inputs.branches }}' | jq -R -s -c 'split(",")')
+          BRANCHES=$(echo -n '${{ inputs.branches }}' | jq -R -s -c 'split(",")')
           echo "branches=${BRANCHES}" >> ${GITHUB_OUTPUT}
-          ENDSWITH=$(echo '${{ inputs.endswith }}' | jq -R -s -c 'split(",")')
+          ENDSWITH=$(echo -n '${{ inputs.endswith }}' | jq -R -s -c 'split(",")')
           echo "endswith=${ENDSWITH}" >> ${GITHUB_OUTPUT}
 
           echo "branches: ${BRANCHES}"
@@ -47,7 +47,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Cleanup old builds for '${{ matrix.branch }}'
+      - name: Cleanup old builds for `${{ matrix.branch }}`
         run: |
           gh run list --limit 500 \
             --workflow github-actions.yml \
@@ -57,7 +57,7 @@ jobs:
             -q ".[].databaseId" \
             | xargs -n 1 gh run delete
 
-      - name: Cleanup old builds ending with '${{ matrix.endswith }}'
+      - name: Cleanup old builds ending with `${{ matrix.endswith }}`
         run: |
           gh run list --limit 500 \
             --workflow github-actions.yml \
