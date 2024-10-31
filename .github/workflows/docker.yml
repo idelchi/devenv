@@ -18,6 +18,11 @@ on:
         default: ${{ github.event.repository.name }}
         required: false
         type: string
+      cache:
+        description: "Cache location for the Docker image"
+        default: ${{ github.repository_owner }}/cache
+        required: false
+        type: boolean
       username:
         description: "Docker Hub Username"
         default: ${{ github.repository_owner }}
@@ -80,8 +85,8 @@ jobs:
         with:
           platforms: ${{ matrix.platform }}
           outputs: type=image,name=${{ inputs.image }},push-by-digest=true,name-canonical=true,push=true
-          cache-from: type=registry,ref=${{ inputs.username }}/cache:${{  inputs.project }}-${{ env.ARCH }}
-          cache-to: type=registry,ref=${{ inputs.username }}/cache:${{ inputs.project }}-${{ env.ARCH }},mode=max
+          cache-from: type=registry,ref=${{ inputs.cache }}:${{  inputs.project }}-${{ env.ARCH }}
+          cache-to: type=registry,ref=${{ inputs.cache }}:${{ inputs.project }}-${{ env.ARCH }},mode=max
 
       - name: Export digest
         run: |

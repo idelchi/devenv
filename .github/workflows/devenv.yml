@@ -18,6 +18,11 @@ on:
         default: ${{ github.repository_owner }}
         required: false
         type: string
+      cache:
+        description: "Cache location for the Docker image"
+        default: ${{ github.repository_owner }}/cache
+        required: false
+        type: boolean
       devenv:
         description: "Path to the devenv directory"
         default: "."
@@ -57,7 +62,7 @@ jobs:
         with:
           load: true
           tags: "${{ inputs.image }}:${{ inputs.tag }}"
-          cache-from: type=registry,ref=${{ inputs.image }}:cache:${{ inputs.project }}-${{ inputs.tag }}
+          cache-from: type=registry,ref=${{ inputs.cache }}:${{ inputs.project }}-${{ inputs.tag }}
 
       # Run the minimum required tests to validate the image
       # Make sure the current image is being built and used, and not a remote one
@@ -72,5 +77,5 @@ jobs:
         with:
           push: true
           tags: ${{ inputs.image }}:${{ inputs.tag }}
-          cache-from: type=registry,ref=${{ inputs.image }}:cache:${{ inputs.project }}-${{ inputs.tag }}
-          cache-to: type=registry,ref=${{ inputs.image }}/cache:${{ inputs.project }}-${{ inputs.tag }},mode=max
+          cache-from: type=registry,ref=${{ inputs.cache }}:${{ inputs.project }}-${{ inputs.tag }}
+          cache-to: type=registry,ref=${{ inputs.cache }}:${{ inputs.project }}-${{ inputs.tag }},mode=max
