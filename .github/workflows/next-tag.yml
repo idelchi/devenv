@@ -19,12 +19,12 @@ on:
     #     required: true
 
     outputs:
-      NEXT_TAG:
-        description: "The next tag to use"
-        value: ${{ jobs.calculate.outputs.next }}
-      LAST_TAG:
+      last:
         description: "The last tag used"
         value: ${{ jobs.calculate.outputs.last }}
+      next:
+        description: "The next tag to use"
+        value: ${{ jobs.calculate.outputs.next }}
 
 jobs:
   calculate:
