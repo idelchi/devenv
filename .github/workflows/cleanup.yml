@@ -46,7 +46,7 @@ jobs:
         endswith: ${{fromJson(needs.prepare.outputs.endswith)}}
     steps:
       - uses: actions/checkout@v4
-      #
+
       - name: Cleanup old builds for `${{ matrix.branch }}`
         run: |
           gh run list --limit 500 \

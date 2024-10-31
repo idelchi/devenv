@@ -42,7 +42,7 @@ jobs:
       - id: targets
         run: |
           # Convert comma-separated string to JSON array
-          PLATFORMS=$(echo '${{ inputs.platforms }}' | jq -R -s -c 'split(",")')
+          PLATFORMS=$(echo -n '${{ inputs.platforms }}' | jq -R -s -c 'split(",")')
           echo "platforms=${PLATFORMS}" >> ${GITHUB_OUTPUT}
 
           echo "platforms: ${PLATFORMS}"
