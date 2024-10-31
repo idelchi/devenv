@@ -34,8 +34,6 @@ jobs:
           echo "endswith=${ENDSWITH}" >> ${GITHUB_ENV}
 
   cleanup:
-    permissions:
-      actions: write
     runs-on: ubuntu-24.04
     needs: prepare
     continue-on-error: true

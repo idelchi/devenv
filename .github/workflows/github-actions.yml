@@ -52,8 +52,12 @@ jobs:
 
   release:
     needs: verify
+    permissions:
+      contents: write
     uses: ./.github/workflows/docker.yml
 
   cleanup:
     needs: release
+    permissions:
+      actions: write
     uses: ./.github/workflows/cleanup.yml
