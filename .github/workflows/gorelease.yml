@@ -2,10 +2,6 @@ name: gorelease
 
 on:
   workflow_call:
-    # secrets:
-    #   GITHUB_TOKEN:
-    #     description: "GitHub Token"
-    #     required: true
 
 jobs:
   release:
