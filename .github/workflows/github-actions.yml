@@ -16,7 +16,7 @@ jobs:
 
   release:
     uses: ./.github/workflows/docker.yml
-    # if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main'
     needs: verify
     permissions:
       contents: write
@@ -24,7 +24,7 @@ jobs:
 
   cleanup:
     uses: ./.github/workflows/cleanup.yml
-    if: always()
+    if: github.ref == 'refs/heads/dev' && always()
     needs: release
     permissions:
       actions: write
