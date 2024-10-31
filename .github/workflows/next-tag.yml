@@ -57,6 +57,8 @@ jobs:
           LAST_TAG=$(gh release list -L 1 --exclude-pre-releases --json tagName -q '.[0].tagName')
           echo "last=${LAST_TAG}" >> ${GITHUB_OUTPUT}
 
+          chmod +x ~/.local/bin/go-next-tag
+
           NEXT_TAG=$(go-next-tag ${LAST_TAG})
           echo "next=${NEXT_TAG}" >> ${GITHUB_OUTPUT}
 
