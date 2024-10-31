@@ -1,4 +1,4 @@
-name: info actions
+name: info
 on:
   workflow_call:
 

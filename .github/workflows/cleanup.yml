@@ -1,0 +1,66 @@
+name: cleanup
+
+on:
+  workflow_call:
+    inputs:
+      branches:
+        description: "Branches to cleanup (comma separated)"
+        default: dev
+        required: false
+        type: string
+
+      endswith:
+        description: "Endswiths to cleanup (comma separated)"
+        default: -beta
+        required: false
+        type: string
+
+env:
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      branches: ${{ steps.targets.outputs.branches }}
+      endswith: ${{ steps.targets.outputs.endswith }}
+    steps:
+      - id: targets
+        run: |
+          # Convert comma-separated string to JSON array
+          BRANCHES=$(echo '${{ inputs.branches }}' | jq -R -s -c 'split(",")')
+          echo "branches=${BRANCHES}" >> ${GITHUB_OUTPUT}
+          ENDSWITH=$(echo '${{ inputs.endswith }}' | jq -R -s -c 'split(",")')
+          echo "endswith=${ENDSWITH}" >> ${GITHUB_ENV}
+
+  cleanup:
+    permissions:
+      actions: write
+    runs-on: ubuntu-24.04
+    needs: prepare
+    continue-on-error: true
+    strategy:
+      matrix:
+        branch: ${{fromJson(needs.prepare.outputs.branches)}}
+        endswith: ${{fromJson(needs.prepare.outputs.endswith)}}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cleanup old builds for '{{ matrix.branch }}'
+        run: |
+          gh run list --limit 500 \
+            --workflow github-actions.yml \
+            --status completed \
+            --branch {{ matrix.branch }} \
+            --json databaseId \
+            -q ".[].databaseId" \
+            | xargs -n 1 gh run delete
+
+      - name: Cleanup old builds ending with '{{ matrix.endswith }}'
+        run: |
+          gh run list --limit 500 \
+            --workflow github-actions.yml \
+            --status completed \
+            --json databaseId,headBranch \
+            -q '.[] | select(.headBranch | endswith("{{ matrix.endswith }}")) | .databaseId' \
+            | xargs -n 1 gh run delete

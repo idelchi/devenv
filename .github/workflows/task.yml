@@ -1,4 +1,4 @@
-name: task actions
+name: task
 on:
   workflow_call:
     inputs:

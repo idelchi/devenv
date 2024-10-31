@@ -1,0 +1,40 @@
+name: calculate next tag
+
+on:
+  workflow_call:
+    secrets:
+      GH_TOKEN:
+        required: true
+
+    outputs:
+      NEXT_TAG:
+        description: "The next tag to use"
+        value: ${{ jobs.calculate.outputs.next }}
+      LAST_TAG:
+        description: "The last tag used"
+        value: ${{ jobs.calculate.outputs.last }}
+
+jobs:
+  calculate:
+    runs-on: ubuntu-24.04
+    outputs:
+      next: ${{ steps.tag.outputs.next }}
+      last: ${{ steps.tag.outputs.last }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Calculate Next Tag
+        id: tag
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          LAST_TAG=$(gh release list -L 1 --exclude-pre-releases --json tagName -q '.[0].tagName')
+          echo "last=${LAST_TAG}" >> ${GITHUB_OUTPUT}
+
+          NEXT_TAG=$(go run ./cmd/go-next-tag ${LAST_TAG})
+          echo "next=${NEXT_TAG}" >> ${GITHUB_OUTPUT}
+
+      - name: Display Tags
+        run: |
+          echo "The last tag is '${{ steps.tag.outputs.last }}'"
+          echo "The next tag is '${{ steps.tag.outputs.next }}'"
