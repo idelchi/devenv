@@ -2,6 +2,18 @@ name: calculate next tag
 
 on:
   workflow_call:
+    inputs:
+      artifact:
+        description: "If passed, the artifact to download"
+        default: ""
+        required: false
+        type: string
+      version:
+        description: "The version of go-next-tag to use"
+        default: ""
+        required: false
+        type: string
+
     secrets:
       GH_TOKEN:
         required: true
@@ -23,6 +35,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Download go-next-tag (curl)
+        if: ${{ !inputs.artifact }}
+        run: |
+          ARGS=""
+          # If inputs.version is set, use it as `-v <version>` for the install script
+          if [ -n "${{ inputs.version }}" ]; then
+            ARGS="-v ${{ inputs.version }}"
+          fi
+
+          curl -sSL https://raw.githubusercontent.com/idelchi/go-next-tag/refs/heads/dev/install.sh | sh -s -- -d ~/.local/bin ${ARGS}
+
+      - name: Download go-next-tag (artifact)
+        uses: actions/download-artifact@v4
+        if: ${{ inputs.artifact }}
+        with:
+          name: ${{ inputs.artifact }}
+          path: ~/.local/bin
+
       - name: Calculate Next Tag
         id: tag
         env:
@@ -31,7 +61,7 @@ jobs:
           LAST_TAG=$(gh release list -L 1 --exclude-pre-releases --json tagName -q '.[0].tagName')
           echo "last=${LAST_TAG}" >> ${GITHUB_OUTPUT}
 
-          NEXT_TAG=$(go run ./cmd/go-next-tag ${LAST_TAG})
+          NEXT_TAG=$(go-next-tag ${LAST_TAG})
           echo "next=${NEXT_TAG}" >> ${GITHUB_OUTPUT}
 
       - name: Display Tags

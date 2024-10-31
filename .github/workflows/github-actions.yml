@@ -16,7 +16,7 @@ jobs:
       dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
 
   release:
-    # if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main'
     needs: verify
     permissions:
       contents: write
