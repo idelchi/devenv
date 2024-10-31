@@ -6,26 +6,28 @@ on:
   workflow_dispatch:
 
 jobs:
-  info:
-    uses: ./.github/workflows/info.yml
+  # info:
+  #   uses: ./.github/workflows/info.yml
 
-  verify:
-    uses: ./.github/workflows/devenv.yml
-    needs: info
-    secrets: inherit
+  # verify:
+  #   uses: ./.github/workflows/devenv.yml
+  #   needs: info
+  #   secrets: inherit
 
-  release:
-    uses: ./.github/workflows/docker.yml
-    # if: github.ref == 'refs/heads/main'
-    needs: verify
-    permissions:
-      contents: write
-    secrets: inherit
+  # release:
+  #   uses: ./.github/workflows/docker.yml
+  #   # if: github.ref == 'refs/heads/main'
+  #   needs: verify
+  #   permissions:
+  #     contents: write
+  #   secrets: inherit
 
   cleanup:
     uses: ./.github/workflows/cleanup.yml
     if: always()
-    needs: release
+    # needs: release
     permissions:
       actions: write
-    # secrets: inherit
+    with:
+      branches: dev, main, master
+      endswith: -beta,-meta, -geta
