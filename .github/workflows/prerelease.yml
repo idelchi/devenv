@@ -7,10 +7,10 @@ on:
         description: "The tag to create"
         required: true
         type: string
-    secrets:
-      GITHUB_TOKEN:
-        description: "GitHub Token"
-        required: true
+    # secrets:
+    #   GITHUB_TOKEN:
+    #     description: "GitHub Token"
+    #     required: true
 
 jobs:
   tag-prerelease:

@@ -14,9 +14,9 @@ on:
         required: false
         type: string
 
-    secrets:
-      GITHUB_TOKEN:
-        required: true
+    # secrets:
+    #   GITHUB_TOKEN:
+    #     required: true
 
     outputs:
       NEXT_TAG:
