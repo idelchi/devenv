@@ -1,4 +1,5 @@
-name: devenv actions
+name: task
+
 on:
   workflow_call:
     inputs:
@@ -8,7 +9,7 @@ on:
         required: false
         type: string
       devenv:
-        description: "Docker Image to use"
+        description: "Path to the devenv directory"
         default: ".devenv"
         required: false
         type: string
@@ -25,6 +26,7 @@ jobs:
         with:
           submodules: recursive
           fetch-depth: 0
+
       - run: task info
 
   lint:
@@ -36,6 +38,7 @@ jobs:
         with:
           submodules: recursive
           fetch-depth: 0
+
       - run: task lint
 
   test:

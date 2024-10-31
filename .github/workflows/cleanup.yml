@@ -1,0 +1,74 @@
+name: cleanup
+
+on:
+  workflow_call:
+    inputs:
+      branches:
+        description: "Branches to cleanup (comma separated)"
+        default: dev
+        required: false
+        type: string
+      endswith:
+        description: "Endswiths to cleanup (comma separated)"
+        default: -beta
+        required: false
+        type: string
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      branches: ${{ steps.targets.outputs.branches }}
+      endswith: ${{ steps.targets.outputs.endswith }}
+    steps:
+      - id: targets
+        run: |
+          # Convert comma-separated string to JSON array
+          BRANCHES=$(echo -n '${{ inputs.branches }}' | jq -R -s -c 'split(",")')
+          echo "branches=${BRANCHES}" >> ${GITHUB_OUTPUT}
+          ENDSWITH=$(echo -n '${{ inputs.endswith }}' | jq -R -s -c 'split(",")')
+          echo "endswith=${ENDSWITH}" >> ${GITHUB_OUTPUT}
+
+          echo "branches: ${BRANCHES}"
+          echo "endswith: ${ENDSWITH}"
+
+  branches:
+    runs-on: ubuntu-24.04
+    needs: prepare
+    continue-on-error: true
+    strategy:
+      matrix:
+        branch: ${{fromJson(needs.prepare.outputs.branches)}}
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cleanup old builds for `${{ matrix.branch }}`
+        run: |
+          gh run list --limit 500 \
+            --status completed \
+            --branch ${{ matrix.branch }} \
+            --json databaseId \
+            -q ".[].databaseId" \
+            | xargs -n 1 gh run delete
+
+  endswith:
+    runs-on: ubuntu-24.04
+    needs: prepare
+    continue-on-error: true
+    strategy:
+      matrix:
+        endswith: ${{fromJson(needs.prepare.outputs.endswith)}}
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cleanup old builds ending with `${{ matrix.endswith }}`
+        run: |
+          gh run list --limit 500 \
+            --status completed \
+            --json databaseId,headBranch \
+            -q '.[] | select(.headBranch | endswith("${{ matrix.endswith }}")) | .databaseId' \
+            | xargs -n 1 gh run delete

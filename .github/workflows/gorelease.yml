@@ -1,0 +1,37 @@
+name: gorelease
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: "The version of Go to use"
+        default: ""
+        required: false
+        type: string
+      latest:
+        description: "Use the latest version of Go"
+        default: false
+        required: false
+        type: boolean
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ inputs.version }}
+          check-latest: ${{ inputs.latest }}
+
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          distribution: goreleaser
+          version: "~> v2"
+          args: release --clean

@@ -1,0 +1,19 @@
+name: info
+on:
+  workflow_call:
+
+jobs:
+  info:
+    runs-on: ubuntu-24.04
+    steps:
+      - run: |
+          # Print out some more information about the environment
+          echo github.repository_owner ${{ github.repository_owner }}
+          echo github.repository: ${{ github.repository }}
+          echo github.actor ${{ github.actor }}
+          echo github.event_name: ${{ github.event_name }}
+          echo runner.os: ${{ runner.os }}
+          echo github.ref: ${{ github.ref }}
+          echo github.head_ref: ${{ github.head_ref }}
+          echo github.ref_name: ${{ github.ref_name }}
+          echo whoami: $(whoami)

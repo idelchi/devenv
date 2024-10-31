@@ -1,0 +1,47 @@
+name: prerelease
+
+on:
+  workflow_call:
+    inputs:
+      tag:
+        description: "The tag to create"
+        required: true
+        type: string
+
+jobs:
+  tag-prerelease:
+    permissions:
+      contents: write
+      actions: write
+    runs-on: ubuntu-24.04
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Delete Old Pre-Releases
+        run: |
+          gh release list --json tagName,isPrerelease \
+            -q '.[] | select(.isPrerelease == true) | .tagName' \
+            | xargs -I {} gh release delete {} --yes
+        continue-on-error: true
+
+      - name: Delete Existing Release
+        run: |
+          gh release delete ${{ inputs.tag }} --yes --cleanup-tag
+        continue-on-error: true
+
+      - name: Delete Existing Tag
+        run: |
+          git tag --delete ${{ inputs.tag }} || true
+          git push origin --delete ${{ inputs.tag }} || true
+        continue-on-error: true
+
+      - name: Create New Tag
+        run: |
+          git tag ${{ inputs.tag }}
+          git push origin ${{ inputs.tag }}
+
+      - name: Trigger Workflow
+        run: |
+          gh workflow run ${{ github.workflow }} --ref ${{ inputs.tag }}

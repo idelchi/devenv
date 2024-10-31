@@ -36,6 +36,9 @@
     /* ****** ****** ****** */
     /* ****** OTHER ****** */
     "prettier.configPath": "settings/.prettierrc.yml",
+    "[github-actions-workflow]": {
+        "editor.autoIndent": "advanced"
+    },
     /* ****** ****** ****** */
     /* ****** PYTHON ****** */
     "python.defaultInterpreterPath": "python",
@@ -95,7 +98,7 @@
         "DEVENV": ".",
         "PYTHONPATH": "${workspaceFolder}"
     },
-    "terminal.integrated.enableMultiLinePasteWarning": "always",
+    "terminal.integrated.enableMultiLinePasteWarning": false,
     /* ****** ****** ****** */
     /* ****** SYSTEM ****** */
     "files.eol": "\n",

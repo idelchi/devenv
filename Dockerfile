@@ -250,14 +250,24 @@ RUN npm-groovy-lint --version
 ARG GOLANGCI_LINT_VERSION=v1.61.0
 RUN wget -qO- https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b "$(go env GOPATH)/bin" ${GOLANGCI_LINT_VERSION}
 
+# Create a local bin directory
+RUN mkdir -p ~/.local/bin
+ENV PATH="/home/${USER}/.local/bin:$PATH"
+
+# Install jq
+ARG JQ_VERSION=1.7.1
+ARG JQ_ARCH=${TARGETARCH}
+ARG JQ_ARCH=${JQ_ARCH/arm/armhf}
+ARG JQ_ARCH=${JQ_ARCH/armhf64/arm64}
+RUN wget -q https://github.com/jqlang/jq/releases/download/jq-${JQ_VERSION}/jq-linux-${JQ_ARCH} -O ~/.local/bin/jq && \
+    chmod +x ~/.local/bin/jq
+
 # Copy the tools from the build stages
 COPY --from=rust-builder /usr/local/cargo/bin/typos /usr/local/bin/typos
 COPY --from=go-builder /go/bin/ /usr/local/bin/
 
 # Install wslint
-# TODO: Implement versioning in wslint instead.
-# ARG CACHEBUST
-RUN go install -ldflags='-s -w -X "main.version=unofficial & built from dev branch"' github.com/idelchi/wslint@dev
+RUN curl -sSL https://raw.githubusercontent.com/idelchi/wslint/refs/heads/main/install.sh | sh -s -- -d ~/.local/bin
 
 # Reroute cache to /tmp
 ENV NPM_CONFIG_CACHE=/tmp/.npm
