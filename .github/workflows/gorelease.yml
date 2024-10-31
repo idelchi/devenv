@@ -2,6 +2,10 @@ name: gorelease
 
 on:
   workflow_call:
+    secrets:
+      GITHUB_TOKEN:
+        description: "GitHub Token"
+        required: true
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
