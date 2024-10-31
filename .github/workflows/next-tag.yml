@@ -15,7 +15,7 @@ on:
         type: string
 
     secrets:
-      GH_TOKEN:
+      GITHUB_TOKEN:
         required: true
 
     outputs:
@@ -56,7 +56,7 @@ jobs:
       - name: Calculate Next Tag
         id: tag
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           LAST_TAG=$(gh release list -L 1 --exclude-pre-releases --json tagName -q '.[0].tagName')
           echo "last=${LAST_TAG}" >> ${GITHUB_OUTPUT}
