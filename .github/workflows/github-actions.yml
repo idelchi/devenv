@@ -29,5 +29,5 @@ jobs:
     permissions:
       actions: write
     with:
-      branches: dev, main, master
-      endswith: -beta,-meta, -geta
+      branches: dev,main,master
+      endswith: -beta,-meta,-geta

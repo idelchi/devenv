@@ -36,14 +36,13 @@ jobs:
           echo "branches: ${BRANCHES}"
           echo "endswith: ${ENDSWITH}"
 
-  cleanup:
+  branches:
     runs-on: ubuntu-24.04
     needs: prepare
     continue-on-error: true
     strategy:
       matrix:
         branch: ${{fromJson(needs.prepare.outputs.branches)}}
-        endswith: ${{fromJson(needs.prepare.outputs.endswith)}}
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
@@ -58,6 +57,18 @@ jobs:
             --json databaseId \
             -q ".[].databaseId" \
             | xargs -n 1 gh run delete
+
+  endswith:
+    runs-on: ubuntu-24.04
+    needs: prepare
+    continue-on-error: true
+    strategy:
+      matrix:
+        endswith: ${{fromJson(needs.prepare.outputs.endswith)}}
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
 
       - name: Cleanup old builds ending with `${{ matrix.endswith }}`
         run: |
