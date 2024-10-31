@@ -12,17 +12,15 @@ jobs:
   verify:
     needs: info
     uses: ./.github/workflows/devenv.yml
-    secrets:
-      dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
+    secrets: inherit
 
   release:
-    if: github.ref == 'refs/heads/main'
+    # if: github.ref == 'refs/heads/main'
     needs: verify
     permissions:
       contents: write
     uses: ./.github/workflows/docker.yml
-    secrets:
-      dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
+    secrets: inherit
 
   cleanup:
     if: always()
