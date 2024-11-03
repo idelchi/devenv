@@ -1,13 +1,28 @@
 name: devenv
 
 on:
-  push:
-  pull_request:
   workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - dev
+      - main
+    tags:
+      - "*"
 
 jobs:
   info:
     uses: ./.github/workflows/info.yml
+
+  cleanup:
+    uses: ./.github/workflows/cleanup.yml
+    if: github.ref == 'refs/heads/dev'
+    needs: info
+    permissions:
+      actions: write
+    with:
+      branches: dev,main
+      endswith: -beta
 
   verify:
     uses: ./.github/workflows/devenv.yml
@@ -21,13 +36,3 @@ jobs:
     permissions:
       contents: write
     secrets: inherit
-
-  cleanup:
-    uses: ./.github/workflows/cleanup.yml
-    if: github.ref == 'refs/heads/dev' && always()
-    needs: release
-    permissions:
-      actions: write
-    with:
-      branches: dev,main
-      endswith: -beta
