@@ -1,0 +1,45 @@
+version: "3"
+
+tasks:
+  tag:
+    cmds:
+      - |
+        # if TAG=="auto", then use the next tag
+        if [ "{{.TAG}}" == "auto" ]; then
+          TAG=$(gh release list -L 1 --exclude-pre-releases --json tagName -q '.[0].tagName')
+          TAG=$(go-next-tag --bump=patch ${TAG})
+        else
+          TAG="{{.TAG}}"
+        fi
+        echo "Tagging as ${TAG}"
+        gh release delete ${TAG} --yes --cleanup-tag || true
+        git tag -d ${TAG} || true
+        git tag ${TAG}
+        git push origin -f ${TAG}
+    vars:
+      TAG: '{{.CLI_ARGS | default "v0.0.1"}}'
+
+  auto:
+    cmds:
+      - task: tag
+        vars:
+          TAG: auto
+
+  delete:
+    cmds:
+      - cmd: |
+          gh run list --limit 500 \
+            --status completed \
+            --json databaseId \
+            -q ".[].databaseId" \
+            | xargs -n 1 gh run delete
+        ignore_error: true
+      - cmd: |
+          git fetch --tags
+          git tag -l '*-beta' | xargs -r git push --delete origin
+        ignore_error: true
+      - cmd: |
+          gh release list --json tagName,isPrerelease \
+            -q '.[] | select(.isPrerelease == true) | .tagName' \
+            | xargs -I {} gh release delete {} --yes --cleanup-tag
+        ignore_error: true

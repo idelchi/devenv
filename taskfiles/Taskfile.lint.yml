@@ -115,7 +115,13 @@ tasks:
     cmds:
       - misspell -error {{.FILES}}
       - codespell --ignore-words={{.WORDLIST}} {{.FILES}}
-      - typos
+      - |
+        # Check if {{.TYPOS_CONFIG}} exists
+        if [ -f "{{.TYPOS_CONFIG}}" ]; then
+          typos --config {{.TYPOS_CONFIG}}
+        else
+          typos
+        fi
       - defer: mv {{.CONFIG}}.bak {{.CONFIG}} >/dev/null 2>&1
         ignore_errors: true
       - |
