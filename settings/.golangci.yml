@@ -5,17 +5,15 @@ linters:
   enable-all: true
   disable:
     # deprecated
-    # overly strict
-    - exhaustruct
     - execinquery
-    # Use named returns when it makes sense
+    - exportloopref
+    - gomnd
+    # # overly strict
+    - exhaustruct
+    # # Use named returns when it makes sense
     - nonamedreturns
     # No restrictions on packages
     - depguard
-    # Renamed
-    - gomnd
-    # Not valid for Go version > 1.22
-    - exportloopref
 
 issues:
   exclude-use-default: false
