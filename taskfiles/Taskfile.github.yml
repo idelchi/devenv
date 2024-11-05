@@ -40,6 +40,7 @@ tasks:
             | xargs -I {} gh release delete {} --yes --cleanup-tag
         ignore_error: true
       - cmd: |
+          git tag -d $(git tag -l)
           git fetch --tags
           git tag -l '*-beta' | xargs -r git push --delete origin
         ignore_error: true
