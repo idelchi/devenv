@@ -23,7 +23,7 @@ jobs:
         run: |
           gh release list --json tagName,isPrerelease \
             -q '.[] | select(.isPrerelease == true) | .tagName' \
-            | xargs -I {} gh release delete {} --yes
+            | xargs -I {} gh release delete {} --yes --cleanup-tag
         continue-on-error: true
 
       - name: Delete Existing Release
