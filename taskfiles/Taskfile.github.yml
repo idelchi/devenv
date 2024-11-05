@@ -35,11 +35,12 @@ tasks:
             | xargs -n 1 gh run delete
         ignore_error: true
       - cmd: |
-          git fetch --tags
-          git tag -l '*-beta' | xargs -r git push --delete origin
-        ignore_error: true
-      - cmd: |
           gh release list --json tagName,isPrerelease \
             -q '.[] | select(.isPrerelease == true) | .tagName' \
             | xargs -I {} gh release delete {} --yes --cleanup-tag
+        ignore_error: true
+      - cmd: |
+          git tag -d $(git tag -l)
+          git fetch --tags
+          git tag -l '*-beta' | xargs -r git push --delete origin
         ignore_error: true
