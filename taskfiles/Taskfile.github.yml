@@ -17,7 +17,7 @@ tasks:
         git tag ${TAG}
         git push origin -f ${TAG}
     vars:
-      TAG: '{{.CLI_ARGS | default "v0.0.1"}}'
+      TAG: '{{.CLI_ARGS | default "v0.0.0"}}'
 
   auto:
     cmds:
