@@ -165,7 +165,7 @@ tasks:
     vars:
       CONFIG: "{{.CONFIG_DIR}}/.jscpd.json"
     generates:
-      - ./build/cpd/**/*
+      - ./.build/cpd/**/*
 
   ws:
     desc: Check for trailing whitespaces in the project files

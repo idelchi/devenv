@@ -38,6 +38,7 @@ tasks:
       This task allows you to run commands inside the Docker container.
       Usage:
         - `task docker` to launch the container and enter its shell
+        - `task docker -- --service-ports` to service ports
         - `task docker -- task <task> -f` to run a task/command inside the container
     cmds:
       - docker rm -f devenv > /dev/null 2>&1 || true

@@ -33,6 +33,8 @@ jobs:
 
       - name: Download go-next-tag (curl)
         if: ${{ !inputs.artifact }}
+        env:
+          GO_NEXT_TAG_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           ARGS=""
           # If inputs.version is set, use it as `-v <version>` for the install script
