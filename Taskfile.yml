@@ -40,7 +40,6 @@ tasks:
         - `task docker` to launch the container and enter its shell
         - `task docker -- --service-ports` to service ports
         - `task docker -- task <task> -f` to run a task/command inside the container
-
     cmds:
       - docker rm -f devenv > /dev/null 2>&1 || true
       - docker compose -f {{.DEVENV}}/docker-compose.yml build --build-arg CACHEBUST=$(date +%s) devenv
