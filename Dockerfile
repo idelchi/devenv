@@ -19,7 +19,7 @@ COPY scripts/rustcc.sh .
 
 RUN ./rustcc.sh -a "${TARGETARCH}" typos-cli
 
-FROM --platform=$BUILDPLATFORM golang:1.23.2 AS go-builder
+FROM --platform=$BUILDPLATFORM golang:1.23.3 AS go-builder
 
 # Basic good practices
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -57,7 +57,7 @@ RUN echo \
 RUN mv /go/bin/linux_${TARGETARCH}/ /go/bin || true && \
     rm -rf "/go/bin/linux_${TARGETARCH}"
 
-FROM python:3.12 AS cryptography-builder
+FROM python:3.13 AS cryptography-builder
 
 LABEL maintainer=arash.idelchi
 
@@ -91,7 +91,7 @@ RUN \
 RUN pip install --no-cache-dir \
     cryptography --no-binary cryptography
 
-FROM python:3.12
+FROM python:3.13
 
 ARG TARGETARCH
 
@@ -191,7 +191,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     scspell3k
 
 # Install Task
-ARG TASK_VERSION=v3.39.2
+ARG TASK_VERSION=v3.40.0
 ARG TASK_ARCH=${TARGETARCH}
 RUN wget -qO- https://github.com/go-task/task/releases/download/${TASK_VERSION}/task_linux_${TASK_ARCH}.tar.gz | tar -xz -C /usr/local/bin
 
@@ -199,16 +199,13 @@ RUN wget -qO- https://github.com/go-task/task/releases/download/${TASK_VERSION}/
 # (mistakes brackets for ranges, split up for readability)
 # hadolint ignore=SC2102,DL3059
 RUN pip install --no-cache-dir \
-    prospector[with_everything] \
     pyright \
-    black \
-    isort \
     ruff \
     # Library stubs for typing
     types-pyyaml
 
 # Copy the cryptography package
-COPY --from=cryptography-builder /usr/local/lib/python3.12/site-packages/ /usr/local/lib/python3.12/site-packages/
+COPY --from=cryptography-builder /usr/local/lib/python3.13/site-packages/ /usr/local/lib/python3.13/site-packages/
 
 # Python tooling for packaging
 # (split up for readability)
@@ -229,7 +226,7 @@ RUN pip install --no-cache-dir \
     fastapi
 
 # Install Go
-ARG GO_VERSION=go1.23.2
+ARG GO_VERSION=go1.23.3
 ARG GO_ARCH=${TARGETARCH}
 ARG GO_ARCH=${GO_ARCH/arm/armv6l}
 ARG GO_ARCH=${GO_ARCH/armv6l64/arm64}
@@ -247,7 +244,7 @@ WORKDIR /home/${USER}
 RUN npm-groovy-lint --version
 
 # Install golangci-lint
-ARG GOLANGCI_LINT_VERSION=v1.61.0
+ARG GOLANGCI_LINT_VERSION=v1.62.0
 RUN wget -qO- https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b "$(go env GOPATH)/bin" ${GOLANGCI_LINT_VERSION}
 
 # Create a local bin directory
@@ -261,6 +258,11 @@ ARG JQ_ARCH=${JQ_ARCH/arm/armhf}
 ARG JQ_ARCH=${JQ_ARCH/armhf64/arm64}
 RUN wget -q https://github.com/jqlang/jq/releases/download/jq-${JQ_VERSION}/jq-linux-${JQ_ARCH} -O ~/.local/bin/jq && \
     chmod +x ~/.local/bin/jq
+
+# Install yq
+ARG YQ_VERSION=v4.44.5
+RUN wget -qO- https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64.tar.gz | tar -xz -C /tmp && \
+    mv /tmp/yq_linux_amd64 ~/.local/bin/jq
 
 # Copy the tools from the build stages
 COPY --from=rust-builder /usr/local/cargo/bin/typos /usr/local/bin/typos
