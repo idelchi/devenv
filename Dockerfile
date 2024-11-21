@@ -19,7 +19,7 @@ COPY scripts/rustcc.sh .
 
 RUN ./rustcc.sh -a "${TARGETARCH}" typos-cli
 
-FROM --platform=$BUILDPLATFORM golang:1.23.2 AS go-builder
+FROM --platform=$BUILDPLATFORM golang:1.23.3 AS go-builder
 
 # Basic good practices
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -199,10 +199,7 @@ RUN wget -qO- https://github.com/go-task/task/releases/download/${TASK_VERSION}/
 # (mistakes brackets for ranges, split up for readability)
 # hadolint ignore=SC2102,DL3059
 RUN pip install --no-cache-dir \
-    prospector[with_everything] \
     pyright \
-    black \
-    isort \
     ruff \
     # Library stubs for typing
     types-pyyaml
@@ -261,6 +258,11 @@ ARG JQ_ARCH=${JQ_ARCH/arm/armhf}
 ARG JQ_ARCH=${JQ_ARCH/armhf64/arm64}
 RUN wget -q https://github.com/jqlang/jq/releases/download/jq-${JQ_VERSION}/jq-linux-${JQ_ARCH} -O ~/.local/bin/jq && \
     chmod +x ~/.local/bin/jq
+
+# Install yq
+ARG YQ_VERSION=v4.44.5
+RUN wget -qO- https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64.tar.gz | tar -xz -C /tmp && \
+    mv /tmp/yq_linux_amd64 ~/.local/bin/jq
 
 # Copy the tools from the build stages
 COPY --from=rust-builder /usr/local/cargo/bin/typos /usr/local/bin/typos
