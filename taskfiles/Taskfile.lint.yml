@@ -130,7 +130,7 @@ tasks:
         fi
 
         if [ -n "$config" ]; then
-            cspell lint --no-must-find-files --show-suggestions --config="$config" --no-progress "**/*.go" "**/*.py" "**/*.sh"
+            cspell lint --no-must-find-files --show-suggestions --config="${config}" --no-progress "**/*.go" "**/*.py" "**/*.sh"
         fi
     vars:
       CONFIG: "{{.CONFIG_DIR}}/cspell.yaml"
