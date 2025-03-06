@@ -9,15 +9,15 @@
 #]=======================================================================]
 
 # Build stage for Rust tools
-FROM --platform=$BUILDPLATFORM rust:bookworm AS rust-builder
+# FROM --platform=$BUILDPLATFORM rust:bookworm AS rust-builder
 
-# Basic good practices
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+# # Basic good practices
+# SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-WORKDIR /tmp
-COPY scripts/rustcc.sh .
+# WORKDIR /tmp
+# COPY scripts/rustcc.sh .
 
-RUN ./rustcc.sh -a "${TARGETARCH}" typos-cli
+# RUN ./rustcc.sh -a "${TARGETARCH}" typos-cli
 
 FROM --platform=$BUILDPLATFORM golang:1.23.3 AS go-builder
 
@@ -54,8 +54,14 @@ RUN echo \
     # Pipe to 'go install'
     | xargs -n 1 go install
 
-RUN mv /go/bin/linux_${TARGETARCH}/ /go/bin || true && \
-    rm -rf "/go/bin/linux_${TARGETARCH}"
+RUN <<EOF
+# 1) If $(go env GOHOSTARCH) is equal to $(go env GOARCH), then the binaries will be placed in $(go env GOPATH)/bin
+# 2) Else they will wind up in $(go env GOPATH)/bin/$(go env GOOS)_$(go env GOARCH). As such, let's move them out to /go/bin
+if [ "$(go env GOHOSTARCH)" != "$(go env GOARCH)" ]; then
+    mv "$(go env GOPATH)/bin/$(go env GOOS)_$(go env GOARCH)"/* /go/bin/
+    rmdir "$(go env GOPATH)/bin/$(go env GOOS)_$(go env GOARCH)"
+fi
+EOF
 
 FROM python:3.13 AS cryptography-builder
 
@@ -93,6 +99,7 @@ RUN pip install --no-cache-dir \
 
 FROM python:3.13
 
+ARG TARGETOS
 ARG TARGETARCH
 
 LABEL maintainer=arash.idelchi
@@ -264,9 +271,15 @@ ARG YQ_VERSION=v4.44.5
 RUN wget -qO- https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64.tar.gz | tar -xz -C /tmp && \
     mv /tmp/yq_linux_amd64 ~/.local/bin/jq
 
+# Install typos-cli
+ARG TYPOS_VERSION=v1.30.1
+ARG TYPOS_ARCH=${TARGETARCH/amd64/x86_64}
+ARG TYPOS_ARCH=${TYPOS_ARCH/arm64/aarch64}
+RUN wget -qO- https://github.com/crate-ci/typos/releases/download/${TYPOS_VERSION}/typos-${TYPOS_VERSION}-${TYPOS_ARCH}-unknown-linux-musl.tar.gz | tar -xz -C /usr/local/bin
+
 # Copy the tools from the build stages
 COPY --from=rust-builder /usr/local/cargo/bin/typos /usr/local/bin/typos
-COPY --from=go-builder /go/bin/ /usr/local/bin/
+COPY --from=go-builder /go/bin/* /usr/local/bin/
 
 # Install wslint
 RUN curl -sSL https://raw.githubusercontent.com/idelchi/wslint/refs/heads/dev/install.sh | sh -s -- -d ~/.local/bin
