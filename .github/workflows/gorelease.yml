@@ -13,6 +13,12 @@ on:
         default: false
         required: false
         type: boolean
+      config:
+        description: "The path to the GoReleaser configuration file"
+        default: ".goreleaser.yml"
+        required: false
+        type: string
+
 jobs:
   release:
     runs-on: ubuntu-24.04
@@ -21,6 +27,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          submodules: recursive
           fetch-depth: 0
 
       - uses: actions/setup-go@v5
@@ -33,4 +40,4 @@ jobs:
         with:
           distribution: goreleaser
           version: "~> v2"
-          args: release --clean
+          args: release --clean --config ${{ inputs.config }}

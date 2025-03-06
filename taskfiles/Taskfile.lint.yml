@@ -122,14 +122,16 @@ tasks:
         else
           typos
         fi
-      - defer: mv {{.CONFIG}}.bak {{.CONFIG}} >/dev/null 2>&1
-        ignore_errors: true
       - |
-        # What did this do?
         if [ -f "{{.CSPELL_CONFIG}}" ]; then
-          sed -i.bak 's|import: \[\]|import: ["{{.CSPELL_CONFIG}}"]|' "{{.CONFIG}}"
+            config="{{.CSPELL_CONFIG}}"
+        elif [ -f "{{.CONFIG}}" ]; then
+            config="{{.CONFIG}}"
         fi
-        cspell lint --show-suggestions --config={{.CONFIG}} --no-progress "**/*.go" "**/*.py" "**/*.sh"
+
+        if [ -n "$config" ]; then
+            cspell lint --no-must-find-files --show-suggestions --config="${config}" --no-progress "**/*.go" "**/*.py" "**/*.sh"
+        fi
     vars:
       CONFIG: "{{.CONFIG_DIR}}/cspell.yaml"
       WORDLIST: "{{.CONFIG_DIR}}/project-words"
