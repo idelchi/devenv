@@ -8,7 +8,7 @@
 #   - and many, many, more...
 #]=======================================================================]
 
-FROM --platform=$BUILDPLATFORM golang:1.23.3 AS go-builder
+FROM --platform=$BUILDPLATFORM golang:1.24.1 AS go-builder
 
 # Basic good practices
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -187,7 +187,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     scspell3k
 
 # Install Task
-ARG TASK_VERSION=v3.40.0
+ARG TASK_VERSION=v3.41.0
 ARG TASK_ARCH=${TARGETARCH}
 RUN wget -qO- https://github.com/go-task/task/releases/download/${TASK_VERSION}/task_linux_${TASK_ARCH}.tar.gz | tar -xz -C /usr/local/bin
 
@@ -222,11 +222,7 @@ RUN pip install --no-cache-dir \
     fastapi
 
 # Install Go
-ARG GO_VERSION=go1.23.3
-ARG GO_ARCH=${TARGETARCH}
-ARG GO_ARCH=${GO_ARCH/arm/armv6l}
-ARG GO_ARCH=${GO_ARCH/armv6l64/arm64}
-RUN wget -qO- https://go.dev/dl/${GO_VERSION}.linux-${GO_ARCH}.tar.gz | tar -xz -C /usr/local
+COPY --from=golang:1.24.1 /usr/local/go /usr/local/go
 ENV PATH="/usr/local/go/bin:$PATH"
 
 ENV GOPATH=/opt/go
