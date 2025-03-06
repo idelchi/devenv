@@ -251,7 +251,7 @@ WORKDIR /home/${USER}
 RUN npm-groovy-lint --version
 
 # Install golangci-lint
-ARG GOLANGCI_LINT_VERSION=v1.62.0
+ARG GOLANGCI_LINT_VERSION=v1.64.6
 RUN wget -qO- https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b "$(go env GOPATH)/bin" ${GOLANGCI_LINT_VERSION}
 
 # Create a local bin directory
@@ -269,13 +269,13 @@ RUN wget -q https://github.com/jqlang/jq/releases/download/jq-${JQ_VERSION}/jq-l
 # Install yq
 ARG YQ_VERSION=v4.44.5
 RUN wget -qO- https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64.tar.gz | tar -xz -C /tmp && \
-    mv /tmp/yq_linux_amd64 ~/.local/bin/jq
+    mv /tmp/yq_linux_amd64 ~/.local/bin/yq
 
 # Install typos-cli
 ARG TYPOS_VERSION=v1.30.1
 ARG TYPOS_ARCH=${TARGETARCH/amd64/x86_64}
 ARG TYPOS_ARCH=${TYPOS_ARCH/arm64/aarch64}
-RUN wget -qO- https://github.com/crate-ci/typos/releases/download/${TYPOS_VERSION}/typos-${TYPOS_VERSION}-${TYPOS_ARCH}-unknown-linux-musl.tar.gz | tar -xz -C /usr/local/bin
+RUN wget -qO- https://github.com/crate-ci/typos/releases/download/${TYPOS_VERSION}/typos-${TYPOS_VERSION}-${TYPOS_ARCH}-unknown-linux-musl.tar.gz | tar -xz -C ~/.local/bin
 
 # Copy the tools from the build stages
 COPY --from=go-builder /go/bin/* /usr/local/bin/
