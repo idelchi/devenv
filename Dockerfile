@@ -19,7 +19,7 @@
 
 # RUN ./rustcc.sh -a "${TARGETARCH}" typos-cli
 
-FROM --platform=$BUILDPLATFORM golang:1.23.3 AS go-builder
+FROM --platform=$BUILDPLATFORM golang:1.24.1 AS go-builder
 
 # Basic good practices
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
