@@ -278,7 +278,6 @@ ARG TYPOS_ARCH=${TYPOS_ARCH/arm64/aarch64}
 RUN wget -qO- https://github.com/crate-ci/typos/releases/download/${TYPOS_VERSION}/typos-${TYPOS_VERSION}-${TYPOS_ARCH}-unknown-linux-musl.tar.gz | tar -xz -C /usr/local/bin
 
 # Copy the tools from the build stages
-COPY --from=rust-builder /usr/local/cargo/bin/typos /usr/local/bin/typos
 COPY --from=go-builder /go/bin/* /usr/local/bin/
 
 # Install wslint
