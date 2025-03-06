@@ -233,7 +233,7 @@ RUN pip install --no-cache-dir \
     fastapi
 
 # Install Go
-ARG GO_VERSION=go1.23.3
+ARG GO_VERSION=go1.24.1
 ARG GO_ARCH=${TARGETARCH}
 ARG GO_ARCH=${GO_ARCH/arm/armv6l}
 ARG GO_ARCH=${GO_ARCH/armv6l64/arm64}
