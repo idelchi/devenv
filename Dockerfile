@@ -8,7 +8,8 @@
 #   - and many, many, more...
 #]=======================================================================]
 
-FROM --platform=$BUILDPLATFORM golang:1.24.1 AS go-builder
+ARG GO_VERSION=1.24.1
+FROM --platform=$BUILDPLATFORM golang:${GO_VERSION} AS go-builder
 
 # Basic good practices
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
