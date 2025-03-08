@@ -15,7 +15,7 @@ on:
         type: boolean
       config:
         description: "The path to the GoReleaser configuration file"
-        default: ".goreleaser.yml"
+        default: .goreleaser.yaml
         required: false
         type: string
 
