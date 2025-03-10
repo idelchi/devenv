@@ -5,9 +5,7 @@ linters:
   enable-all: true
   disable:
     # deprecated
-    - execinquery
-    - exportloopref
-    - gomnd
+    - tenv
     # # overly strict
     - exhaustruct
     # # Use named returns when it makes sense

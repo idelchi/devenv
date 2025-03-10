@@ -167,7 +167,6 @@ tasks:
     desc: test go project with code coverage enabled
     deps:
       - init
-      - cover-prereq
     cmds:
       - task: test
         vars:
@@ -228,6 +227,7 @@ tasks:
       COVER_REPORT: "{{.BUILD_DIR}}/{{.COVER_REPORT}}"
 
   cover-prereq:
+    # TODO(Idelchi): Either deprecate or properly set up this task. It should orientate around package names and not folder names.
     cmd: |
       for package in {{.PACKAGES}}; do
         prefix={{.PROJECT}}
