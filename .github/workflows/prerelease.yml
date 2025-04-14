@@ -7,6 +7,11 @@ on:
         description: "The tag to create"
         required: true
         type: string
+      workflow:
+        description: "The workflow to trigger"
+        default: ${{ github.workflow }}
+        required: true
+        type: string
 
 jobs:
   tag-prerelease:
@@ -44,4 +49,4 @@ jobs:
 
       - name: Trigger Workflow
         run: |
-          gh workflow run ${{ github.workflow }} --ref ${{ inputs.tag }}
+          gh workflow run ${{ inputs.workflow }} --ref ${{ inputs.tag }}
