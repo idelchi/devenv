@@ -66,10 +66,6 @@ linters-settings:
   gofumpt:
     extra-rules: true
 
-  mnd:
-    ignored-functions:
-      - time.Duration
-
   ireturn:
     allow:
       - anon
@@ -138,6 +134,7 @@ linters-settings:
       - os.Mkdir.*
       - os.OpenFile
       - os.WriteFile
+      - time.Duration
 
   nakedret:
     # Make an issue if func has more lines of code than this setting, and it has naked returns.
@@ -147,7 +144,7 @@ linters-settings:
   nolintlint:
     # Exclude following linters from requiring an explanation.
     # Default: []
-    allow-no-explanation: [ funlen, gocognit, lll ]
+    allow-no-explanation: [funlen, gocognit, lll]
     # Enable to require an explanation of nonzero length after each nolint directive.
     # Default: false
     require-explanation: true

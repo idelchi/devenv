@@ -45,10 +45,8 @@
     "python.languageServer": "Pylance",
     "python.analysis.autoImportCompletions": true,
     "autoDocstring.docstringFormat": "google",
-    "black-formatter.args": ["--config", "settings/pyproject.toml"],
-    "isort.args": ["--settings-file", "settings/pyproject.toml"],
     "[python]": {
-        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.defaultFormatter": "charliermarsh.ruff",
         "editor.formatOnSave": true,
         "editor.codeActionsOnSave": {
             "source.organizeImports": "explicit",
@@ -58,10 +56,7 @@
     "pylint.args": ["--rcfile=settings/pyproject.toml"],
     "mypy-type-checker.args": ["--config=settings/pyproject.toml"],
     "ruff.configuration": "settings/pyproject.toml",
-    "ruff.lint.args": ["--config=settings/pyproject.toml"],
-    "ruff.lint.run": "onSave",
     "ruff.nativeServer": true,
-    "ruff.organizeImports": false,
     /* ****** ****** ****** */
     /* ****** GO ****** */
     "go.lintOnSave": "workspace",
@@ -98,7 +93,7 @@
         "DEVENV": ".",
         "PYTHONPATH": "${workspaceFolder}"
     },
-    "terminal.integrated.enableMultiLinePasteWarning": false,
+    "terminal.integrated.enableMultiLinePasteWarning": "always",
     /* ****** ****** ****** */
     /* ****** SYSTEM ****** */
     "files.eol": "\n",
