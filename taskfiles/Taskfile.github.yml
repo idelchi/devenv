@@ -28,13 +28,6 @@ tasks:
   delete:
     cmds:
       - cmd: |
-          gh run list --limit 500 \
-            --status completed \
-            --json databaseId \
-            -q ".[].databaseId" \
-            | xargs -n 1 gh run delete
-        ignore_error: true
-      - cmd: |
           gh release list --json tagName,isPrerelease \
             -q '.[] | select(.isPrerelease == true) | .tagName' \
             | xargs -I {} gh release delete {} --yes --cleanup-tag
@@ -43,4 +36,11 @@ tasks:
           git tag -d $(git tag -l)
           git fetch --tags
           git tag -l '*-beta' | xargs -r git push --delete origin
+        ignore_error: true
+      - cmd: |
+          gh run list --limit 500 \
+            --status completed \
+            --json databaseId \
+            -q ".[].databaseId" \
+            | xargs -n 1 gh run delete
         ignore_error: true
