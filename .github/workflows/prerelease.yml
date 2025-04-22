@@ -5,12 +5,11 @@ on:
     inputs:
       tag:
         description: "The tag to create"
-        required: true
+        default: ${{ github.ref_name }}
         type: string
       workflow:
         description: "The workflow to trigger"
         default: ${{ github.workflow }}
-        required: true
         type: string
 
 jobs:
