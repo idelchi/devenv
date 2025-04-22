@@ -30,7 +30,7 @@ jobs:
     secrets: inherit
 
   release:
-    uses: ./.github/workflows/docker.yml
+    uses: ./.github/workflows/docker-merge.yml
     if: github.ref == 'refs/heads/main'
     needs: verify
     permissions:

@@ -13,6 +13,11 @@ on:
         default: ""
         required: false
         type: string
+      bump:
+        description: "The type of bump to use"
+        default: "patch"
+        required: false
+        type: string
 
     outputs:
       last:
@@ -61,7 +66,7 @@ jobs:
 
           chmod +x ~/.local/bin/go-next-tag
 
-          NEXT_TAG=$(go-next-tag ${LAST_TAG})
+          NEXT_TAG=$(go-next-tag ${LAST_TAG} --bump ${{ inputs.bump }})
           echo "next=${NEXT_TAG}" >> ${GITHUB_OUTPUT}
 
       - name: Display Tags
