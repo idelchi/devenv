@@ -124,6 +124,7 @@ tasks:
           --output.code-climate.path={{.LINT_REPORT}} \
           --output.junit-xml.path={{.LINT_REPORT}}.xml \
           --output.checkstyle.path={{.LINT_REPORT}}.checkstyle \
+          --output.text.path=stdout \
           --output.text.colors=true \
           {{.CLI_ARGS}}
 
