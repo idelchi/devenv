@@ -8,7 +8,7 @@
 #   - and many, many, more...
 #]=======================================================================]
 
-ARG GO_VERSION=1.24.1
+ARG GO_VERSION=1.24.3
 FROM --platform=$BUILDPLATFORM golang:${GO_VERSION} AS go-builder
 
 # Basic good practices
@@ -188,7 +188,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     scspell3k
 
 # Install Task
-ARG TASK_VERSION=v3.41.0
+ARG TASK_VERSION=v3.43.3
 ARG TASK_ARCH=${TARGETARCH}
 RUN wget -qO- https://github.com/go-task/task/releases/download/${TASK_VERSION}/task_linux_${TASK_ARCH}.tar.gz | tar -xz -C /usr/local/bin
 
@@ -223,7 +223,7 @@ RUN pip install --no-cache-dir \
     fastapi
 
 # Install Go
-COPY --from=golang:1.24.1 /usr/local/go /usr/local/go
+COPY --from=golang:1.24.3 /usr/local/go /usr/local/go
 ENV PATH="/usr/local/go/bin:$PATH"
 
 ENV GOPATH=/opt/go
@@ -237,7 +237,7 @@ WORKDIR /home/${USER}
 RUN npm-groovy-lint --version
 
 # Install golangci-lint
-ARG GOLANGCI_LINT_VERSION=v1.64.6
+ARG GOLANGCI_LINT_VERSION=v2.1.6
 RUN wget -qO- https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b "$(go env GOPATH)/bin" ${GOLANGCI_LINT_VERSION}
 
 # Create a local bin directory
@@ -253,12 +253,12 @@ RUN wget -q https://github.com/jqlang/jq/releases/download/jq-${JQ_VERSION}/jq-l
     chmod +x ~/.local/bin/jq
 
 # Install yq
-ARG YQ_VERSION=v4.44.5
+ARG YQ_VERSION=v4.45.3
 RUN wget -qO- https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64.tar.gz | tar -xz -C /tmp && \
     mv /tmp/yq_linux_amd64 ~/.local/bin/yq
 
 # Install typos-cli
-ARG TYPOS_VERSION=v1.30.1
+ARG TYPOS_VERSION=v1.32.0
 ARG TYPOS_ARCH=${TARGETARCH/amd64/x86_64}
 ARG TYPOS_ARCH=${TYPOS_ARCH/arm64/aarch64}
 RUN wget -qO- https://github.com/crate-ci/typos/releases/download/${TYPOS_VERSION}/typos-${TYPOS_VERSION}-${TYPOS_ARCH}-unknown-linux-musl.tar.gz | tar -xz -C ~/.local/bin
@@ -267,7 +267,7 @@ RUN wget -qO- https://github.com/crate-ci/typos/releases/download/${TYPOS_VERSIO
 COPY --from=go-builder /go/bin/* /usr/local/bin/
 
 # Install wslint
-RUN curl -sSL https://raw.githubusercontent.com/idelchi/wslint/refs/heads/main/install.sh | sh -s -- -d ~/.local/bin
+RUN curl -sSL https://raw.githubusercontent.com/idelchi/wslint/refs/heads/dev/install.sh | sh -s -- -d ~/.local/bin
 
 # Reroute cache to /tmp
 ENV NPM_CONFIG_CACHE=/tmp/.npm
