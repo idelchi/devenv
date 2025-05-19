@@ -118,13 +118,16 @@ tasks:
           exit 1
         fi
       - >
-        golangci-lint run
-        --config={{.CONFIG_GOLANGCI_LINT}}
-        --disable=godox
-        --sort-results
-        --out-format
-        code-climate:{{.LINT_REPORT}},junit-xml:{{.LINT_REPORT}}.xml,checkstyle:{{.LINT_REPORT}}.checkstyle,colored-line-number
-        {{.CLI_ARGS}}
+        golangci-lint run \
+          --config={{.CONFIG_GOLANGCI_LINT}} \
+          --disable=godox \
+          --output.code-climate.path={{.LINT_REPORT}} \
+          --output.junit-xml.path={{.LINT_REPORT}}.xml \
+          --output.checkstyle.path={{.LINT_REPORT}}.checkstyle \
+          --output.text.path=stdout \
+          --output.text.colors=true \
+          {{.CLI_ARGS}}
+
     vars:
       CONFIG_GOLANGCI_LINT: "{{.CONFIG_DIR}}/.golangci.yml"
       LINT_REPORT: "{{.BUILD_DIR}}/{{.LINT_REPORT}}"
