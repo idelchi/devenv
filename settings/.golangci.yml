@@ -36,6 +36,8 @@ linters:
 
     govet:
       enable-all: true
+      disable:
+        - fieldalignment
 
     inamedparam:
       skip-single-param: true
@@ -116,6 +118,7 @@ formatters:
     - gofmt
     - gofumpt
     - goimports
+    - golines
 
   settings:
     gci:
@@ -131,8 +134,20 @@ formatters:
         - default
       custom-order: true
 
+    gofmt:
+      rewrite-rules:
+        - pattern: "interface{}"
+          replacement: "any"
+        - pattern: "a[b:len(a)]"
+          replacement: "a[b:]"
+
     gofumpt:
       extra-rules: true
+
+    golines:
+      max-len: 120
+      shorten-comments: true
+      reformat-tags: true
 
   exclusions:
     generated: lax
