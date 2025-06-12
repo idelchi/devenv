@@ -8,7 +8,7 @@
 #   - and many, many, more...
 #]=======================================================================]
 
-ARG GO_VERSION=1.24.3
+ARG GO_VERSION=1.24.4
 FROM --platform=$BUILDPLATFORM golang:${GO_VERSION} AS go-builder
 
 # Basic good practices
@@ -223,7 +223,7 @@ RUN pip install --no-cache-dir \
     fastapi
 
 # Install Go
-COPY --from=golang:1.24.3 /usr/local/go /usr/local/go
+COPY --from=golang:1.24.4 /usr/local/go /usr/local/go
 ENV PATH="/usr/local/go/bin:$PATH"
 
 ENV GOPATH=/opt/go

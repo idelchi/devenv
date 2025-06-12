@@ -27,7 +27,11 @@
     "shellcheck.enable": true,
     "shellcheck.run": "onSave",
     "shellcheck.useWorkspaceRootAsCwd": true,
-    "shellcheck.customArgs": ["-x", "--enable=all", "--severity=style"],
+    "shellcheck.customArgs": [
+        "-x",
+        "--enable=all",
+        "--severity=style"
+    ],
     "[shellscript]": {
         "editor.insertSpaces": true,
         "editor.tabSize": 2,
@@ -53,8 +57,12 @@
             "source.fixAll": "explicit"
         }
     },
-    "pylint.args": ["--rcfile=settings/pyproject.toml"],
-    "mypy-type-checker.args": ["--config=settings/pyproject.toml"],
+    "pylint.args": [
+        "--rcfile=settings/pyproject.toml"
+    ],
+    "mypy-type-checker.args": [
+        "--config=settings/pyproject.toml"
+    ],
     "ruff.configuration": "settings/pyproject.toml",
     "ruff.nativeServer": true,
     /* ****** ****** ****** */
@@ -69,7 +77,10 @@
     "go.alternateTools": {
         "customFormatter": "golangci-lint"
     },
-    "go.formatFlags": ["fmt", "--stdin"],
+    "go.formatFlags": [
+        "fmt",
+        "--stdin"
+    ],
     "go.useLanguageServer": true,
     "gopls": {
         "formatting.gofumpt": true,

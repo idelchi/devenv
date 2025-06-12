@@ -65,20 +65,10 @@ tasks:
   format:
     desc: format go project
     cmds:
-      # TODO(Idelchi): This should be integrated in `golangci-lint`
-      # - gofmt -l -s -e -w .
       - >
-        golines -w
-        -m 120
-        --shorten-comments
-        --reformat-tags
-        --ignored-dirs=.git
-        --ignored-dirs=vendor
-        --ignored-dirs=.cache
-        --ignored-dirs=.go-path
-        --ignored-dirs=.go-cache
-        --ignored-dirs=.golangci-lint-cache
-        .
+        golangci-lint fmt
+        --config={{.CONFIG_GOLANGCI_LINT}}
+
       - >
         golangci-lint run
         --config={{.CONFIG_GOLANGCI_LINT}}
@@ -91,32 +81,11 @@ tasks:
     sources:
       - ./**/*.go
       - "{{.CONFIG_DIR}}/.golangci.yml"
-    preconditions:
-      - sh: test $(which golines)
-        msg: "golines is missing"
 
   lint:
     desc: lint go project
     deps: [init]
     cmds:
-      - >
-        lines=$(golines
-        -m 120
-        --shorten-comments
-        --reformat-tags
-        --dry-run
-        --ignored-dirs=.git
-        --ignored-dirs=vendor
-        --ignored-dirs=.cache
-        --ignored-dirs=.go-path
-        --ignored-dirs=.go-cache
-        --ignored-dirs=.golangci-lint-cache
-        .)
-
-        if [[ -n $lines ]]; then
-          echo "go files have not been formatted with golines"
-          exit 1
-        fi
       - >
         golangci-lint run \
           --config={{.CONFIG_GOLANGCI_LINT}} \

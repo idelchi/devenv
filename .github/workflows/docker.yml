@@ -4,12 +4,12 @@ on:
   workflow_call:
     inputs:
       image:
-        description: 'Docker Image to build'
+        description: "Docker Image to build"
         default: ${{ github.repository }}
         required: false
         type: string
       tags:
-        description: 'Docker tags to build'
+        description: "Docker tags to build"
         default: |
           # Tag releases like "v1.2.3" as "1.2.3" and "1.2"
           type=semver,pattern={{version}}
@@ -20,32 +20,32 @@ on:
         required: false
         type: string
       args:
-        description: 'Docker build args'
+        description: "Docker build args"
         required: false
         type: string
       platforms:
-        description: 'Platforms to build (comma separated)'
+        description: "Platforms to build (comma separated)"
         default: linux/amd64,linux/arm64,linux/arm/v7
         required: false
         type: string
       project:
-        description: 'Project name'
+        description: "Project name"
         default: ${{ github.event.repository.name }}
         required: false
         type: string
       cache:
-        description: 'Cache location for the Docker image'
+        description: "Cache location for the Docker image"
         default: ${{ github.repository_owner }}/cache
         required: false
         type: string
       username:
-        description: 'Docker Hub Username'
+        description: "Docker Hub Username"
         default: ${{ github.repository_owner }}
         required: false
         type: string
     secrets:
       DOCKERHUB_TOKEN:
-        description: 'Docker Hub Token'
+        description: "Docker Hub Token"
         required: true
 
 jobs:
