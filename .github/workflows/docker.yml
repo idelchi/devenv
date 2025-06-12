@@ -8,6 +8,17 @@ on:
         default: ${{ github.repository }}
         required: false
         type: string
+      tags:
+        description: 'Docker tags to build'
+        default: |
+          # Tag releases like "v1.2.3" as "1.2.3" and "1.2"
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+
+          # Tag the default branch as "latest"
+          type=raw,value=latest,enable={{is_default_branch}}
+        required: false
+        type: string
       args:
         description: 'Docker build args'
         required: false
@@ -47,16 +58,7 @@ jobs:
           images: ${{ inputs.image }}
           flavor: |
             latest=false
-          tags: |
-            # Tag releases like "v1.2.3" as "1.2.3" and "1.2"
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-
-            # Tag all branches with their name
-            type=ref,event=branch
-
-            # Tag the default branch as "latest"
-            type=raw,value=latest,enable={{is_default_branch}}
+          tags: ${{ inputs.tags }}
 
       - name: info
         run: |
