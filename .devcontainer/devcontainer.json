@@ -13,7 +13,8 @@
             "moby": "true"
         },
         // Task
-        "ghcr.io/eitsupi/devcontainer-features/go-task:1": {},
+        "ghcr.io/eitsupi/devcontainer-features/go-task:1": {
+        },
         // Go
         "ghcr.io/devcontainers/features/go:1": {
             "version": "1.20"

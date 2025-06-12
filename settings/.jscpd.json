@@ -1,5 +1,10 @@
 {
-    "reporters": ["console", "html", "markdown", "json"],
+    "reporters": [
+        "console",
+        "html",
+        "markdown",
+        "json"
+    ],
     "output": ".build/cpd/",
     "format": "python, go, bash",
     "mode": "mild",
