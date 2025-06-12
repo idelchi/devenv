@@ -4,52 +4,69 @@ on:
   workflow_call:
     inputs:
       image:
-        description: "Docker Image to build"
+        description: 'Docker Image to build'
         default: ${{ github.repository }}
         required: false
         type: string
-      tag:
-        description: "Docker Image tag"
-        default: ${{ github.ref_name }}
-        required: false
-        type: string
       args:
-        description: "Docker build args"
+        description: 'Docker build args'
         required: false
         type: string
       platforms:
-        description: "Platforms to build (comma separated)"
+        description: 'Platforms to build (comma separated)'
         default: linux/amd64,linux/arm64,linux/arm/v7
         required: false
         type: string
       project:
-        description: "Project name"
+        description: 'Project name'
         default: ${{ github.event.repository.name }}
         required: false
         type: string
       cache:
-        description: "Cache location for the Docker image"
+        description: 'Cache location for the Docker image'
         default: ${{ github.repository_owner }}/cache
         required: false
         type: string
       username:
-        description: "Docker Hub Username"
+        description: 'Docker Hub Username'
         default: ${{ github.repository_owner }}
         required: false
         type: string
     secrets:
       DOCKERHUB_TOKEN:
-        description: "Docker Hub Token"
+        description: 'Docker Hub Token'
         required: true
 
 jobs:
   build:
     runs-on: ubuntu-24.04
     steps:
+      - uses: docker/metadata-action@v5
+        id: meta
+        with:
+          images: ${{ inputs.image }}
+          flavor: |
+            latest=false
+          tags: |
+            # Tag releases like "v1.2.3" as "1.2.3" and "1.2"
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+
+            # Tag all branches with their name
+            type=ref,event=branch
+
+            # Tag the default branch as "latest"
+            type=raw,value=latest,enable={{is_default_branch}}
+
       - name: info
         run: |
-          echo "Building Docker image '${{ inputs.image }}:${{ inputs.tag }}'"
-          echo "Using args: ${{ inputs.args }}"
+          echo "Building image '${{ inputs.image }}'"
+          echo "tags:"
+          echo "${{ steps.meta.outputs.tags }}" | while read -r tag; do
+            echo "  - ${tag#${{ inputs.image }}:}"
+          done
+          echo "args:"
+          echo "  - ${{ inputs.args }}"
 
       - uses: docker/setup-qemu-action@v3
         with:
@@ -68,6 +85,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           push: true
-          tags: ${{ inputs.image }}:${{ inputs.tag }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
           target: final
           build-args: ${{ inputs.args }}
