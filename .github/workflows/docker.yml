@@ -8,11 +8,6 @@ on:
         default: ${{ github.repository }}
         required: false
         type: string
-      tag:
-        description: "Docker Image tag"
-        default: ${{ github.ref_name }}
-        required: false
-        type: string
       args:
         description: "Docker build args"
         required: false
@@ -46,10 +41,32 @@ jobs:
   build:
     runs-on: ubuntu-24.04
     steps:
+      - uses: docker/metadata-action@v5
+        id: meta
+        with:
+          images: ${{ inputs.image }}
+          flavor: |
+            latest=false
+          tags: |
+            # Tag releases like "v1.2.3" as "1.2.3" and "1.2"
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+
+            # Tag all branches with their name
+            type=ref,event=branch
+
+            # Tag the default branch as "latest"
+            type=raw,value=latest,enable={{is_default_branch}}
+
       - name: info
         run: |
-          echo "Building Docker image '${{ inputs.image }}:${{ inputs.tag }}'"
-          echo "Using args: ${{ inputs.args }}"
+          echo "Building image '${{ inputs.image }}'"
+          echo "tags:"
+          echo "${{ steps.meta.outputs.tags }}" | while read -r tag; do
+            echo "  - ${tag#${{ inputs.image }}:}"
+          done
+          echo "args:"
+          echo "  - ${{ inputs.args }}"
 
       - uses: docker/setup-qemu-action@v3
         with:
@@ -68,6 +85,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           push: true
-          tags: ${{ inputs.image }}:${{ inputs.tag }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
           target: final
           build-args: ${{ inputs.args }}
