@@ -8,34 +8,55 @@
 #   - and many, many, more...
 #]=======================================================================]
 
-# TODO(Idelchi): Use godyl to download the latest version of each tool
-
-FROM idelchi/godyl:dev AS downloader
-
-USER root
+ARG GO_VERSION=1.24.4
+FROM --platform=$BUILDPLATFORM golang:${GO_VERSION} AS go-builder
 
 # Basic good practices
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-COPY --from=golang:1.24.4 /usr/local/go /usr/local/go
+ARG TARGETOS
+ARG TARGETARCH
+ENV GOOS=${TARGETOS}
+ENV GOARCH=${TARGETARCH}
+ENV CGO_ENABLED=0
 
-ENV PATH="/usr/local/go/bin:$PATH"
+# Go based tooling
+RUN echo \
+    # Commands to install
+    # Go tools
+    github.com/amit-davidson/Chronos/cmd/chronos@latest \
+    github.com/loov/goda@latest \
+    github.com/rillig/gobco@latest \
+    github.com/segmentio/golines@latest \
+    github.com/t-yuki/gocover-cobertura@latest \
+    golang.org/x/tools/cmd/godoc@latest \
+    golang.org/x/tools/cmd/guru@latest \
+    gotest.tools/gotestsum@latest \
+    honnef.co/go/implements@latest \
+    mvdan.cc/gofumpt@latest \
+    rsc.io/uncover@latest \
+    # Spelling
+    github.com/client9/misspell/cmd/misspell@latest \
+    # Shell
+    mvdan.cc/sh/v3/cmd/shfmt@latest \
+    # YAML
+    github.com/google/yamlfmt/cmd/yamlfmt@latest \
+    # Pipe to 'go install'
+    | xargs -n 1 go install
 
-COPY tools /tmp/tools
-
-ENV GODYL_INSTALL_OUTPUT=/tmp/binaries
-
-ARG CACHEBUST=1
-ARG GODYL_VERSION=v0.0.18-beta
-
-RUN --mount=type=secret,id=github-token,env=GITHUB_TOKEN \
-    --mount=type=secret,id=secrets.env \
-    [ -f /run/secrets/secrets.env ] && source /run/secrets/secrets.env || true && \
-    godyl update --version=${GODYL_VERSION} && \
-    godyl -v i /tmp/tools/go.yml --source=go  && \
-    godyl -v i /tmp/tools/tools.yml
+RUN <<EOF
+# 1) If $(go env GOHOSTARCH) is equal to $(go env GOARCH), then the binaries will be placed in $(go env GOPATH)/bin
+# 2) Else they will wind up in $(go env GOPATH)/bin/$(go env GOOS)_$(go env GOARCH). As such, let's move them out to /go/bin
+if [ "$(go env GOHOSTARCH)" != "$(go env GOARCH)" ]; then
+    mv "$(go env GOPATH)/bin/$(go env GOOS)_$(go env GOARCH)"/* /go/bin/
+    rmdir "$(go env GOPATH)/bin/$(go env GOOS)_$(go env GOARCH)"
+fi
+EOF
 
 FROM python:3.13
+
+ARG TARGETOS
+ARG TARGETARCH
 
 LABEL maintainer=arash.idelchi
 
@@ -99,6 +120,8 @@ RUN npm install -g \
 RUN apt-get update && apt-get install -y --no-install-recommends \
     # yaml
     yamllint \
+    # shell/bash
+    shellcheck \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Update pip & allow breaking packages
@@ -123,6 +146,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # hadolint ignore=SC2102,DL3059
 RUN pip install --no-cache-dir \
     pyright \
+    ruff \
     # Library stubs for typing
     types-pyyaml
 
@@ -162,6 +186,47 @@ RUN npm-groovy-lint --version
 RUN mkdir -p ~/.local/bin
 ENV PATH="/home/${USER}/.local/bin:$PATH"
 
+# Tool versions
+ARG JQ_VERSION=1.8.0
+ARG YQ_VERSION=v4.45.4
+ARG TYPOS_VERSION=v1.33.1
+ARG GOLANGCI_LINT_VERSION=v2.1.6
+ARG TASK_VERSION=v3.44.0
+ARG HADOLINT_VERSION=v2.12.0
+ARG WSLINT_VERSION=v0.0.0
+
+# Install jq
+ARG JQ_ARCH=${TARGETARCH}
+ARG JQ_ARCH=${JQ_ARCH/arm/armhf}
+ARG JQ_ARCH=${JQ_ARCH/armhf64/arm64}
+RUN wget -q https://github.com/jqlang/jq/releases/download/jq-${JQ_VERSION}/jq-linux-${JQ_ARCH} -O ~/.local/bin/jq && \
+    chmod +x ~/.local/bin/jq
+
+# Install yq
+RUN wget -qO- https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64.tar.gz | tar -xz -C /tmp && \
+    mv /tmp/yq_linux_amd64 ~/.local/bin/yq
+
+# Install typos-cli
+ARG TYPOS_ARCH=${TARGETARCH/amd64/x86_64}
+ARG TYPOS_ARCH=${TYPOS_ARCH/arm64/aarch64}
+RUN wget -qO- https://github.com/crate-ci/typos/releases/download/${TYPOS_VERSION}/typos-${TYPOS_VERSION}-${TYPOS_ARCH}-unknown-linux-musl.tar.gz | tar -xz -C ~/.local/bin
+
+# Install golangci-lint
+RUN wget -qO- https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b "$(go env GOPATH)/bin" ${GOLANGCI_LINT_VERSION}
+
+# Install Task
+ARG TASK_ARCH=${TARGETARCH}
+RUN wget -qO- https://github.com/go-task/task/releases/download/${TASK_VERSION}/task_linux_${TASK_ARCH}.tar.gz | tar -xz -C ~/.local/bin
+
+# Install hadolint
+ARG HADOLINT_ARCH=${TARGETARCH/amd64/x86_64}
+ARG HADOLINT_ARCH=${HADOLINT_ARCH/arm/arm64}
+ARG HADOLINT_ARCH=${HADOLINT_ARCH/arm6464/arm64}
+RUN wget -q https://github.com/hadolint/hadolint/releases/download/${HADOLINT_VERSION}/hadolint-Linux-${HADOLINT_ARCH} -O ~/.local/bin/hadolint && \
+    chmod +x ~/.local/bin/hadolint
+
+# Install wslint
+RUN curl -sSL https://raw.githubusercontent.com/idelchi/wslint/refs/heads/dev/install.sh | sh -s -- -d ~/.local/bin -v ${WSLINT_VERSION}
 
 # Reroute cache to /tmp
 ENV NPM_CONFIG_CACHE=/tmp/.npm
@@ -179,7 +244,7 @@ COPY --chown=${USER}:${USER} . ${DEVENV}
 RUN sed -i 's#^DEVENV=.*#DEVENV='"${DEVENV}"'#' ${DEVENV}/.env
 
 # Copy the tools from the build stages
-COPY --from=downloader /tmp/binaries  /usr/local/bin/
+COPY --from=go-builder /go/bin/* /usr/local/bin/
 
 # Clear the base image entrypoint
 ENTRYPOINT []
