@@ -30,43 +30,7 @@ services:
       platforms:
         - linux/amd64
         - linux/arm64
-        - linux/arm/v7
-
-  cross:
-    extends: devenv
-    user: root
-    build:
-      dockerfile: Dockerfile
-    platform: linux/arm/v7
 
   arm64:
     extends: devenv
     platform: linux/arm64/v8
-
-  tools:
-    build:
-      dockerfile: Dockerfile.tools
-      platforms:
-        - linux/amd64
-    pull_policy: if_not_present
-    image: idelchi/devenv:tools
-    container_name: tools
-    hostname: tools
-    ports:
-      # <host:container>
-      - "8888:8888" # GoDoc
-      - "10000-10200:10000-10200" # Go Profilers
-      - "9090:6419" # grip
-    environment:
-      - DEVENV
-      - KUBECONFIG=/home/user/.kube/config
-    network_mode: bridge
-    user: user
-    volumes:
-      - ${PWD}:/home/user/ws
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ${HOME}/.kube/config:/home/user/.kube/config
-      # - ${DEVENV}:${DEVENV} # Possible to mount it inside
-    extra_hosts:
-      - host.docker.internal:host-gateway
-    working_dir: /home/user/ws
