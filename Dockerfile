@@ -25,8 +25,8 @@ COPY tools /tmp/tools
 
 ENV GODYL_INSTALL_OUTPUT=/tmp/binaries
 
-RUN --mount=type=secret,id=secrets.env \
-    # --mount=type=secret,id=github-token,env=GITHUB_TOKEN \
+RUN --mount=type=secret,id=github-token,env=GITHUB_TOKEN \
+    # --mount=type=secret,id=secrets.env \
     # [ -f /run/secrets/secrets.env ] && . /run/secrets/secrets.env && \
     godyl update --pre --force && \
     godyl -v i /tmp/tools/go.yml --source=go  && \
