@@ -43,10 +43,6 @@ services:
     extends: devenv
     platform: linux/arm64/v8
 
-  armv7:
-    extends: devenv
-    platform: linux/arm/v7
-
   tools:
     build:
       dockerfile: Dockerfile.tools
