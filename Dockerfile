@@ -17,6 +17,9 @@ ARG TARGETARCH
 
 USER root
 
+# Basic good practices
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
 COPY --from=golang:1.24.4 /usr/local/go /usr/local/go
 
 ENV PATH="/usr/local/go/bin:$PATH"
@@ -26,11 +29,12 @@ COPY tools /tmp/tools
 ENV GODYL_INSTALL_OUTPUT=/tmp/binaries
 
 RUN --mount=type=secret,id=github-token,env=GITHUB_TOKEN \
-    # --mount=type=secret,id=secrets.env \
-    # [ -f /run/secrets/secrets.env ] && . /run/secrets/secrets.env && \
+    --mount=type=secret,id=secrets.env \
+    [ -f /run/secrets/secrets.env ] && source /run/secrets/secrets.env || true && \
     godyl update --pre --force && \
-    godyl -v i /tmp/tools/go.yml --source=go  && \
-    godyl -v i /tmp/tools/tools.yml
+    godyl -v i /tmp/tools/go.yml --source=go --dry  && \
+    godyl -v i /tmp/tools/tools.yml --dry && \
+    echo "yaay"
 
 # FROM python:3.13
 
