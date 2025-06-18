@@ -245,7 +245,7 @@ RUN mkdir -p ~/.local/bin
 ENV PATH="/home/${USER}/.local/bin:$PATH"
 
 # Install jq
-ARG JQ_VERSION=1.7.1
+ARG JQ_VERSION=1.8.0
 ARG JQ_ARCH=${TARGETARCH}
 ARG JQ_ARCH=${JQ_ARCH/arm/armhf}
 ARG JQ_ARCH=${JQ_ARCH/armhf64/arm64}
@@ -253,12 +253,12 @@ RUN wget -q https://github.com/jqlang/jq/releases/download/jq-${JQ_VERSION}/jq-l
     chmod +x ~/.local/bin/jq
 
 # Install yq
-ARG YQ_VERSION=v4.45.3
+ARG YQ_VERSION=v4.45.4
 RUN wget -qO- https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64.tar.gz | tar -xz -C /tmp && \
     mv /tmp/yq_linux_amd64 ~/.local/bin/yq
 
 # Install typos-cli
-ARG TYPOS_VERSION=v1.32.0
+ARG TYPOS_VERSION=v1.33.1
 ARG TYPOS_ARCH=${TARGETARCH/amd64/x86_64}
 ARG TYPOS_ARCH=${TYPOS_ARCH/arm64/aarch64}
 RUN wget -qO- https://github.com/crate-ci/typos/releases/download/${TYPOS_VERSION}/typos-${TYPOS_VERSION}-${TYPOS_ARCH}-unknown-linux-musl.tar.gz | tar -xz -C ~/.local/bin

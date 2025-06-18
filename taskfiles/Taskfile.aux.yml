@@ -68,13 +68,3 @@ tasks:
       cp {{.CLI_ARGS}}/.env .
       sed -i 's#^DEVENV=.*#DEVENV='"$(pwd)"'#' .env
       cp {{.CLI_ARGS}}/Taskfile.yml Taskfile.base.yml
-
-  share:
-    cmd: |
-      [ -z "{{.CLI_ARGS}}" ] && echo "missing folder argument (pass as 'task share -- <folder>')" && exit 1
-      find {{.CLI_ARGS}} -type f -name "*" -exec echo "" \; -exec echo "***** FILE: {} *****" \; -exec cat {} \; > share.txt
-
-  unshare:
-    cmd: |
-      [ -z "{{.CLI_ARGS}}" ] && echo "missing file argument (pass as 'task unshare -- <file>')" && exit 1
-      cat {{.CLI_ARGS}} | {{.SCRIPTS_DIR}}/unshare.sh

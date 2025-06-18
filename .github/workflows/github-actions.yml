@@ -36,3 +36,5 @@ jobs:
     permissions:
       contents: write
     secrets: inherit
+    with:
+      platforms: linux/amd64,linux/arm64
