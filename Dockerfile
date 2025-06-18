@@ -34,7 +34,7 @@ RUN --mount=type=secret,id=github-token,env=GITHUB_TOKEN \
     godyl update --pre --force && \
     godyl -v i /tmp/tools/go.yml --source=go --dry  && \
     godyl -v i /tmp/tools/tools.yml --dry && \
-    echo "yaay"
+    echo "yaays"
 
 # FROM python:3.13
 
