@@ -25,10 +25,13 @@ COPY tools /tmp/tools
 
 ENV GODYL_INSTALL_OUTPUT=/tmp/binaries
 
+ARG CACHEBUST=1
+ARG GODYL_VERSION=v0.0.18-beta
+
 RUN --mount=type=secret,id=github-token,env=GITHUB_TOKEN \
     --mount=type=secret,id=secrets.env \
     [ -f /run/secrets/secrets.env ] && source /run/secrets/secrets.env || true && \
-    godyl update --pre --force && \
+    godyl update --version=${GODYL_VERSION} && \
     godyl -v i /tmp/tools/go.yml --source=go  && \
     godyl -v i /tmp/tools/tools.yml
 
@@ -102,11 +105,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN pip install --no-cache-dir --upgrade pip && \
     echo -e "[global]\nbreak-system-packages=true" >> /etc/pip.conf
 
-RUN \
-    if [ "${TARGETARCH}${TARGETVARIANT}" = "armv7" ]; then \
-    printf "extra-index-url=https://www.piwheels.org/simple\n" >> /etc/pip.conf ; \
-    fi
-
 # Spellcheckers
 RUN apt-get update && apt-get install -y --no-install-recommends \
     enchant-2 \
@@ -165,9 +163,6 @@ RUN mkdir -p ~/.local/bin
 ENV PATH="/home/${USER}/.local/bin:$PATH"
 
 
-# Copy the tools from the build stages
-COPY --from=downloader /tmp/binaries  /usr/local/bin/
-
 # Reroute cache to /tmp
 ENV NPM_CONFIG_CACHE=/tmp/.npm
 ENV XDG_CACHE_HOME=/tmp/.cache
@@ -182,6 +177,9 @@ ENV TZ=Europe/Zurich
 ENV DEVENV=/home/${USER}
 COPY --chown=${USER}:${USER} . ${DEVENV}
 RUN sed -i 's#^DEVENV=.*#DEVENV='"${DEVENV}"'#' ${DEVENV}/.env
+
+# Copy the tools from the build stages
+COPY --from=downloader /tmp/binaries  /usr/local/bin/
 
 # Clear the base image entrypoint
 ENTRYPOINT []
