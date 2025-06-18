@@ -30,8 +30,7 @@ RUN --mount=type=secret,id=github-token,env=GITHUB_TOKEN \
     [ -f /run/secrets/secrets.env ] && source /run/secrets/secrets.env || true && \
     godyl update --pre --force && \
     godyl -v i /tmp/tools/go.yml --source=go  && \
-    godyl -v i /tmp/tools/tools.ym && \
-    echo "yaays"
+    godyl -v i /tmp/tools/tools.yml
 
 FROM python:3.13
 
