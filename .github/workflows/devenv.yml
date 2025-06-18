@@ -70,7 +70,8 @@ jobs:
 
       # Run the minimum required tests to validate the image
       # Make sure the current image is being built and used, and not a remote one
-      - run: |
+      - name: Lint the repository
+        run: |
           touch secrets.env
           docker compose run --build --rm devenv task lint
         env:
