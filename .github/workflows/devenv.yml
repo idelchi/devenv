@@ -53,6 +53,9 @@ jobs:
           username: ${{ inputs.username }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - run: |
+          echo "GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}" > secrets.env
+
       # Build the Docker image
       - name: build `${{ inputs.image }}:${{ inputs.tag }}` image
         uses: docker/build-push-action@v6
@@ -62,6 +65,8 @@ jobs:
           cache-from: type=registry,ref=${{ inputs.cache }}:${{ inputs.project }}-${{ inputs.tag }}
           secrets: |
             "github-token=${{ secrets.GITHUB_TOKEN }}"
+          secret-files: |
+            "tokens.env=tokens.env"
 
       # Run the minimum required tests to validate the image
       # Make sure the current image is being built and used, and not a remote one
