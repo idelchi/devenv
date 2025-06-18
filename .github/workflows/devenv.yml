@@ -53,7 +53,8 @@ jobs:
           username: ${{ inputs.username }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - run: |
+      - name: Prepare secrets
+        run: |
           echo "GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}" > secrets.env
 
       # Build the Docker image
@@ -66,13 +67,12 @@ jobs:
           secrets: |
             "github-token=${{ secrets.GITHUB_TOKEN }}"
           secret-files: |
-            "tokens.env=tokens.env"
+            "secrets.env=secrets.env"
 
       # Run the minimum required tests to validate the image
       # Make sure the current image is being built and used, and not a remote one
       - name: Lint the repository
         run: |
-          touch secrets.env
           docker compose run --build --rm devenv task lint
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
