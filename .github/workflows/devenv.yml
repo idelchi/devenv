@@ -65,7 +65,9 @@ jobs:
 
       # Run the minimum required tests to validate the image
       # Make sure the current image is being built and used, and not a remote one
-      - run: docker compose run --build --rm devenv task lint
+      - run: |
+          touch secrets.env
+          docker compose run --build --rm devenv task lint
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         #   DEVENV: ${{ inputs.devenv }}
