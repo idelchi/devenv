@@ -60,12 +60,15 @@ jobs:
           load: true
           tags: "${{ inputs.image }}:${{ inputs.tag }}"
           cache-from: type=registry,ref=${{ inputs.cache }}:${{ inputs.project }}-${{ inputs.tag }}
+          secrets: |
+            "github-token=${{ secrets.GITHUB_TOKEN }}"
 
       # Run the minimum required tests to validate the image
       # Make sure the current image is being built and used, and not a remote one
       - run: docker compose run --build --rm devenv task lint
         env:
-          DEVENV: ${{ inputs.devenv }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        #   DEVENV: ${{ inputs.devenv }}
         continue-on-error: true
 
       # Build the Docker image and Push it to Docker Hub
@@ -76,3 +79,5 @@ jobs:
           tags: ${{ inputs.image }}:${{ inputs.tag }}
           cache-from: type=registry,ref=${{ inputs.cache }}:${{ inputs.project }}-${{ inputs.tag }}
           cache-to: type=registry,ref=${{ inputs.cache }}:${{ inputs.project }}-${{ inputs.tag }},mode=max
+          secrets: |
+            "github-token=${{ secrets.GITHUB_TOKEN }}"

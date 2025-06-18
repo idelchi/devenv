@@ -2,7 +2,10 @@
 
 services:
   devenv:
-    build: .
+    build:
+      secrets:
+        - secrets.env
+        - github-token
     pull_policy: if_not_present
     image: idelchi/devenv:dev
     container_name: devenv
@@ -33,4 +36,10 @@ services:
 
   arm64:
     extends: devenv
-    platform: linux/arm64/v8
+    platform: linux/arm64
+
+secrets:
+  secrets.env:
+    file: ./secrets.env
+  github-token:
+    environment: GITHUB_TOKEN

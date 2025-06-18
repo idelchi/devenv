@@ -89,6 +89,8 @@ jobs:
           outputs: type=image,name=${{ inputs.image }},push-by-digest=true,name-canonical=true,push=true
           cache-from: type=registry,ref=${{ inputs.cache }}:${{  inputs.project }}-${{ env.ARCH }}
           cache-to: type=registry,ref=${{ inputs.cache }}:${{ inputs.project }}-${{ env.ARCH }},mode=max
+          secrets: |
+            "github-token=${{ secrets.GITHUB_TOKEN }}"
 
       - name: Export digest
         run: |
