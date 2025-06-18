@@ -183,6 +183,8 @@ WORKDIR /home/${USER}
 RUN npm-groovy-lint --version
 
 # Create a local bin directory
+# (split up for readability)
+# hadolint ignore=DL3059
 RUN mkdir -p ~/.local/bin
 ENV PATH="/home/${USER}/.local/bin:$PATH"
 

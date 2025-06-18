@@ -76,8 +76,7 @@ jobs:
           docker compose run --build --rm devenv task lint
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        #   DEVENV: ${{ inputs.devenv }}
-        continue-on-error: true
+          DEVENV: ${{ inputs.devenv }}
 
       # Build the Docker image and Push it to Docker Hub
       - name: build and push `${{ inputs.image }}:${{ inputs.tag }}` image
