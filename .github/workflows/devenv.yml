@@ -53,6 +53,10 @@ jobs:
           username: ${{ inputs.username }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Prepare secrets
+        run: |
+          echo "GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}" > secrets.env
+
       # Build the Docker image
       - name: build `${{ inputs.image }}:${{ inputs.tag }}` image
         uses: docker/build-push-action@v6
@@ -60,13 +64,19 @@ jobs:
           load: true
           tags: "${{ inputs.image }}:${{ inputs.tag }}"
           cache-from: type=registry,ref=${{ inputs.cache }}:${{ inputs.project }}-${{ inputs.tag }}
+          secrets: |
+            "github-token=${{ secrets.GITHUB_TOKEN }}"
+          secret-files: |
+            "secrets.env=secrets.env"
 
       # Run the minimum required tests to validate the image
       # Make sure the current image is being built and used, and not a remote one
-      - run: docker compose run --build --rm devenv task lint
+      - name: Lint the repository
+        run: |
+          docker compose run --build --rm devenv task lint
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEVENV: ${{ inputs.devenv }}
-        continue-on-error: true
 
       # Build the Docker image and Push it to Docker Hub
       - name: build and push `${{ inputs.image }}:${{ inputs.tag }}` image
@@ -76,3 +86,5 @@ jobs:
           tags: ${{ inputs.image }}:${{ inputs.tag }}
           cache-from: type=registry,ref=${{ inputs.cache }}:${{ inputs.project }}-${{ inputs.tag }}
           cache-to: type=registry,ref=${{ inputs.cache }}:${{ inputs.project }}-${{ inputs.tag }},mode=max
+          secrets: |
+            "github-token=${{ secrets.GITHUB_TOKEN }}"

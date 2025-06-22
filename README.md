@@ -38,7 +38,6 @@ To display the available commands along with their descriptions, run:
   - [gofmt](https://pkg.go.dev/cmd/gofmt)
   - [govet](https://pkg.go.dev/cmd/vet)
   - [golangci-lint](https://github.com/golangci/golangci-lint)
-  - [golines](https://github.com/segmentio/golines)
 - Python
   - [pyright](https://github.com/microsoft/pyright)
   - [ruff](https://github.com/charliermarsh/ruff)

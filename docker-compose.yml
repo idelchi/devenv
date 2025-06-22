@@ -2,9 +2,9 @@
 
 services:
   devenv:
-    build: .
     pull_policy: if_not_present
     image: idelchi/devenv:dev
+    build: .
     container_name: devenv
     hostname: devenv
     ports:

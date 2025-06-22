@@ -81,6 +81,10 @@ jobs:
           username: ${{ inputs.username }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Prepare secrets
+        run: |
+          echo "GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}" > secrets.env
+
       - uses: docker/build-push-action@v6
         with:
           platforms: ${{ inputs.platforms }}
@@ -91,3 +95,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           target: final
           build-args: ${{ inputs.args }}
+          secrets: |
+            "github-token=${{ secrets.GITHUB_TOKEN }}"
+          secret-files: |
+            "secrets.env=secrets.env"

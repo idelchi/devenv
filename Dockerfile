@@ -53,40 +53,6 @@ if [ "$(go env GOHOSTARCH)" != "$(go env GOARCH)" ]; then
 fi
 EOF
 
-FROM python:3.13 AS cryptography-builder
-
-LABEL maintainer=arash.idelchi
-
-# (root through the build stage, it is anyway multi-stage)
-# hadolint ignore=DL3002
-USER root
-
-# Basic good practices
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-
-# Install Rust
-ARG RUST_DIR=/opt/rust
-RUN mkdir -p ${RUST_DIR}
-ENV RUSTUP_HOME=${RUST_DIR}/.rustup
-ENV CARGO_HOME=${RUST_DIR}/.cargo
-RUN wget -qO- https://sh.rustup.rs | bash -s -- -y --profile minimal
-ENV PATH="${CARGO_HOME}/bin:${PATH}"
-
-# Update pip & allow breaking packages
-RUN pip install --no-cache-dir --upgrade pip && \
-    echo -e "[global]\nbreak-system-packages=true" >> /etc/pip.conf
-
-RUN \
-    if [ "${TARGETARCH}${TARGETVARIANT}" = "armv7" ]; then \
-    printf "extra-index-url=https://www.piwheels.org/simple\n" >> /etc/pip.conf ; \
-    fi
-
-# Cryptography
-# (split up for readability)
-# hadolint ignore=DL3059
-RUN pip install --no-cache-dir \
-    cryptography --no-binary cryptography
-
 FROM python:3.13
 
 ARG TARGETOS
@@ -158,21 +124,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     shellcheck \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-ARG HADOLINT_VERSION=v2.12.0
-ARG HADOLINT_ARCH=${TARGETARCH/amd64/x86_64}
-ARG HADOLINT_ARCH=${HADOLINT_ARCH/arm/arm64}
-ARG HADOLINT_ARCH=${HADOLINT_ARCH/arm6464/arm64}
-RUN wget -q https://github.com/hadolint/hadolint/releases/download/${HADOLINT_VERSION}/hadolint-Linux-${HADOLINT_ARCH} -O /usr/local/bin/hadolint && \
-    chmod +x /usr/local/bin/hadolint
-
 # Update pip & allow breaking packages
 RUN pip install --no-cache-dir --upgrade pip && \
     echo -e "[global]\nbreak-system-packages=true" >> /etc/pip.conf
-
-RUN \
-    if [ "${TARGETARCH}${TARGETVARIANT}" = "armv7" ]; then \
-    printf "extra-index-url=https://www.piwheels.org/simple\n" >> /etc/pip.conf ; \
-    fi
 
 # Spellcheckers
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -187,11 +141,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     codespell \
     scspell3k
 
-# Install Task
-ARG TASK_VERSION=v3.43.3
-ARG TASK_ARCH=${TARGETARCH}
-RUN wget -qO- https://github.com/go-task/task/releases/download/${TASK_VERSION}/task_linux_${TASK_ARCH}.tar.gz | tar -xz -C /usr/local/bin
-
 # Python tooling for linting & formatting
 # (mistakes brackets for ranges, split up for readability)
 # hadolint ignore=SC2102,DL3059
@@ -200,9 +149,6 @@ RUN pip install --no-cache-dir \
     ruff \
     # Library stubs for typing
     types-pyyaml
-
-# Copy the cryptography package
-COPY --from=cryptography-builder /usr/local/lib/python3.13/site-packages/ /usr/local/lib/python3.13/site-packages/
 
 # Python tooling for packaging
 # (split up for readability)
@@ -236,16 +182,22 @@ WORKDIR /home/${USER}
 # Run npm-groovy-lint once to download its preferred version of Java
 RUN npm-groovy-lint --version
 
-# Install golangci-lint
-ARG GOLANGCI_LINT_VERSION=v2.1.6
-RUN wget -qO- https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b "$(go env GOPATH)/bin" ${GOLANGCI_LINT_VERSION}
-
 # Create a local bin directory
+# (split up for readability)
+# hadolint ignore=DL3059
 RUN mkdir -p ~/.local/bin
 ENV PATH="/home/${USER}/.local/bin:$PATH"
 
-# Install jq
+# Tool versions
 ARG JQ_VERSION=1.8.0
+ARG YQ_VERSION=v4.45.4
+ARG TYPOS_VERSION=v1.33.1
+ARG GOLANGCI_LINT_VERSION=v2.1.6
+ARG TASK_VERSION=v3.44.0
+ARG HADOLINT_VERSION=v2.12.0
+ARG WSLINT_VERSION=v0.0.0
+
+# Install jq
 ARG JQ_ARCH=${TARGETARCH}
 ARG JQ_ARCH=${JQ_ARCH/arm/armhf}
 ARG JQ_ARCH=${JQ_ARCH/armhf64/arm64}
@@ -253,21 +205,30 @@ RUN wget -q https://github.com/jqlang/jq/releases/download/jq-${JQ_VERSION}/jq-l
     chmod +x ~/.local/bin/jq
 
 # Install yq
-ARG YQ_VERSION=v4.45.4
 RUN wget -qO- https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64.tar.gz | tar -xz -C /tmp && \
     mv /tmp/yq_linux_amd64 ~/.local/bin/yq
 
 # Install typos-cli
-ARG TYPOS_VERSION=v1.33.1
 ARG TYPOS_ARCH=${TARGETARCH/amd64/x86_64}
 ARG TYPOS_ARCH=${TYPOS_ARCH/arm64/aarch64}
 RUN wget -qO- https://github.com/crate-ci/typos/releases/download/${TYPOS_VERSION}/typos-${TYPOS_VERSION}-${TYPOS_ARCH}-unknown-linux-musl.tar.gz | tar -xz -C ~/.local/bin
 
-# Copy the tools from the build stages
-COPY --from=go-builder /go/bin/* /usr/local/bin/
+# Install golangci-lint
+RUN wget -qO- https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b "$(go env GOPATH)/bin" ${GOLANGCI_LINT_VERSION}
+
+# Install Task
+ARG TASK_ARCH=${TARGETARCH}
+RUN wget -qO- https://github.com/go-task/task/releases/download/${TASK_VERSION}/task_linux_${TASK_ARCH}.tar.gz | tar -xz -C ~/.local/bin
+
+# Install hadolint
+ARG HADOLINT_ARCH=${TARGETARCH/amd64/x86_64}
+ARG HADOLINT_ARCH=${HADOLINT_ARCH/arm/arm64}
+ARG HADOLINT_ARCH=${HADOLINT_ARCH/arm6464/arm64}
+RUN wget -q https://github.com/hadolint/hadolint/releases/download/${HADOLINT_VERSION}/hadolint-Linux-${HADOLINT_ARCH} -O ~/.local/bin/hadolint && \
+    chmod +x ~/.local/bin/hadolint
 
 # Install wslint
-RUN curl -sSL https://raw.githubusercontent.com/idelchi/wslint/refs/heads/dev/install.sh | sh -s -- -d ~/.local/bin
+RUN curl -sSL https://raw.githubusercontent.com/idelchi/wslint/refs/heads/dev/install.sh | sh -s -- -d ~/.local/bin -v ${WSLINT_VERSION}
 
 # Reroute cache to /tmp
 ENV NPM_CONFIG_CACHE=/tmp/.npm
@@ -284,7 +245,8 @@ ENV DEVENV=/home/${USER}
 COPY --chown=${USER}:${USER} . ${DEVENV}
 RUN sed -i 's#^DEVENV=.*#DEVENV='"${DEVENV}"'#' ${DEVENV}/.env
 
-# TODO: Install "Mega-Linter"?
+# Copy the tools from the build stages
+COPY --from=go-builder /go/bin/* /usr/local/bin/
 
 # Clear the base image entrypoint
 ENTRYPOINT []

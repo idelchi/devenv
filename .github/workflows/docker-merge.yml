@@ -81,6 +81,10 @@ jobs:
           username: ${{ inputs.username }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Prepare secrets
+        run: |
+          echo "GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}" > secrets.env
+
       - name: Build and push by digest
         id: build
         uses: docker/build-push-action@v6
@@ -89,6 +93,10 @@ jobs:
           outputs: type=image,name=${{ inputs.image }},push-by-digest=true,name-canonical=true,push=true
           cache-from: type=registry,ref=${{ inputs.cache }}:${{  inputs.project }}-${{ env.ARCH }}
           cache-to: type=registry,ref=${{ inputs.cache }}:${{ inputs.project }}-${{ env.ARCH }},mode=max
+          secrets: |
+            "github-token=${{ secrets.GITHUB_TOKEN }}"
+          secret-files: |
+            "secrets.env=secrets.env"
 
       - name: Export digest
         run: |
