@@ -45,7 +45,6 @@ tasks:
     sources:
       - ./**/*.json
       - "{{.CONFIG}}"
-      - "{{.IGNORE}}"
 
   docker:
     desc: Lint Dockerfiles
