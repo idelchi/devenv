@@ -7,10 +7,7 @@
             "request": "launch",
             "mode": "debug",
             "program": "main.go",
-            "args": [
-                "-w",
-                "file"
-            ]
+            "args": ["-w", "file"]
         },
         {
             "name": "Python: Current File",
