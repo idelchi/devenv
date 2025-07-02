@@ -176,6 +176,14 @@ ENV GOPATH=/opt/go
 RUN mkdir ${GOPATH} && chown -R ${USER}:${USER} ${GOPATH}
 ENV PATH="${GOPATH}/bin:$PATH"
 
+# Install Rust
+COPY --from=rust:1.88 /usr/local/cargo /usr/local/cargo
+COPY --from=rust:1.88 /usr/local/rustup /usr/local/rustup
+ENV RUSTUP_HOME=/usr/local/rustup
+ENV CARGO_HOME=/home/${USER}/.cargo
+ENV PATH="/usr/local/cargo/bin:$PATH"
+ENV PATH="/home/${USER}/.cargo/bin:$PATH"
+
 USER ${USER}
 WORKDIR /home/${USER}
 

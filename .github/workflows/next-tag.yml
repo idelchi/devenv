@@ -38,8 +38,6 @@ jobs:
 
       - name: Download go-next-tag (curl)
         if: ${{ !inputs.artifact }}
-        env:
-          GO_NEXT_TAG_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           ARGS=""
           # If inputs.version is set, use it as `-v <version>` for the install script
@@ -47,7 +45,7 @@ jobs:
             ARGS="-v ${{ inputs.version }}"
           fi
 
-          curl -sSL https://raw.githubusercontent.com/idelchi/go-next-tag/refs/heads/dev/install.sh | sh -s -- -d ~/.local/bin ${ARGS}
+          curl -sSL https://raw.githubusercontent.com/idelchi/go-next-tag/refs/heads/main/install.sh | sh -s -- -d ~/.local/bin ${ARGS}
 
       - name: Download go-next-tag (artifact)
         uses: actions/download-artifact@v4

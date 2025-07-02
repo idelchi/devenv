@@ -78,7 +78,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEVENV: ${{ inputs.devenv }}
 
-      # Build the Docker image and Push it to Docker Hub
+      # Build the Docker image and Push it to Docker Hub, just for caching purposes
       - name: build and push `${{ inputs.image }}:${{ inputs.tag }}` image
         uses: docker/build-push-action@v6
         with:
