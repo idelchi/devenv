@@ -6,7 +6,9 @@
     "files.eol": "\n",
     /* ****** ****** ****** */
     /* ****** GitHub ****** */
-    "[github-actions-workflow]": { "editor.autoIndent": "advanced" },
+    "[github-actions-workflow]": {
+        "editor.autoIndent": "advanced"
+    },
     /* ****** ****** ****** */
     /* ****** JSON ****** */
     "[json][jsonc]": {

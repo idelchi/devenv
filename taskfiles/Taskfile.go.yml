@@ -65,17 +65,15 @@ tasks:
   format:
     desc: format go project
     cmds:
-      - >
-        golangci-lint fmt
-        --config={{.CONFIG_GOLANGCI_LINT}}
+      - golangci-lint fmt
+          --config={{.CONFIG_GOLANGCI_LINT}}
 
-      - >
-        golangci-lint run
-        --config={{.CONFIG_GOLANGCI_LINT}}
-        --disable=godox
-        --fix
-        --issues-exit-code 0
-        &> /dev/null
+      - golangci-lint run
+          --config={{.CONFIG_GOLANGCI_LINT}}
+          --disable=godox
+          --fix
+          --issues-exit-code 0
+          &> /dev/null
     vars:
       CONFIG_GOLANGCI_LINT: "{{.CONFIG_DIR}}/.golangci.yml"
     sources:
@@ -86,8 +84,7 @@ tasks:
     desc: lint go project
     deps: [init]
     cmds:
-      - >
-        golangci-lint run
+      - golangci-lint run
           --config={{.CONFIG_GOLANGCI_LINT}}
           --disable=godox
           --output.code-climate.path={{.LINT_REPORT}}

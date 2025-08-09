@@ -113,7 +113,12 @@ tasks:
       cspell is used mainly for code.
     cmds:
       - misspell -error {{.FILES}}
-      - codespell --ignore-words={{.WORDLIST}} {{.FILES}}
+      - |
+        wordlist="{{.WORDLIST}}"
+        if [ -n "{{.CODESPELL_WORDLIST}}" ]; then
+            wordlist="{{.CODESPELL_WORDLIST}}"
+        fi
+        codespell --ignore-words=${wordlist} {{.FILES}}
       - |
         # Check if {{.TYPOS_CONFIG}} exists
         if [ -f "{{.TYPOS_CONFIG}}" ]; then
@@ -128,7 +133,7 @@ tasks:
             config="{{.CONFIG}}"
         fi
 
-        if [ -n "$config" ]; then
+        if [ -n "${config}" ]; then
             cspell lint --no-must-find-files --show-suggestions --config="${config}" --no-progress "**/*.go" "**/*.py" "**/*.sh"
         fi
     vars:

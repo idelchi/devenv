@@ -8,7 +8,7 @@
 #   - and many, many, more...
 #]=======================================================================]
 
-ARG GO_VERSION=1.24.4
+ARG GO_VERSION=1.24.6
 FROM --platform=$BUILDPLATFORM golang:${GO_VERSION} AS go-builder
 
 # Basic good practices
@@ -169,7 +169,7 @@ RUN pip install --no-cache-dir \
     fastapi
 
 # Install Go
-COPY --from=golang:1.24.4 /usr/local/go /usr/local/go
+COPY --from=golang:1.24.6 /usr/local/go /usr/local/go
 ENV PATH="/usr/local/go/bin:$PATH"
 
 ENV GOPATH=/opt/go
@@ -177,8 +177,8 @@ RUN mkdir ${GOPATH} && chown -R ${USER}:${USER} ${GOPATH}
 ENV PATH="${GOPATH}/bin:$PATH"
 
 # Install Rust
-COPY --from=rust:1.88 /usr/local/cargo /usr/local/cargo
-COPY --from=rust:1.88 /usr/local/rustup /usr/local/rustup
+COPY --from=rust:1.89 /usr/local/cargo /usr/local/cargo
+COPY --from=rust:1.89 /usr/local/rustup /usr/local/rustup
 ENV RUSTUP_HOME=/usr/local/rustup
 ENV CARGO_HOME=/home/${USER}/.cargo
 ENV PATH="/usr/local/cargo/bin:$PATH"
@@ -197,11 +197,11 @@ RUN mkdir -p ~/.local/bin
 ENV PATH="/home/${USER}/.local/bin:$PATH"
 
 # Tool versions
-ARG JQ_VERSION=1.8.0
-ARG YQ_VERSION=v4.45.4
-ARG TYPOS_VERSION=v1.33.1
-ARG GOLANGCI_LINT_VERSION=v2.1.6
-ARG TASK_VERSION=v3.44.0
+ARG JQ_VERSION=1.8.1
+ARG YQ_VERSION=v4.47.1
+ARG TYPOS_VERSION=v1.35.3
+ARG GOLANGCI_LINT_VERSION=v2.3.1
+ARG TASK_VERSION=v3.44.1
 ARG HADOLINT_VERSION=v2.12.0
 ARG WSLINT_VERSION=v0.0.0
 
