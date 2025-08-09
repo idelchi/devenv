@@ -23,3 +23,10 @@ services:
     extra_hosts:
       - host.docker.internal:host-gateway
     working_dir: /home/user/ws
+
+  platforms:
+    extends: devenv
+    build:
+      platforms:
+        - linux/amd64
+        - linux/arm64

@@ -104,9 +104,15 @@ linters:
           - forbidigo
         path: main.go$
 
+      # Ignore varnamelen for test files
+      - linters:
+          - varnamelen
+        path: _test.go$
+
       # EXC0001 errcheck: Almost all programs ignore errors on these functions and in most cases it's ok
       - path: (.+)\.go$
         text: Error return value of .((os\.)?std(out|err)\..*|.*Close|.*Flush|os\.Remove(All)?|.*printf?|os\.(Un)?Setenv). is not checked
+
     paths:
       - third_party$
       - builtin$
