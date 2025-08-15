@@ -5,7 +5,7 @@ vars:
   DEVENV: .
   CONFIG_DIR: "{{.DEVENV}}/settings"
   SCRIPTS_DIR: "{{.DEVENV}}/scripts"
-  BUILD_DIR: .build
+  BUILD_DIR: "{{ .ROOT_DIR | toSlash }}/.build"
 
 includes:
   aux: "{{.DEVENV}}/taskfiles/Taskfile.aux.yml"
