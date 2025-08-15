@@ -8,7 +8,7 @@
 #   - and many, many, more...
 #]=======================================================================]
 
-ARG GO_VERSION=1.24.6
+ARG GO_VERSION=1.25.0
 FROM --platform=$BUILDPLATFORM golang:${GO_VERSION} AS go-builder
 
 # Basic good practices
@@ -27,7 +27,6 @@ RUN echo \
     github.com/amit-davidson/Chronos/cmd/chronos@latest \
     github.com/loov/goda@latest \
     github.com/rillig/gobco@latest \
-    github.com/segmentio/golines@latest \
     github.com/t-yuki/gocover-cobertura@latest \
     golang.org/x/tools/cmd/godoc@latest \
     golang.org/x/tools/cmd/guru@latest \
@@ -169,7 +168,7 @@ RUN pip install --no-cache-dir \
     fastapi
 
 # Install Go
-COPY --from=golang:1.24.6 /usr/local/go /usr/local/go
+COPY --from=golang:1.25.0 /usr/local/go /usr/local/go
 ENV PATH="/usr/local/go/bin:$PATH"
 
 ENV GOPATH=/opt/go
@@ -236,7 +235,7 @@ RUN wget -q https://github.com/hadolint/hadolint/releases/download/${HADOLINT_VE
     chmod +x ~/.local/bin/hadolint
 
 # Install wslint
-RUN curl -sSL https://raw.githubusercontent.com/idelchi/wslint/refs/heads/dev/install.sh | sh -s -- -d ~/.local/bin -v ${WSLINT_VERSION}
+RUN curl -sSL https://raw.githubusercontent.com/idelchi/wslint/refs/heads/main/install.sh | sh -s -- -d ~/.local/bin -v ${WSLINT_VERSION}
 
 # Reroute cache to /tmp
 ENV NPM_CONFIG_CACHE=/tmp/.npm
@@ -251,7 +250,9 @@ ENV TZ=Europe/Zurich
 # Embed the project
 ENV DEVENV=/home/${USER}
 COPY --chown=${USER}:${USER} . ${DEVENV}
-RUN sed -i 's#^DEVENV=.*#DEVENV='"${DEVENV}"'#' ${DEVENV}/.env
+# ($DEVENV should not be expanded)
+# hadolint ignore=SC2016
+RUN sed -i 's/^  DEVENV: \.$/  DEVENV: ${DEVENV}/' ${DEVENV}/Taskfile.yml
 
 # Copy the tools from the build stages
 COPY --from=go-builder /go/bin/* /usr/local/bin/

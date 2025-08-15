@@ -46,6 +46,9 @@ tasks:
         echo Config directory: {{.CONFIG_DIR}}
         echo Scripts directory: {{.SCRIPTS_DIR}}
         echo Build directory: {{.BUILD_DIR}}
+        echo User Working Dir: {{.USER_WORKING_DIR}}
+        echo pwd: $(pwd)
+        echo PWD: ${PWD}
     requires:
       vars:
         - DEVENV
