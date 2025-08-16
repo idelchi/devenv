@@ -1,11 +1,13 @@
 version: "3"
 
 # requires
-# - CONFIG_DIR
 # - SCRIPTS_DIR
 # - BUILD_DIR
 
 vars:
+  # Folders
+  CONFIG_DIR: '{{.CONFIG_DIR | default "." }}'
+
   # Files
   LINT_REPORT: '{{.LINT_REPORT | default "lint-report"}}'
   COVER_REPORT: '{{.COVER_REPORT | default "coverage-report"}}'
@@ -67,17 +69,17 @@ tasks:
     cmds:
       - >
         golangci-lint fmt
-        --config={{.CONFIG_GOLANGCI_LINT}}
+        --config={{.GOLANGCI_LINT_CONFIG}}
 
       - >
         golangci-lint run
-        --config={{.CONFIG_GOLANGCI_LINT}}
+        --config={{.GOLANGCI_LINT_CONFIG}}
         --disable=godox
         --fix
         --issues-exit-code 0
         &> /dev/null
     vars:
-      CONFIG_GOLANGCI_LINT: "{{.CONFIG_DIR}}/.golangci.yml"
+      GOLANGCI_LINT_CONFIG: "{{.CONFIG_DIR}}/.golangci.yml"
     sources:
       - ./**/*.go
       - "{{.CONFIG_DIR}}/.golangci.yml"
@@ -88,7 +90,7 @@ tasks:
     cmds:
       - >
         golangci-lint run
-        --config={{.CONFIG_GOLANGCI_LINT}}
+        --config={{.GOLANGCI_LINT_CONFIG}}
         --disable=godox
         --output.code-climate.path={{.LINT_REPORT}}
         --output.junit-xml.path={{.LINT_REPORT}}.xml
@@ -97,7 +99,7 @@ tasks:
         --output.text.colors=true
         {{.CLI_ARGS}}
     vars:
-      CONFIG_GOLANGCI_LINT: "{{.CONFIG_DIR}}/.golangci.yml"
+      GOLANGCI_LINT_CONFIG: "{{.CONFIG_DIR}}/.golangci.yml"
       LINT_REPORT: "{{.BUILD_DIR}}/{{.LINT_REPORT}}"
     sources:
       - ./**/*.go
