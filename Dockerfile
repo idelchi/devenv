@@ -234,6 +234,11 @@ ARG HADOLINT_ARCH=${HADOLINT_ARCH/arm6464/arm64}
 RUN wget -q https://github.com/hadolint/hadolint/releases/download/${HADOLINT_VERSION}/hadolint-Linux-${HADOLINT_ARCH} -O ~/.local/bin/hadolint && \
     chmod +x ~/.local/bin/hadolint
 
+# Install ripgrep
+ARG RIPGREP_VERSION=14.1.1
+ARG RIPGREP_ARCH=${TARGETARCH/amd64/x86_64}
+RUN wget -qO- https://github.com/BurntSushi/ripgrep/releases/download/${RIPGREP_VERSION}/ripgrep-${RIPGREP_VERSION}-${RIPGREP_ARCH}-unknown-linux-musl.tar.gz | tar -xz -C ~/.local/bin
+
 # Install wslint
 RUN curl -sSL https://raw.githubusercontent.com/idelchi/wslint/refs/heads/main/install.sh | sh -s -- -d ~/.local/bin -v ${WSLINT_VERSION}
 

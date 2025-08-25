@@ -4,6 +4,7 @@ version: "3"
 # - SCRIPTS_DIR
 # - BUILD_DIR
 
+# TODO(Idelchi): How should vars, env be passed from the including Taskfile? It's a bit confusing.
 vars:
   # Folders
   CONFIG_DIR: '{{.CONFIG_DIR | default "." }}'
