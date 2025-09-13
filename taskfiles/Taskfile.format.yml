@@ -7,7 +7,7 @@ version: "3"
 # - SCRIPTS_DIR
 # - BUILD_DIR
 
-# TODO(Idelchi): for loops are slow. Use shell to check if any files are present and then run, using find `` or something similar.
+# TODO(Idelchi): for loops are slow. Use shell to check if any files are present and then run, using `find` or something similar.
 
 shopt: [globstar] # NOTE(Idelchi): Doesn't seem to work on a global level or in vars for some reason.
 
@@ -90,16 +90,6 @@ tasks:
     sources:
       - ./**/*.sh
 
-  jenkins:
-    desc: Format Jenkinsfiles
-    summary: |
-      This task formats Jenkinsfiles using npm-groovy-lint.
-    cmds:
-      - npm-groovy-lint --failon none --config={{.CONFIG_DIR}}/ --fix --nolintafter --no-insight --files "**/Jenkinsfile" > /dev/null
-      - npm-groovy-lint --failon none --config={{.CONFIG_DIR}}/ --format --nolintafter --no-insight --files "**/Jenkinsfile"  > /dev/null
-    sources:
-      - ./**/Jenkinsfile
-
   ws:
     desc: Remove trailing whitespace from files
     summary: |
@@ -117,5 +107,4 @@ tasks:
       - task: docker
       - task: md
       - task: shell
-      - task: jenkins
       - task: ws

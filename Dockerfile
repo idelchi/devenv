@@ -8,7 +8,7 @@
 #   - and many, many, more...
 #]=======================================================================]
 
-ARG GO_VERSION=1.25.0
+ARG GO_VERSION=1.25.1
 FROM --platform=$BUILDPLATFORM golang:${GO_VERSION} AS go-builder
 
 # Basic good practices
@@ -40,6 +40,7 @@ RUN echo \
     mvdan.cc/sh/v3/cmd/shfmt@latest \
     # YAML
     github.com/google/yamlfmt/cmd/yamlfmt@latest \
+    github.com/lucasepe/yml2dot@latest \
     # Pipe to 'go install'
     | xargs -n 1 go install
 
@@ -90,7 +91,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install Java & Node
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
     apt-get install -y --no-install-recommends \
     default-jdk \
     nodejs \
@@ -98,10 +99,6 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
 
 # Various linters & formatters
 RUN npm install -g \
-    # groovy
-    npm-groovy-lint \
-    # Jenkinsfile
-    jflint \
     # spellcheck
     spellchecker-cli \
     cspell \
@@ -153,9 +150,7 @@ RUN pip install --no-cache-dir \
 # (split up for readability)
 # hadolint ignore=DL3059
 RUN pip install --no-cache-dir \
-    build \
-    twine \
-    poetry
+    uv
 
 # Useful packages
 # (split up for readability)
@@ -168,7 +163,7 @@ RUN pip install --no-cache-dir \
     fastapi
 
 # Install Go
-COPY --from=golang:1.25.0 /usr/local/go /usr/local/go
+COPY --from=golang:1.25.1 /usr/local/go /usr/local/go
 ENV PATH="/usr/local/go/bin:$PATH"
 
 ENV GOPATH=/opt/go
@@ -186,9 +181,6 @@ ENV PATH="/home/${USER}/.cargo/bin:$PATH"
 USER ${USER}
 WORKDIR /home/${USER}
 
-# Run npm-groovy-lint once to download its preferred version of Java
-RUN npm-groovy-lint --version
-
 # Create a local bin directory
 # (split up for readability)
 # hadolint ignore=DL3059
@@ -197,11 +189,11 @@ ENV PATH="/home/${USER}/.local/bin:$PATH"
 
 # Tool versions
 ARG JQ_VERSION=1.8.1
-ARG YQ_VERSION=v4.47.1
-ARG TYPOS_VERSION=v1.35.3
+ARG YQ_VERSION=v4.47.2
+ARG TYPOS_VERSION=v1.36.2
 ARG GOLANGCI_LINT_VERSION=v2.4.0
 ARG TASK_VERSION=v3.44.1
-ARG HADOLINT_VERSION=v2.12.0
+ARG HADOLINT_VERSION=v2.13.1
 ARG WSLINT_VERSION=v0.0.0
 
 # Install jq
@@ -251,13 +243,6 @@ ENV TASK_TEMP_DIR=/tmp/.task
 
 # Timezone
 ENV TZ=Europe/Zurich
-
-# Embed the project
-ENV DEVENV=/home/${USER}
-COPY --chown=${USER}:${USER} . ${DEVENV}
-# ($DEVENV should not be expanded)
-# hadolint ignore=SC2016
-RUN sed -i 's/^  DEVENV: \.$/  DEVENV: ${DEVENV}/' ${DEVENV}/Taskfile.yml
 
 # Copy the tools from the build stages
 COPY --from=go-builder /go/bin/* /usr/local/bin/

@@ -149,20 +149,6 @@ tasks:
           | grep -v mypy_cache/
           | tr '\n' ' '
 
-  jenkins:
-    desc: Lint Jenkinsfiles
-    summary: |
-      This task lints Jenkinsfiles using npm-groovy-lint and jflint.
-    cmds:
-      - npm-groovy-lint --config={{.CONFIG_DIR}}/ --failon info --no-insight --files "**/Jenkinsfile"
-      - cmd: jflint --config={{.CONFIG}} {{.JENKINSFILE}} >> /dev/null
-        ignore_error: true
-    vars:
-      CONFIG: "{{.CONFIG_DIR}}/.jflintrc"
-      JENKINSFILE: '{{.CLI_ARGS | default "Jenkinsfile"}}'
-    sources:
-      - ./**/Jenkinsfile
-
   cp:
     desc: Detect copy-paste issues in the project files
     summary: |
@@ -193,4 +179,3 @@ tasks:
       - task: md
       - task: spell
       - task: cp
-      - task: jenkins
