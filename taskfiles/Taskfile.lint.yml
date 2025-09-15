@@ -163,7 +163,7 @@ tasks:
     desc: Check for trailing whitespaces in the project files
     summary: |
       This task finds any trailing whitespaces in the project files and reports them.
-    cmd: wslint -q -a {{.WSLINT_ARGS}} "**"
+    cmd: wslint -a {{.WSLINT_ARGS}} "**"
     vars:
       WSLINT_ARGS: '{{.WSLINT_ARGS | default "-e **/.build/**"}}'
 
