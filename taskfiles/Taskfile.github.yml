@@ -34,7 +34,6 @@ tasks:
             [ -n "$tag" ] && gh release delete "$tag" --yes --cleanup-tag || true
           done
         ignore_error: true
-
       - cmd: |
           # Delete all local tags, refetch, then delete remote *-beta tags
           git tag -l | while IFS= read -r t; do
@@ -45,11 +44,10 @@ tasks:
             [ -n "$t" ] && git push --delete origin "$t" || true
           done
         ignore_error: true
-
       - cmd: |
-        # Delete completed workflow runs
-          gh run list --limit 500 --status completed --json databaseId -q '.[].databaseId' |
-          while IFS= read -r id; do
-            [ -n "$id" ] && gh run delete "$id" || true
-          done
+          # Delete completed workflow runs
+            gh run list --limit 500 --status completed --json databaseId -q '.[].databaseId' |
+            while IFS= read -r id; do
+              [ -n "$id" ] && gh run delete "$id" || true
+            done
         ignore_error: true
