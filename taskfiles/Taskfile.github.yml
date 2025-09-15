@@ -28,19 +28,28 @@ tasks:
   delete:
     cmds:
       - cmd: |
-          gh release list --json tagName,isPrerelease \
-            -q '.[] | select(.isPrerelease == true) | .tagName' \
-            | xargs -I {} gh release delete {} --yes --cleanup-tag
+          # Delete prerelease GitHub releases (and cleanup their tags)
+          gh release list --json tagName,isPrerelease -q '.[] | select(.isPrerelease==true) | .tagName' |
+          while IFS= read -r tag; do
+            [ -n "$tag" ] && gh release delete "$tag" --yes --cleanup-tag || true
+          done
         ignore_error: true
+
       - cmd: |
-          git tag -d $(git tag -l)
-          git fetch --tags
-          git tag -l '*-beta' | xargs -r git push --delete origin
+          # Delete all local tags, refetch, then delete remote *-beta tags
+          git tag -l | while IFS= read -r t; do
+            [ -n "$t" ] && git tag -d "$t" || true
+          done
+          git fetch --tags || true
+          git tag -l '*-beta' | while IFS= read -r t; do
+            [ -n "$t" ] && git push --delete origin "$t" || true
+          done
         ignore_error: true
+
       - cmd: |
-          gh run list --limit 500 \
-            --status completed \
-            --json databaseId \
-            -q ".[].databaseId" \
-            | xargs -n 1 gh run delete
+        # Delete completed workflow runs
+          gh run list --limit 500 --status completed --json databaseId -q '.[].databaseId' |
+          while IFS= read -r id; do
+            [ -n "$id" ] && gh run delete "$id" || true
+          done
         ignore_error: true
