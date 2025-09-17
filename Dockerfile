@@ -88,6 +88,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     moreutils \
     iputils-ping \
     procps \
+    bsdextrautils \
+    vim-common \
+    coreutils \
+    tree \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install Java & Node
@@ -192,7 +196,7 @@ ARG JQ_VERSION=1.8.1
 ARG YQ_VERSION=v4.47.2
 ARG TYPOS_VERSION=v1.36.2
 ARG GOLANGCI_LINT_VERSION=v2.4.0
-ARG TASK_VERSION=v3.44.1
+ARG TASK_VERSION=v3.45.3
 ARG HADOLINT_VERSION=v2.13.1
 ARG WSLINT_VERSION=v0.0.0
 
