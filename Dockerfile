@@ -175,8 +175,8 @@ RUN mkdir ${GOPATH} && chown -R ${USER}:${USER} ${GOPATH}
 ENV PATH="${GOPATH}/bin:$PATH"
 
 # Install Rust
-COPY --from=rust:1.89 /usr/local/cargo /usr/local/cargo
-COPY --from=rust:1.89 /usr/local/rustup /usr/local/rustup
+COPY --from=rust:1.90 /usr/local/cargo /usr/local/cargo
+COPY --from=rust:1.90 /usr/local/rustup /usr/local/rustup
 ENV RUSTUP_HOME=/usr/local/rustup
 ENV CARGO_HOME=/home/${USER}/.cargo
 ENV PATH="/usr/local/cargo/bin:$PATH"
@@ -233,6 +233,7 @@ RUN wget -q https://github.com/hadolint/hadolint/releases/download/${HADOLINT_VE
 # Install ripgrep
 ARG RIPGREP_VERSION=14.1.1
 ARG RIPGREP_ARCH=${TARGETARCH/amd64/x86_64}
+ARG RIPGREP_ARCH=${RIPGREP_ARCH/arm64/aarch64}
 RUN wget -qO- https://github.com/BurntSushi/ripgrep/releases/download/${RIPGREP_VERSION}/ripgrep-${RIPGREP_VERSION}-${RIPGREP_ARCH}-unknown-linux-musl.tar.gz | tar -xz -C ~/.local/bin
 
 # Install wslint
