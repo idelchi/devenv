@@ -11,6 +11,7 @@ includes:
   git: "{{.DEVENV}}/taskfiles/Taskfile.git.yml"
   lint: "{{.DEVENV}}/taskfiles/Taskfile.lint.yml"
   format: "{{.DEVENV}}/taskfiles/Taskfile.format.yml"
+  github: "{{.DEVENV}}/taskfiles/Taskfile.github.yml"
 
 silent: true
 

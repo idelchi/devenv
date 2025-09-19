@@ -14,16 +14,6 @@ jobs:
   info:
     uses: ./.github/workflows/info.yml
 
-  cleanup:
-    uses: ./.github/workflows/cleanup.yml
-    if: github.ref == 'refs/heads/dev'
-    needs: info
-    permissions:
-      actions: write
-    with:
-      branches: dev,main
-      endswith: -beta
-
   verify:
     uses: ./.github/workflows/devenv.yml
     needs: info
