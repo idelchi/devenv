@@ -39,7 +39,7 @@ tasks:
       This task displays the current project setup, including directory paths, operating system, and build information.
     cmds:
       - |
-        echo Running in: $(pwd) as $(whoami)
+        echo Running in: $(pwd) as $(whoami) $(id -u):$(id -g)
         echo OS: {{OS}}:{{ARCH}}
         echo Time: {{now | date "2006-01-02 15:04:05"}}
         echo DevEnv directory: {{.DEVENV}}
