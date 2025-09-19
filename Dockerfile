@@ -198,6 +198,7 @@ ARG TYPOS_VERSION=v1.36.2
 ARG GOLANGCI_LINT_VERSION=v2.4.0
 ARG TASK_VERSION=v3.45.3
 ARG HADOLINT_VERSION=v2.13.1
+ARG RIPGREP_VERSION=14.1.1
 ARG WSLINT_VERSION=v0.0.0
 
 # Install jq
@@ -231,10 +232,14 @@ RUN wget -q https://github.com/hadolint/hadolint/releases/download/${HADOLINT_VE
     chmod +x ~/.local/bin/hadolint
 
 # Install ripgrep
-ARG RIPGREP_VERSION=14.1.1
 ARG RIPGREP_ARCH=${TARGETARCH/amd64/x86_64}
 ARG RIPGREP_ARCH=${RIPGREP_ARCH/arm64/aarch64}
-RUN wget -qO- https://github.com/BurntSushi/ripgrep/releases/download/${RIPGREP_VERSION}/ripgrep-${RIPGREP_VERSION}-${RIPGREP_ARCH}-unknown-linux-musl.tar.gz | tar -xz -C ~/.local/bin
+ARG RIPGREP_LIBC=musl
+RUN if [ "$RIPGREP_ARCH" = "aarch64" ]; then \
+    RIPGREP_LIBC=gnu; \
+    fi && \
+    wget -qO- https://github.com/BurntSushi/ripgrep/releases/download/${RIPGREP_VERSION}/ripgrep-${RIPGREP_VERSION}-${RIPGREP_ARCH}-unknown-linux-${RIPGREP_LIBC}.tar.gz \
+    | tar -xz -C ~/.local/bin
 
 # Install wslint
 RUN curl -sSL https://raw.githubusercontent.com/idelchi/wslint/refs/heads/main/install.sh | sh -s -- -d ~/.local/bin -v ${WSLINT_VERSION}
