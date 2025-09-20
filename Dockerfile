@@ -239,7 +239,7 @@ RUN if [ "$RIPGREP_ARCH" = "aarch64" ]; then \
     RIPGREP_LIBC=gnu; \
     fi && \
     wget -qO- https://github.com/BurntSushi/ripgrep/releases/download/${RIPGREP_VERSION}/ripgrep-${RIPGREP_VERSION}-${RIPGREP_ARCH}-unknown-linux-${RIPGREP_LIBC}.tar.gz \
-    | tar -xz -C ~/.local/bin
+    | tar -xz --strip-components=1 -C ~/.local/bin
 
 # Install wslint
 RUN curl -sSL https://raw.githubusercontent.com/idelchi/wslint/refs/heads/main/install.sh | sh -s -- -d ~/.local/bin -v ${WSLINT_VERSION}
