@@ -8,7 +8,7 @@
 #   - and many, many, more...
 #]=======================================================================]
 
-ARG GO_VERSION=1.25.3
+ARG GO_VERSION=1.25.4
 FROM --platform=$BUILDPLATFORM golang:${GO_VERSION} AS go-builder
 
 # Basic good practices
@@ -167,7 +167,7 @@ RUN pip install --no-cache-dir \
     fastapi
 
 # Install Go
-COPY --from=golang:1.25.3 /usr/local/go /usr/local/go
+COPY --from=golang:1.25.4 /usr/local/go /usr/local/go
 ENV PATH="/usr/local/go/bin:$PATH"
 
 ENV GOPATH=/opt/go
@@ -193,12 +193,12 @@ ENV PATH="/home/${USER}/.local/bin:$PATH"
 
 # Tool versions
 ARG JQ_VERSION=1.8.1
-ARG YQ_VERSION=v4.48.1
-ARG TYPOS_VERSION=v1.38.1
-ARG GOLANGCI_LINT_VERSION=v2.5.0
-ARG TASK_VERSION=v3.45.4
+ARG YQ_VERSION=v4.48.2
+ARG TYPOS_VERSION=v1.39.2
+ARG GOLANGCI_LINT_VERSION=v2.6.2
+ARG TASK_VERSION=v3.45.5
 ARG HADOLINT_VERSION=v2.14.0
-ARG RIPGREP_VERSION=14.1.1
+ARG RIPGREP_VERSION=15.1.0
 ARG WSLINT_VERSION=v0.0.0
 
 # Install jq
