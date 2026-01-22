@@ -45,6 +45,8 @@ tasks:
     vars:
       CONFIG_PRETTIER: "{{.CONFIG_DIR}}/.prettierrc.yml"
     sources:
+      - "{{.RESOURCES_DIR}}/**/.*.yaml"
+      - "{{.RESOURCES_DIR}}/**/.*.yml"
       - "{{.RESOURCES_DIR}}/**/*.yaml"
       - "{{.RESOURCES_DIR}}/**/*.yml"
 

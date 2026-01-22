@@ -53,7 +53,7 @@ if [ "$(go env GOHOSTARCH)" != "$(go env GOARCH)" ]; then
 fi
 EOF
 
-FROM python:3.13
+FROM python:3.14
 
 ARG TARGETOS
 ARG TARGETARCH
@@ -113,7 +113,7 @@ RUN npm install -g \
     # docker
     dockerfile-utils \
     # json
-    @prantlf/jsonlint \
+    @prantlf/jsonlint@16.1.0 \
     # compound
     prettier
 
@@ -194,12 +194,12 @@ ENV PATH="/home/${USER}/.local/bin:$PATH"
 # Tool versions
 ARG JQ_VERSION=1.8.1
 ARG YQ_VERSION=v4.50.1
-ARG TYPOS_VERSION=v1.40.0
-ARG GOLANGCI_LINT_VERSION=v2.7.2
+ARG TYPOS_VERSION=v1.42.1
+ARG GOLANGCI_LINT_VERSION=v2.8.0
 ARG TASK_VERSION=v3.45.5
 ARG HADOLINT_VERSION=v2.14.0
 ARG RIPGREP_VERSION=15.1.0
-ARG WSLINT_VERSION=v0.0.0
+ARG WSLINT_VERSION=v0.0.1
 
 # Install jq
 ARG JQ_ARCH=${TARGETARCH}

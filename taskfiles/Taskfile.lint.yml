@@ -23,6 +23,8 @@ tasks:
       CONFIG_YAMLFMT: "{{.CONFIG_DIR}}/.yamlfmt.yml"
       IGNORE: "{{.CONFIG_DIR}}/.ignore"
     sources:
+      - ./**/.*.yaml
+      - ./**/.*.yml
       - ./**/*.yaml
       - ./**/*.yml
       - "{{.CONFIG_PRETTIER}}"
@@ -36,13 +38,14 @@ tasks:
     summary: |
       This task lints JSON files using prettier and jsonlint.
     cmds:
-      - jsonlint --mode=cjson --quiet .
+      - jsonlint --mode=cjson --quiet '**/*.json' '**/.*.json'
       - for: sources
         cmd: prettier --config={{.CONFIG}} --ignore-path={{.IGNORE}} --check "{{.ITEM}}"
     vars:
       CONFIG: "{{.CONFIG_DIR}}/.prettierrc.yml"
       IGNORE: "{{.CONFIG_DIR}}/.ignore"
     sources:
+      - ./**/.*.json
       - ./**/*.json
       - "{{.CONFIG}}"
 

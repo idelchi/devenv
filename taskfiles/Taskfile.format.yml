@@ -27,6 +27,8 @@ tasks:
       CONFIG_YAMLFMT: "{{.CONFIG_DIR}}/.yamlfmt.yml"
       IGNORE: "{{.CONFIG_DIR}}/.ignore"
     sources:
+      - ./**/.*.yaml
+      - ./**/.*.yml
       - ./**/*.yaml
       - ./**/*.yml
 
@@ -35,13 +37,14 @@ tasks:
     summary: |
       This task formats JSON files using jsonlint and prettier.
     cmds:
-      - cmd: jsonlint --mode=cjson --pretty-print --quiet --in-place --indent "    " .
+      - cmd: jsonlint --mode=cjson --pretty-print --quiet --in-place --indent "    " '**/*.json' '**/.*.json'
       - for: sources
         cmd: prettier --log-level=silent --config={{.CONFIG}} --ignore-path={{.IGNORE}} --write {{toSlash .ITEM}}
     vars:
       CONFIG: "{{.CONFIG_DIR}}/.prettierrc.yml"
       IGNORE: "{{.CONFIG_DIR}}/.ignore"
     sources:
+      - ./**/.*.json
       - ./**/*.json
 
   docker:
