@@ -175,8 +175,8 @@ RUN mkdir ${GOPATH} && chown -R ${USER}:${USER} ${GOPATH}
 ENV PATH="${GOPATH}/bin:$PATH"
 
 # Install Rust
-COPY --from=rust:1.90 /usr/local/cargo /usr/local/cargo
-COPY --from=rust:1.90 /usr/local/rustup /usr/local/rustup
+COPY --from=rust:1.93 /usr/local/cargo /usr/local/cargo
+COPY --from=rust:1.93 /usr/local/rustup /usr/local/rustup
 ENV RUSTUP_HOME=/usr/local/rustup
 ENV CARGO_HOME=/home/${USER}/.cargo
 ENV PATH="/usr/local/cargo/bin:$PATH"
@@ -196,7 +196,7 @@ ARG JQ_VERSION=1.8.1
 ARG YQ_VERSION=v4.50.1
 ARG TYPOS_VERSION=v1.42.1
 ARG GOLANGCI_LINT_VERSION=v2.8.0
-ARG TASK_VERSION=v3.45.5
+ARG TASK_VERSION=v3.48.0
 ARG HADOLINT_VERSION=v2.14.0
 ARG RIPGREP_VERSION=15.1.0
 ARG WSLINT_VERSION=v0.0.1
