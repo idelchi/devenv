@@ -68,6 +68,8 @@ tasks:
   format:
     desc: format go project
     cmds:
+      - go fix ./...
+
       - >
         golangci-lint fmt
         --config={{.GOLANGCI_LINT_CONFIG}}
