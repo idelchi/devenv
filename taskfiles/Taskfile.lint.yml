@@ -38,7 +38,7 @@ tasks:
     summary: |
       This task lints JSON files using prettier and jsonlint.
     cmds:
-      - jsonlint --mode=cjson --quiet '**/*.json' '**/.*.json'
+      - jsonlint --succeed-with-no-files --mode=cjson --quiet '**/*.json' '**/.*.json'
       - for: sources
         cmd: prettier --config={{.CONFIG}} --ignore-path={{.IGNORE}} --check "{{.ITEM}}"
     vars:
