@@ -91,6 +91,11 @@ tasks:
     desc: lint go project
     deps: [init]
     cmds:
+      - |
+        if go fix --diff ./... | grep -q .; then
+          exit 1
+        fi
+
       - >
         golangci-lint run
         --config={{.GOLANGCI_LINT_CONFIG}}
