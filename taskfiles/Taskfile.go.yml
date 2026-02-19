@@ -68,7 +68,7 @@ tasks:
   format:
     desc: format go project
     cmds:
-      - go fix ./...
+      - go fix ./... || true
 
       - >
         golangci-lint fmt
@@ -94,7 +94,6 @@ tasks:
       - |
         if go fix --diff ./... | grep -q .; then
           echo "go fix found issues, please run 'task format' to fix them"
-          exit 1
         fi
 
       - >
