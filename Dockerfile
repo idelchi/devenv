@@ -53,7 +53,7 @@ if [ "$(go env GOHOSTARCH)" != "$(go env GOARCH)" ]; then
 fi
 EOF
 
-FROM python:3.14
+FROM ubuntu:26.04
 
 ARG TARGETOS
 ARG TARGETARCH
@@ -64,8 +64,14 @@ USER root
 
 # Create User (Debian/Ubuntu)
 ARG USER=user
-RUN groupadd -r -g 1001 ${USER} && \
-    useradd -r -u 1001 -g 1001 -m -c "${USER} account" -d /home/${USER} -s /bin/bash ${USER}
+ARG UID=1000
+ARG GID=1000
+ENV HOME=/home/${USER}
+RUN usermod -l "${USER}" ubuntu && \
+    groupmod -n "${USER}" ubuntu && \
+    groupmod -g "${GID}" "${USER}" && \
+    usermod -u "${UID}" -g "${GID}" -d "${HOME}" -m -c "${USER} account" -s /bin/bash "${USER}" && \
+    chown -R "${UID}:${GID}" "${HOME}"
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -77,6 +83,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     # Build tools
     build-essential \
     clang \
+    python3 \
+    python3-pip \
     # Auxiliaries
     curl \
     wget \
@@ -124,9 +132,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     shellcheck \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Update pip & allow breaking packages
-RUN pip install --no-cache-dir --upgrade pip && \
-    echo -e "[global]\nbreak-system-packages=true" >> /etc/pip.conf
+# Allow breaking packages
+RUN echo -e "[global]\nbreak-system-packages=true" >> /etc/pip.conf
 
 # Spellcheckers
 RUN apt-get update && apt-get install -y --no-install-recommends \

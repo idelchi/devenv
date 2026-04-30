@@ -3,8 +3,8 @@ FROM mcr.microsoft.com/devcontainers/base:bullseye
 USER root
 
 # Create CI User (Debian/Ubuntu)
-RUN groupadd -r -g 1001 user && \
-    useradd -r -u 1001 -g 1001 -m -c "user account" -d /home/user -s /bin/bash user
+RUN groupadd -r -g 1000 user && \
+    useradd -r -u 1000 -g 1000 -m -c "user account" -d /home/user -s /bin/bash user
 
 ENV USERNAME=user
 
