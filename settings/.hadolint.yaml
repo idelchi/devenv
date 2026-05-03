@@ -6,3 +6,5 @@ ignored:
   - DL3018
 
   - DL4001 # Ignore DL4001 because we use wget or curl depending on installation guides
+
+  - DL3059 # Splitting up RUN statements for readability

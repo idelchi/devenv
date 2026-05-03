@@ -15,7 +15,7 @@ services:
     environment:
       - DEVENV
     network_mode: bridge
-    user: user
+    user: 1000:1000
     volumes:
       - ${PWD}:/home/user/ws
       - /var/run/docker.sock:/var/run/docker.sock

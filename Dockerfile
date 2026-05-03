@@ -62,21 +62,35 @@ LABEL maintainer=arash.idelchi
 
 USER root
 
-# Create User (Debian/Ubuntu)
-ARG USER=user
-ARG UID=1000
-ARG GID=1000
-ENV HOME=/home/${USER}
-RUN usermod -l "${USER}" ubuntu && \
-    groupmod -n "${USER}" ubuntu && \
-    groupmod -g "${GID}" "${USER}" && \
-    usermod -u "${UID}" -g "${GID}" -d "${HOME}" -m -c "${USER} account" -s /bin/bash "${USER}" && \
-    chown -R "${UID}:${GID}" "${HOME}"
+# (removed fixed UID/GID user creation to make image UID-agnostic)
 
 ARG DEBIAN_FRONTEND=noninteractive
 
 # Basic good practices
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+# Runtime paths (UID-agnostic)
+ENV HOME=/tmp/home
+ENV GOPATH=/tmp/go
+ENV GOCACHE=/tmp/.cache/go-build
+ENV RUSTUP_HOME=/usr/local/rustup
+ENV CARGO_HOME=/tmp/cargo
+
+# Reroute cache to /tmp
+ENV NPM_CONFIG_CACHE=/tmp/.npm
+ENV XDG_CACHE_HOME=/tmp/.cache
+ENV MYPY_CACHE_DIR=/tmp/.mypy_cache
+ENV RUFF_CACHE_DIR=/tmp/.ruff_cache
+ENV TASK_TEMP_DIR=/tmp/.task
+
+# Timezone
+ENV TZ=Europe/Zurich
+
+# Ensure writable dirs for arbitrary UID
+RUN mkdir -p /tmp/{home,go,cargo,.npm,.cache,.mypy_cache,.ruff_cache,.task} /workspace
+RUN chmod 1777 /tmp/{home,go,cargo,.npm,.cache,.mypy_cache,.ruff_cache,.task} /workspace
+
+WORKDIR /workspace
 
 # Basic tooling
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -100,13 +114,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     vim-common \
     coreutils \
     tree \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# Install Java & Node
-RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
-    apt-get install -y --no-install-recommends \
     default-jdk \
     nodejs \
+    npm \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Various linters & formatters
@@ -149,60 +159,28 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     scspell3k
 
 # Python tooling for linting & formatting
-# (mistakes brackets for ranges, split up for readability)
-# hadolint ignore=SC2102,DL3059
 RUN pip install --no-cache-dir \
+    uv \
     pyright \
-    ruff \
-    # Library stubs for typing
-    types-pyyaml
-
-# Python tooling for packaging
-# (split up for readability)
-# hadolint ignore=DL3059
-RUN pip install --no-cache-dir \
-    uv
-
-# Useful packages
-# (split up for readability)
-# hadolint ignore=DL3059
-RUN pip install --no-cache-dir \
-    pytest \
-    pydantic \
-    requests \
-    flask \
-    fastapi
+    ruff
 
 # Install Go
 COPY --from=golang:1.26.2 /usr/local/go /usr/local/go
 ENV PATH="/usr/local/go/bin:$PATH"
 
-ENV GOPATH=/opt/go
-RUN mkdir ${GOPATH} && chown -R ${USER}:${USER} ${GOPATH}
-ENV PATH="${GOPATH}/bin:$PATH"
-
 # Install Rust
-COPY --from=rust:1.94 /usr/local/cargo /usr/local/cargo
-COPY --from=rust:1.94 /usr/local/rustup /usr/local/rustup
-ENV RUSTUP_HOME=/usr/local/rustup
-ENV CARGO_HOME=/home/${USER}/.cargo
+COPY --from=rust:1.95 /usr/local/cargo /usr/local/cargo
+COPY --from=rust:1.95 /usr/local/rustup /usr/local/rustup
 ENV PATH="/usr/local/cargo/bin:$PATH"
-ENV PATH="/home/${USER}/.cargo/bin:$PATH"
 
-USER ${USER}
-WORKDIR /home/${USER}
-
-# Create a local bin directory
-# (split up for readability)
-# hadolint ignore=DL3059
-RUN mkdir -p ~/.local/bin
-ENV PATH="/home/${USER}/.local/bin:$PATH"
+# Global bin path (instead of ~/.local/bin)
+ENV PATH="/usr/local/bin:$PATH"
 
 # Tool versions
 ARG JQ_VERSION=1.8.1
-ARG YQ_VERSION=v4.52.5
-ARG TYPOS_VERSION=v1.45.1
-ARG GOLANGCI_LINT_VERSION=v2.11.4
+ARG YQ_VERSION=v4.53.2
+ARG TYPOS_VERSION=v1.46.0
+ARG GOLANGCI_LINT_VERSION=v2.12.1
 ARG TASK_VERSION=v3.50.0
 ARG HADOLINT_VERSION=v2.14.0
 ARG RIPGREP_VERSION=15.1.0
@@ -212,31 +190,31 @@ ARG WSLINT_VERSION=v0.0.1
 ARG JQ_ARCH=${TARGETARCH}
 ARG JQ_ARCH=${JQ_ARCH/arm/armhf}
 ARG JQ_ARCH=${JQ_ARCH/armhf64/arm64}
-RUN wget -q https://github.com/jqlang/jq/releases/download/jq-${JQ_VERSION}/jq-linux-${JQ_ARCH} -O ~/.local/bin/jq && \
-    chmod +x ~/.local/bin/jq
+RUN wget -q https://github.com/jqlang/jq/releases/download/jq-${JQ_VERSION}/jq-linux-${JQ_ARCH} -O /usr/local/bin/jq && \
+    chmod +x /usr/local/bin/jq
 
 # Install yq
 RUN wget -qO- https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64.tar.gz | tar -xz -C /tmp && \
-    mv /tmp/yq_linux_amd64 ~/.local/bin/yq
+    mv /tmp/yq_linux_amd64 /usr/local/bin/yq
 
 # Install typos-cli
 ARG TYPOS_ARCH=${TARGETARCH/amd64/x86_64}
 ARG TYPOS_ARCH=${TYPOS_ARCH/arm64/aarch64}
-RUN wget -qO- https://github.com/crate-ci/typos/releases/download/${TYPOS_VERSION}/typos-${TYPOS_VERSION}-${TYPOS_ARCH}-unknown-linux-musl.tar.gz | tar -xz -C ~/.local/bin
+RUN wget -qO- https://github.com/crate-ci/typos/releases/download/${TYPOS_VERSION}/typos-${TYPOS_VERSION}-${TYPOS_ARCH}-unknown-linux-musl.tar.gz | tar -xz -C /usr/local/bin
 
 # Install golangci-lint
-RUN wget -qO- https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b "$(go env GOPATH)/bin" ${GOLANGCI_LINT_VERSION}
+RUN curl -sSfL https://golangci-lint.run/install.sh | sh -s -- -b /usr/local/bin ${GOLANGCI_LINT_VERSION}
 
 # Install Task
 ARG TASK_ARCH=${TARGETARCH}
-RUN wget -qO- https://github.com/go-task/task/releases/download/${TASK_VERSION}/task_linux_${TASK_ARCH}.tar.gz | tar -xz -C ~/.local/bin
+RUN wget -qO- https://github.com/go-task/task/releases/download/${TASK_VERSION}/task_linux_${TASK_ARCH}.tar.gz | tar -xz -C /usr/local/bin
 
 # Install hadolint
 ARG HADOLINT_ARCH=${TARGETARCH/amd64/x86_64}
 ARG HADOLINT_ARCH=${HADOLINT_ARCH/arm/arm64}
 ARG HADOLINT_ARCH=${HADOLINT_ARCH/arm6464/arm64}
-RUN wget -q https://github.com/hadolint/hadolint/releases/download/${HADOLINT_VERSION}/hadolint-Linux-${HADOLINT_ARCH} -O ~/.local/bin/hadolint && \
-    chmod +x ~/.local/bin/hadolint
+RUN wget -q https://github.com/hadolint/hadolint/releases/download/${HADOLINT_VERSION}/hadolint-Linux-${HADOLINT_ARCH} -O /usr/local/bin/hadolint && \
+    chmod +x /usr/local/bin/hadolint
 
 # Install ripgrep
 ARG RIPGREP_ARCH=${TARGETARCH/amd64/x86_64}
@@ -246,20 +224,10 @@ RUN if [ "$RIPGREP_ARCH" = "aarch64" ]; then \
     RIPGREP_LIBC=gnu; \
     fi && \
     wget -qO- https://github.com/BurntSushi/ripgrep/releases/download/${RIPGREP_VERSION}/ripgrep-${RIPGREP_VERSION}-${RIPGREP_ARCH}-unknown-linux-${RIPGREP_LIBC}.tar.gz \
-    | tar -xz --strip-components=1 -C ~/.local/bin
+    | tar -xz --strip-components=1 -C /usr/local/bin
 
 # Install wslint
-RUN curl -sSL https://raw.githubusercontent.com/idelchi/wslint/refs/heads/main/install.sh | sh -s -- -d ~/.local/bin -v ${WSLINT_VERSION}
-
-# Reroute cache to /tmp
-ENV NPM_CONFIG_CACHE=/tmp/.npm
-ENV XDG_CACHE_HOME=/tmp/.cache
-ENV MYPY_CACHE_DIR=/tmp/.mypy_cache
-ENV RUFF_CACHE_DIR=/tmp/.ruff_cache
-ENV TASK_TEMP_DIR=/tmp/.task
-
-# Timezone
-ENV TZ=Europe/Zurich
+RUN curl -sSL https://raw.githubusercontent.com/idelchi/wslint/refs/heads/main/install.sh | sh -s -- -d /usr/local/bin -v ${WSLINT_VERSION}
 
 # Copy the tools from the build stages
 COPY --from=go-builder /go/bin/* /usr/local/bin/
@@ -267,3 +235,6 @@ COPY --from=go-builder /go/bin/* /usr/local/bin/
 # Clear the base image entrypoint
 ENTRYPOINT []
 CMD ["/bin/bash"]
+
+# (user is expected to be overridden from root)
+# hadolint global ignore=DL3002
