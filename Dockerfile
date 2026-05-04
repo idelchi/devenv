@@ -220,5 +220,8 @@ COPY --chmod=0755 entrypoint.sh /usr/local/bin/entrypoint
 ENTRYPOINT ["entrypoint"]
 CMD ["/bin/bash"]
 
+# Default CI user
+USER 1001:1001
+
 # (user is expected to be overridden from root)
 # hadolint global ignore=DL3002
