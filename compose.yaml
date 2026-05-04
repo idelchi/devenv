@@ -15,14 +15,13 @@ services:
     environment:
       - DEVENV
     network_mode: bridge
-    user: 1000:1000
+    user: 1001:1001
     volumes:
-      - ${PWD}:/home/user/ws
+      - ${PWD}:/workspace
       - /var/run/docker.sock:/var/run/docker.sock
-      # - ${DEVENV}:${DEVENV} # Possible to mount it inside
     extra_hosts:
       - host.docker.internal:host-gateway
-    working_dir: /home/user/ws
+    working_dir: /workspace
 
   platforms:
     extends: devenv

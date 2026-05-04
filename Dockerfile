@@ -69,29 +69,6 @@ ARG DEBIAN_FRONTEND=noninteractive
 # Basic good practices
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-# Runtime paths (UID-agnostic)
-ENV HOME=/tmp/home
-ENV GOPATH=/tmp/go
-ENV GOCACHE=/tmp/.cache/go-build
-ENV RUSTUP_HOME=/usr/local/rustup
-ENV CARGO_HOME=/tmp/cargo
-
-# Reroute cache to /tmp
-ENV NPM_CONFIG_CACHE=/tmp/.npm
-ENV XDG_CACHE_HOME=/tmp/.cache
-ENV MYPY_CACHE_DIR=/tmp/.mypy_cache
-ENV RUFF_CACHE_DIR=/tmp/.ruff_cache
-ENV TASK_TEMP_DIR=/tmp/.task
-
-# Timezone
-ENV TZ=Europe/Zurich
-
-# Ensure writable dirs for arbitrary UID
-RUN mkdir -p /tmp/{home,go,cargo,.npm,.cache,.mypy_cache,.ruff_cache,.task} /workspace
-RUN chmod 1777 /tmp/{home,go,cargo,.npm,.cache,.mypy_cache,.ruff_cache,.task} /workspace
-
-WORKDIR /workspace
-
 # Basic tooling
 RUN apt-get update && apt-get install -y --no-install-recommends \
     # Build tools
@@ -232,8 +209,15 @@ RUN curl -sSL https://raw.githubusercontent.com/idelchi/wslint/refs/heads/main/i
 # Copy the tools from the build stages
 COPY --from=go-builder /go/bin/* /usr/local/bin/
 
-# Clear the base image entrypoint
-ENTRYPOINT []
+ENV TZ=Europe/Zurich
+
+RUN mkdir -p /workspace && chmod 1777 /workspace
+
+WORKDIR /workspace
+
+COPY --chmod=0755 entrypoint.sh /usr/local/bin/entrypoint
+
+ENTRYPOINT ["entrypoint"]
 CMD ["/bin/bash"]
 
 # (user is expected to be overridden from root)

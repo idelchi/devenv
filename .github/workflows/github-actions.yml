@@ -14,9 +14,15 @@ jobs:
   info:
     uses: ./.github/workflows/info.yml
 
+  verify:
+    uses: ./.github/workflows/devenv.yml
+    needs: info
+    secrets: inherit
+
   release:
     uses: ./.github/workflows/docker-merge.yml
     if: github.ref == 'refs/heads/main'
+    needs: verify
     permissions:
       contents: write
     secrets: inherit
