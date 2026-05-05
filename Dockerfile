@@ -234,10 +234,5 @@ ARG USER=ci
 RUN groupadd -r -g 1001 ${USER} && \
     useradd -r -u 1001 -g 1001 -m -c "${USER} account" -d /home/${USER} -s /bin/bash ${USER}
 
-
-
 # Default CI user
-USER 1001:1001
-
-# (user is expected to be overridden from root)
-# hadolint global ignore=DL3002
+USER ci
