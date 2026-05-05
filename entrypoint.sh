@@ -2,8 +2,13 @@
 set -euo pipefail
 
 uid="$(id -u)"
+home="${HOME:-}"
 
-export HOME="/tmp/home/${uid}"
+if [[ -z ${home} || ${home} == "/" || ! -d ${home} || ! -w ${home} ]]; then
+  home="/tmp/home/${uid}"
+fi
+
+export HOME="${home}"
 
 export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-${HOME}/.config}"
 export XDG_DATA_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}"

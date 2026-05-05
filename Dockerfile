@@ -220,6 +220,22 @@ COPY --chmod=0755 entrypoint.sh /usr/local/bin/entrypoint
 ENTRYPOINT ["entrypoint"]
 CMD ["/bin/bash"]
 
+# Delete default user/group with UID/GID 1000 if they exist
+RUN userdel ubuntu && \
+    rm -rf /home/ubuntu /var/mail/ubuntu
+
+# Create normal user
+ARG USER=user
+RUN groupadd -r -g 1000 ${USER} && \
+    useradd -r -u 1000 -g 1000 -m -c "${USER} account" -d /home/${USER} -s /bin/bash ${USER}
+
+# Create ci user
+ARG USER=ci
+RUN groupadd -r -g 1001 ${USER} && \
+    useradd -r -u 1001 -g 1001 -m -c "${USER} account" -d /home/${USER} -s /bin/bash ${USER}
+
+
+
 # Default CI user
 USER 1001:1001
 
