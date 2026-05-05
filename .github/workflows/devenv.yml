@@ -73,7 +73,7 @@ jobs:
       # Make sure the current image is being built and used, and not a remote one
       - name: Lint the repository
         run: |
-          docker compose run --build --rm devenv task lint
+          docker compose run --user ci --build --rm devenv task lint
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEVENV: ${{ inputs.devenv }}
