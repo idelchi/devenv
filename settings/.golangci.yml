@@ -13,6 +13,7 @@ linters:
     - noinlineerr
     # Deprecated
     - wsl
+    - gomodguard
 
   settings:
     wsl_v5:
