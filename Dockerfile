@@ -146,8 +146,8 @@ COPY --from=golang:1.26.4 /usr/local/go /usr/local/go
 ENV PATH="/usr/local/go/bin:$PATH"
 
 # Install Rust
-COPY --from=rust:1.95 /usr/local/cargo /usr/local/cargo
-COPY --from=rust:1.95 /usr/local/rustup /usr/local/rustup
+COPY --from=rust:1.96 /usr/local/cargo /usr/local/cargo
+COPY --from=rust:1.96 /usr/local/rustup /usr/local/rustup
 ENV PATH="/usr/local/cargo/bin:$PATH"
 
 # Global bin path (instead of ~/.local/bin)
