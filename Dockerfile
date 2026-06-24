@@ -171,8 +171,9 @@ RUN wget -q https://github.com/jqlang/jq/releases/download/jq-${JQ_VERSION}/jq-l
     chmod +x /usr/local/bin/jq
 
 # Install yq
-RUN wget -qO- https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64.tar.gz | tar -xz -C /tmp && \
-    mv /tmp/yq_linux_amd64 /usr/local/bin/yq
+ARG YQ_ARCH=${TARGETARCH}
+RUN wget -qO- https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_${YQ_ARCH}.tar.gz | tar -xz -C /tmp && \
+    mv /tmp/yq_linux_${YQ_ARCH} /usr/local/bin/yq
 
 # Install typos-cli
 ARG TYPOS_ARCH=${TARGETARCH/amd64/x86_64}
