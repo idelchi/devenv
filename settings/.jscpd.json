@@ -3,6 +3,7 @@
     "output": ".build/cpd/",
     "format": ["python", "go", "bash"],
     "mode": "mild",
+    "ignore": ["**/.git/**", "**/.devenv/**"],
     "ignorePattern": [
         "___appSpecifics___",
         "___errorChecking___",
