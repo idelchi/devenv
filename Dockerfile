@@ -146,8 +146,8 @@ COPY --from=golang:1.27.1 /usr/local/go /usr/local/go
 ENV PATH="/usr/local/go/bin:$PATH"
 
 # Install Rust
-COPY --from=rust:1.96 /usr/local/cargo /usr/local/cargo
-COPY --from=rust:1.96 /usr/local/rustup /usr/local/rustup
+COPY --from=rust:1.98 /usr/local/cargo /usr/local/cargo
+COPY --from=rust:1.98 /usr/local/rustup /usr/local/rustup
 ENV PATH="/usr/local/cargo/bin:$PATH"
 
 # Global bin path (instead of ~/.local/bin)
@@ -155,12 +155,12 @@ ENV PATH="/usr/local/bin:$PATH"
 
 # Tool versions
 ARG JQ_VERSION=1.8.2
-ARG YQ_VERSION=v4.53.3
-ARG TYPOS_VERSION=v1.47.2
-ARG GOLANGCI_LINT_VERSION=v2.12.2
-ARG TASK_VERSION=v3.51.1
-ARG HADOLINT_VERSION=v2.14.0
-ARG RIPGREP_VERSION=15.1.0
+ARG YQ_VERSION=v4.53.6
+ARG TYPOS_VERSION=v1.50.1
+ARG GOLANGCI_LINT_VERSION=v2.13.2
+ARG TASK_VERSION=v3.53.1
+ARG HADOLINT_VERSION=v2.15.1
+ARG RIPGREP_VERSION=15.2.0
 ARG WSLINT_VERSION=v0.0.1
 
 # Install jq
