@@ -8,7 +8,7 @@
 #   - and many, many, more...
 #]=======================================================================]
 
-ARG GO_VERSION=1.26.4
+ARG GO_VERSION=1.27.1
 FROM --platform=$BUILDPLATFORM golang:${GO_VERSION} AS go-builder
 
 # Basic good practices
@@ -142,7 +142,7 @@ RUN pip install --no-cache-dir \
     ruff
 
 # Install Go
-COPY --from=golang:1.26.4 /usr/local/go /usr/local/go
+COPY --from=golang:1.27.1 /usr/local/go /usr/local/go
 ENV PATH="/usr/local/go/bin:$PATH"
 
 # Install Rust
