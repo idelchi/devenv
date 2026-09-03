@@ -1,7 +1,7 @@
 {
     "reporters": ["console", "html", "markdown", "json"],
     "output": ".build/cpd/",
-    "format": "python, go, bash",
+    "format": ["python", "go", "bash"],
     "mode": "mild",
     "ignorePattern": [
         "___appSpecifics___",

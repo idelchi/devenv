@@ -62,8 +62,6 @@ LABEL maintainer=arash.idelchi
 
 USER root
 
-# (removed fixed UID/GID user creation to make image UID-agnostic)
-
 ARG DEBIAN_FRONTEND=noninteractive
 
 # Basic good practices

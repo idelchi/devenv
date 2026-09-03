@@ -6,6 +6,7 @@ USER root
 RUN groupadd -r -g 1000 user && \
     useradd -r -u 1000 -g 1000 -m -c "user account" -d /home/user -s /bin/bash user
 
+# hadolint ignore=DL3064
 ENV USERNAME=user
 
 # Add sudo support for non-root user

@@ -8,3 +8,5 @@ ignored:
   - DL4001 # Ignore DL4001 because we use wget or curl depending on installation guides
 
   - DL3059 # Splitting up RUN statements for readability
+
+  - DL3066 # Ignore DL3066 because we use non-numeric user-ids by convention
