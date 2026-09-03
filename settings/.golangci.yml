@@ -5,15 +5,16 @@ linters:
   disable:
     # No restrictions on packages
     - depguard
-    # overly strict
-    - exhaustruct
+    # Overly strict
+    - exhaustruct_v5
     # Use named returns when it makes sense
     - nonamedreturns
     # Favor inline errors
     - noinlineerr
     # Deprecated
-    - wsl
+    - exhaustruct
     - gomodguard
+    - wsl
 
   settings:
     wsl_v5:
@@ -165,7 +166,8 @@ formatters:
           replacement: "a[b:]"
 
     gofumpt:
-      extra-rules: true
+      extra:
+        group-params: true
 
     golines:
       max-len: 120
