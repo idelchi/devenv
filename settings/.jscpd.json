@@ -14,5 +14,6 @@
     ],
     "minTokens": 50,
     "minLines": 5,
-    "threshold": 0
+    "threshold": 0,
+    "noTips": true
 }

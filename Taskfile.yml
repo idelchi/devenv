@@ -1,5 +1,8 @@
 version: "3"
 
+env:
+  TYPOS_CONFIG: ./settings/typos.toml
+
 vars:
   DEVENV: .
   CONFIG_DIR: "{{.DEVENV}}/settings"
